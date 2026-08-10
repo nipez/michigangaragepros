@@ -28,6 +28,8 @@ export function LeadForm({
 }: LeadFormProps) {
   const [step, setStep] = useState(initialStep);
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [lead, setLead] = useState<Lead>({ ...emptyLead(), ...initialLead });
 
   const valid = isStepValid(step, lead);
@@ -35,9 +37,34 @@ export function LeadForm({
     setLead((prev) => ({ ...prev, [key]: value }));
   };
 
+  const submitLead = async () => {
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(lead),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(data?.error || "Unable to submit request");
+      }
+      setDone(true);
+    } catch (err) {
+      setSubmitError(
+        err instanceof Error ? err.message : "Unable to submit request",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const next = () => {
-    if (!valid) return;
-    if (step === 5) setDone(true);
+    if (!valid || submitting) return;
+    if (step === 5) void submitLead();
     else setStep((s) => s + 1);
   };
 
@@ -217,19 +244,26 @@ export function LeadForm({
         <button
           type="button"
           onClick={next}
-          disabled={!valid}
+          disabled={!valid || submitting}
           className="border-none font-extrabold text-white"
           style={{
             padding: variant === "page" ? "13px 26px" : "12px 24px",
             borderRadius: 10,
-            background: valid ? "#2F80ED" : "#B9CDDE",
+            background: valid && !submitting ? "#2F80ED" : "#B9CDDE",
             fontSize: 15,
-            cursor: valid ? "pointer" : "default",
+            cursor: valid && !submitting ? "pointer" : "default",
           }}
         >
-          {step === 5 ? "Submit Request" : "Continue →"}
+          {step === 5
+            ? submitting
+              ? "Submitting…"
+              : "Submit Request"
+            : "Continue →"}
         </button>
       </div>
+      {submitError ? (
+        <p className="mt-3 text-sm font-semibold text-[#B42318]">{submitError}</p>
+      ) : null}
     </div>
   );
 }

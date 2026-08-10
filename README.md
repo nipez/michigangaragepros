@@ -5,18 +5,18 @@ Two-sided local marketplace connecting Michigan homeowners with garage-door serv
 ## Stack
 
 - **Next.js 16** (App Router) + TypeScript + Tailwind CSS v4
-- **Deploy target: Vercel** (recommended)
+- **Deploy target: Cloudflare Workers** via [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare)
+- **Database: Cloudflare D1** (SQLite) for leads, claim requests, and company profiles
 
-### Why Vercel (not Railway or Cloudflare Pages)
+### Why Cloudflare
 
-| | Vercel | Cloudflare Pages | Railway |
-|---|---|---|---|
-| Next.js App Router | Native, zero-config | Needs OpenNext adapter | Runs Node container |
-| SEO (SSR/SSG) | Excellent | Good with adapter | Good |
-| Edge lead APIs | Built-in | Workers | Separate setup |
-| Best when… | SEO marketplace + forms | Already on CF edge | Long-running DB/API workers |
-
-This site is SEO-driven marketing + lead capture. **Vercel** is the lowest-friction fit. Switch to Cloudflare later via `@opennextjs/cloudflare` if you want edge/CDN consolidation; use Railway when you add a dedicated Postgres API or background jobs.
+| Need | Cloudflare product |
+|---|---|
+| SEO pages + SSR | Workers + OpenNext |
+| Leads / claims / listings | **D1** |
+| Future photos | R2 |
+| Future cache/sessions | KV |
+| Edge + custom domain | Workers custom domains |
 
 ## Routes
 
@@ -28,28 +28,61 @@ This site is SEO-driven marketing + lead capture. **Vercel** is the lowest-frict
 | `/companies/[slug]/` | Company profile |
 | `/for-companies/` | Contractor acquisition |
 | `/get-a-quote/` | 5-step lead flow |
+| `POST /api/leads` | Persist quote leads to D1 |
+| `POST /api/claims` | Persist profile claim requests to D1 |
 
 ## Develop
 
 ```bash
 npm install
+npm run cf-typegen
+npm run db:migrate:local
 npm run dev
 ```
 
+`next dev` uses local D1 simulation via `initOpenNextCloudflareForDev()`.
+
+## Preview in the Workers runtime
+
 ```bash
-npm run build
-npm start
+npm run preview
 ```
 
-## Deploy (Vercel)
+## Deploy
 
-1. Import `nipez/michigangaragepros` in the Vercel dashboard (or `npx vercel`).
-2. Framework preset: Next.js. Build: `next build`. Output: default.
-3. Point `michigangaragepros.com` DNS to Vercel.
+1. Authenticate: `npx wrangler login`
+2. Create the D1 database once:
+
+```bash
+npx wrangler d1 create michigangaragepros
+```
+
+3. Paste the returned `database_id` into `wrangler.jsonc`.
+4. Apply migrations:
+
+```bash
+npm run db:migrate:remote
+```
+
+5. Deploy:
+
+```bash
+npm run deploy
+```
+
+Point `michigangaragepros.com` at the Worker (custom domain in the Cloudflare dashboard).
+
+## D1 schema
+
+Migrations live in `migrations/`:
+
+- `leads` — homeowner quote requests
+- `claim_requests` — contractor claim form submissions
+- `companies` (+ services / service areas) — seeded sample profiles
 
 ## Next production work
 
-- Lead submission API + email/CRM
-- Company search by ZIP/city
-- Profile claim / contractor auth
-- Replace sample company/review data with real listings
+- Contractor auth / claim verification
+- ZIP/city search queries against D1
+- R2 for company photos
+- Lead routing email/notifications

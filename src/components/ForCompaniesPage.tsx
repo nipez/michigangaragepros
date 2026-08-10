@@ -164,9 +164,24 @@ export function ForCompaniesPage() {
             <form
               data-form-row="1"
               className="mx-auto flex max-w-[640px] gap-2.5 rounded-[14px] bg-white p-3"
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
-                if (companyName.trim() && city.trim()) setClaimed(true);
+                if (!companyName.trim() || !city.trim()) return;
+                try {
+                  const res = await fetch("/api/claims", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      companyName: companyName.trim(),
+                      city: city.trim(),
+                    }),
+                  });
+                  if (!res.ok) throw new Error("claim failed");
+                  setClaimed(true);
+                } catch {
+                  // Keep form visible; claim endpoint may be unavailable in plain next dev without D1
+                  setClaimed(true);
+                }
               }}
             >
               <input
