@@ -474,3 +474,4 @@ SELECT id, 'Petoskey' FROM companies WHERE slug = 'northwest-commercial-door';
 INSERT INTO company_service_areas (company_id, area)
 SELECT id, 'Gaylord' FROM companies WHERE slug = 'northwest-commercial-door';
 
+
