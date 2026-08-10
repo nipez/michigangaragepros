@@ -89,7 +89,14 @@ export const CITIES: City[] = [
     name: "Traverse City",
     state: "MI",
     region: "North",
-    nearby: ["Acme", "Elk Rapids", "Cadillac"],
+    nearby: [
+      "Acme",
+      "Elk Rapids",
+      "Cadillac",
+      "Interlochen",
+      "Kingsley",
+      "Petoskey",
+    ],
   },
   {
     slug: "saginaw",
