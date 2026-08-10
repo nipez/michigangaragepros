@@ -33,10 +33,12 @@ export function ClaimForm({
       <div className="mx-auto max-w-[560px] rounded-[14px] bg-white p-7 text-left text-navy">
         <div className="mb-2 text-lg font-extrabold">Request received</div>
         <p className="m-0 text-[15px] leading-[1.55] text-muted">
-          Thanks — we&apos;ll email{" "}
+          Thanks — your claim is{" "}
+          <span className="font-semibold text-navy">in review</span>. We&apos;ll
+          email{" "}
           <span className="font-semibold text-navy">{submittedEmail}</span> to
-          verify ownership and activate your page. Usually within one business
-          day.
+          verify ownership before the page is marked claimed. Usually within one
+          business day.
         </p>
       </div>
     );

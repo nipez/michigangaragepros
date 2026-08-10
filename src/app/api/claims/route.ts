@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { validateClaim, type ClaimRequest } from "@/lib/claim";
+import { assertClaimAllowed } from "@/lib/claimStatus";
 import { formatClaimNotify, notifyOperator } from "@/lib/notify";
 
 export const runtime = "nodejs";
@@ -29,13 +30,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error }, { status: 400 });
   }
 
+  if (claim.companySlug) {
+    const blocked = await assertClaimAllowed(claim.companySlug);
+    if (blocked) {
+      return NextResponse.json({ error: blocked }, { status: 409 });
+    }
+  }
+
   try {
     const db = await getDb();
     const result = await db
       .prepare(
         `INSERT INTO claim_requests (
-           company_name, city, contact_name, email, phone, website, company_slug, notes
-         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+           company_name, city, contact_name, email, phone, website, company_slug, notes, status
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
       )
       .bind(
         claim.companyName,
@@ -67,6 +75,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       id,
+      status: "pending",
     });
   } catch (err) {
     console.error("claim insert failed", err);

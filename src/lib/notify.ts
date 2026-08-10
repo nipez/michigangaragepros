@@ -135,6 +135,9 @@ export function formatClaimNotify(claim: {
     claim.notes ? `Notes: ${claim.notes}` : null,
     "",
     "Review with: npm run db:claims",
+    claim.companySlug
+      ? `Approve with: npm run db:approve-claim -- --slug=${claim.companySlug}`
+      : null,
   ].filter(Boolean);
 
   return {

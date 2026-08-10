@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CompanyProfilePage } from "@/components/CompanyProfilePage";
 import { COMPANIES, getCompanyBySlug } from "@/data/companies";
+import { getCompanyClaimStatus } from "@/lib/claimStatus";
+
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return COMPANIES.map((c) => ({ slug: c.slug }));
@@ -29,5 +32,6 @@ export default async function Page({
   const { slug } = await params;
   const company = getCompanyBySlug(slug);
   if (!company) notFound();
-  return <CompanyProfilePage company={company} />;
+  const claimStatus = await getCompanyClaimStatus(company.slug);
+  return <CompanyProfilePage company={company} claimStatus={claimStatus} />;
 }
