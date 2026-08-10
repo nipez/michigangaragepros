@@ -14,6 +14,13 @@
   "observability": {
     "enabled": true
   },
+  // Non-secret notify defaults. Set secrets with:
+  //   npx wrangler secret put RESEND_API_KEY
+  // Optional: npx wrangler secret put NOTIFY_WEBHOOK_URL
+  "vars": {
+    "NOTIFY_EMAIL": "nickperez@gmail.com",
+    "NOTIFY_FROM_EMAIL": "Michigan Garage Pros <onboarding@resend.dev>"
+  },
   "d1_databases": [
     {
       "binding": "DB",

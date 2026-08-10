@@ -81,7 +81,7 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
             </div>
             <p className="mb-4 text-[15px] leading-[1.6] text-muted">
               Enter your ZIP to browse Michigan garage-door companies, or jump
-              to a service page for springs, openers, and emergency repair.
+              to a service or region page.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/pros/" className="btn-primary !px-5 !py-3">
@@ -90,6 +90,27 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
               <Link href="/broken-springs/" className="btn-outline !px-5 !py-3">
                 Broken Spring Help
               </Link>
+              <Link href="/emergency-service/" className="btn-outline !px-5 !py-3">
+                Emergency Service
+              </Link>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {[
+                { href: "/regions/southeast/", label: "Southeast MI" },
+                { href: "/regions/west/", label: "West MI" },
+                { href: "/regions/central/", label: "Central MI" },
+                { href: "/cities/", label: "All cities" },
+                { href: "/garage-door-repair/", label: "Repair" },
+                { href: "/garage-door-openers/", label: "Openers" },
+              ].map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="rounded-full border border-border bg-white px-3 py-1.5 text-[13px] font-semibold text-navy transition-colors hover:border-bright-blue hover:text-michigan-blue"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
         </section>

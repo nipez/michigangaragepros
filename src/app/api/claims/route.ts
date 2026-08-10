@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { validateClaim, type ClaimRequest } from "@/lib/claim";
+import { formatClaimNotify, notifyOperator } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -48,9 +49,24 @@ export async function POST(request: Request) {
       )
       .run();
 
+    const id = result.meta.last_row_id;
+    await notifyOperator(
+      formatClaimNotify({
+        id: id ?? "unknown",
+        companyName: claim.companyName,
+        city: claim.city,
+        contactName: claim.contactName,
+        email: claim.email,
+        phone: claim.phone,
+        website: claim.website,
+        companySlug: claim.companySlug,
+        notes: claim.notes,
+      }),
+    );
+
     return NextResponse.json({
       ok: true,
-      id: result.meta.last_row_id,
+      id,
     });
   } catch (err) {
     console.error("claim insert failed", err);

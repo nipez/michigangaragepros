@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { isStepValid, type Lead } from "@/lib/lead";
+import { formatLeadNotify, notifyOperator } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -47,9 +48,24 @@ export async function POST(request: Request) {
       )
       .run();
 
+    const id = result.meta.last_row_id;
+    await notifyOperator(
+      formatLeadNotify({
+        id: id ?? "unknown",
+        service: body.service.trim(),
+        issue: body.issue.trim(),
+        zip: body.zip.trim(),
+        name: body.name.trim(),
+        phone: body.phone.trim() || null,
+        email: body.email.trim() || null,
+        timing: body.timing.trim(),
+        companySlug: body.companySlug?.trim() || null,
+      }),
+    );
+
     return NextResponse.json({
       ok: true,
-      id: result.meta.last_row_id,
+      id,
     });
   } catch (err) {
     console.error("lead insert failed", err);
