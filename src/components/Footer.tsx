@@ -108,8 +108,8 @@ export function Footer() {
               <Link href="/#how" className="text-footer-link hover:text-white">
                 How It Works
               </Link>
-              <span className="text-footer-link">Privacy</span>
-              <span className="text-footer-link">Terms</span>
+              <span className="text-[#8AA3B8]">Privacy</span>
+              <span className="text-[#8AA3B8]">Terms</span>
             </div>
           </div>
         </div>

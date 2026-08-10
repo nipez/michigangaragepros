@@ -21,8 +21,8 @@
   --tag-bg: #f2f6fa;
   --star: #f5a623;
   --hero-muted: #b9cdde;
-  --footer-link: #c4d4e1;
-  --footer-accent: #7cc0f4;
+  --footer-link: #d7e4ef;
+  --footer-accent: #9ad0f5;
   --disabled: #b9cdde;
   --content: 1240px;
   --gutter: 24px;
@@ -60,34 +60,38 @@
   --font-sans: var(--font-plus-jakarta);
 }
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans), system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 
-a {
-  color: var(--michigan-blue);
-  text-decoration: none;
-}
+  /* Keep link defaults in @layer base so Tailwind text-* utilities can override.
+     An unlayered `a { color }` rule was winning over footer/CTA text classes. */
+  a {
+    color: var(--michigan-blue);
+    text-decoration: none;
+  }
 
-a:hover {
-  color: var(--bright-blue);
-}
+  a:hover {
+    color: var(--bright-blue);
+  }
 
-input,
-select,
-button,
-textarea {
-  font-family: inherit;
+  input,
+  select,
+  button,
+  textarea {
+    font-family: inherit;
+  }
 }
 
 .container-site {
@@ -286,6 +290,32 @@ textarea {
 .cta-gradient {
   background: linear-gradient(140deg, #102a43, #164a75);
   border-radius: var(--radius-band);
+  color: #fff;
+}
+
+/* Dark surfaces: keep links light so michigan-blue never sits on navy.
+   Exclude filled CTA buttons so they keep white text on bright-blue fills. */
+.hero-gradient a:not(.btn-primary):not(.btn-navy):not([class*="bg-bright-blue"]):not([class*="bg-navy"]) {
+  color: #d7e4ef;
+}
+
+.hero-gradient a:not(.btn-primary):not(.btn-navy):not([class*="bg-bright-blue"]):not([class*="bg-navy"]):hover {
+  color: #fff;
+}
+
+.cta-gradient a:not(.btn-primary):not(.btn-navy):not([class*="bg-bright-blue"]):not([class*="bg-navy"]) {
+  color: #fff;
+}
+
+.cta-gradient a:not(.btn-primary):not(.btn-navy):not([class*="bg-bright-blue"]):not([class*="bg-navy"]):hover {
+  color: #fff;
+}
+
+footer a {
+  color: var(--footer-link);
+}
+
+footer a:hover {
   color: #fff;
 }
 
