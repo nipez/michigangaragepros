@@ -1,0 +1,256 @@
+export type BlogSection = {
+  heading?: string;
+  paragraphs: string[];
+};
+
+export type BlogPost = {
+  slug: string;
+  title: string;
+  description: string;
+  date: string;
+  readMinutes: number;
+  category: string;
+  sections: BlogSection[];
+};
+
+export const BLOG_POSTS: BlogPost[] = [
+  {
+    slug: "broken-garage-door-spring-signs",
+    title: "7 Signs Your Garage Door Spring Is Failing",
+    description:
+      "Learn the warning signs of a worn or broken garage door spring, why DIY replacement is risky, and when to call a Michigan pro.",
+    date: "2026-03-02",
+    readMinutes: 6,
+    category: "Repair",
+    sections: [
+      {
+        paragraphs: [
+          "Garage door springs carry almost the full weight of the door. When they wear out, the opener works harder, the door feels heavy, and a sudden break can leave you stranded. In Michigan winters, freeze-thaw cycles make spring failures especially common.",
+          "Here are the clearest signs it is time to schedule spring service before a small problem becomes an emergency.",
+        ],
+      },
+      {
+        heading: "1. The door feels much heavier than usual",
+        paragraphs: [
+          "If you disconnect the opener and the door is hard to lift by hand, the spring is no longer balancing the door correctly. A healthy door should stay roughly halfway open when lifted manually.",
+        ],
+      },
+      {
+        heading: "2. You hear a loud bang from the garage",
+        paragraphs: [
+          "A sharp bang often means a torsion spring has snapped. The door may refuse to open, or it may open only a few inches before the opener strains.",
+        ],
+      },
+      {
+        heading: "3. The door opens unevenly or looks crooked",
+        paragraphs: [
+          "Extension-spring systems use a spring on each side. If one side fails, the door can rack or bind in the tracks. Stop using the opener until a technician inspects it.",
+        ],
+      },
+      {
+        heading: "4. The opener sounds strained or reverses mid-travel",
+        paragraphs: [
+          "Openers are not designed to lift an unbalanced door. Grinding, hesitation, or mid-travel reversing can point to spring wear rather than a bad motor.",
+        ],
+      },
+      {
+        heading: "5. Visible gaps or stretching in the spring coils",
+        paragraphs: [
+          "Look (from a safe distance) for separation in torsion spring coils or a spring hanging loosely. Never try to adjust a wound torsion spring yourself — the stored energy is dangerous.",
+        ],
+      },
+      {
+        heading: "6. The door slams shut or drops quickly",
+        paragraphs: [
+          "A door that falls hard instead of closing smoothly is a serious safety issue. Keep kids and pets clear and call for repair the same day when possible.",
+        ],
+      },
+      {
+        heading: "7. Your door is older than the spring's expected life",
+        paragraphs: [
+          "Many residential springs are rated for a set number of cycles. Daily use in a Michigan household can reach end-of-life in several years. Proactive replacement is cheaper than an emergency call at night.",
+          "Browse local spring-repair companies by ZIP on Michigan Garage Pros, or open a city page to compare pros near you.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "garage-door-repair-cost-michigan",
+    title: "Garage Door Repair Cost in Michigan: What to Expect",
+    description:
+      "A practical guide to typical Michigan garage door repair costs for springs, openers, cables, and service calls — plus what drives the price up or down.",
+    date: "2026-03-10",
+    readMinutes: 7,
+    category: "Guides",
+    sections: [
+      {
+        paragraphs: [
+          "Homeowners usually want a ballpark before they call. Exact pricing varies by city, parts, and how urgent the visit is, but Michigan repair jobs tend to fall into a few common ranges.",
+          "Use these figures as planning ranges — not quotes — then compare local companies for a firm price.",
+        ],
+      },
+      {
+        heading: "Service call and diagnosis",
+        paragraphs: [
+          "Many companies charge a trip or diagnostic fee that may be applied toward the repair. Same-day or after-hours emergency visits usually cost more than weekday appointments.",
+        ],
+      },
+      {
+        heading: "Broken spring replacement",
+        paragraphs: [
+          "Spring replacement is one of the most common repairs. Cost depends on door weight, spring type (torsion vs extension), and whether both springs should be replaced as a pair for even wear.",
+        ],
+      },
+      {
+        heading: "Opener repair vs replacement",
+        paragraphs: [
+          "Logic-board, gear, or sensor repairs can be cheaper than a full opener swap. If the unit is old, noisy, or lacks battery backup for winter outages, replacement may be the better long-term value.",
+        ],
+      },
+      {
+        heading: "Cables, rollers, and tracks",
+        paragraphs: [
+          "Frayed cables, worn rollers, and bent tracks are mid-range repairs. Ignoring them can damage the door panels or create unsafe operation.",
+        ],
+      },
+      {
+        heading: "What changes the price in Michigan",
+        paragraphs: [
+          "Urban markets like Metro Detroit or Grand Rapids may have more competition. Remote Northern Michigan or Upper Peninsula visits can include travel time. Winter emergencies and commercial doors also push pricing higher.",
+          "The best way to get a real number is to shortlist local pros and request quotes with photos or a clear description of the problem.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "garage-door-wont-open-winter-michigan",
+    title: "Garage Door Won't Open in a Michigan Winter? Try This",
+    description:
+      "Troubleshooting steps for a garage door that won't open in freezing weather — plus when ice, sensors, or a broken spring mean you should call a pro.",
+    date: "2026-03-18",
+    readMinutes: 6,
+    category: "Maintenance",
+    sections: [
+      {
+        paragraphs: [
+          "Cold snaps are hard on garage doors. Weather seals freeze to the floor, batteries weaken, and sensors get blocked by snow. Before you assume the opener is dead, run through a few safe checks.",
+        ],
+      },
+      {
+        heading: "Clear ice and snow from the seal and sensors",
+        paragraphs: [
+          "Gently break ice along the bottom weather seal. Wipe the photo-eye sensors near the floor — if their lights are blinking or out of alignment, the opener may refuse to close or act erratically.",
+        ],
+      },
+      {
+        heading: "Check the power and the wall button",
+        paragraphs: [
+          "Confirm the outlet has power and the opener isn't on a tripped GFCI. Try the wall control. If remotes fail but the wall button works, cold weather may have weakened remote batteries.",
+        ],
+      },
+      {
+        heading: "Look for a locked or disconnected trolley",
+        paragraphs: [
+          "Some doors have a lock or an emergency release cord. Make sure the door isn't manually locked and that the trolley is re-engaged after a power outage or manual operation.",
+        ],
+      },
+      {
+        heading: "When to stop and call a pro",
+        paragraphs: [
+          "If you heard a bang, the door is crooked, cables look frayed, or the opener strains without lifting, stop. Those symptoms often mean a broken spring or cable — not something to force.",
+          "Michigan Garage Pros can help you find emergency-ready companies near your ZIP when the door has to move today.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "how-to-choose-garage-door-company-michigan",
+    title: "How to Choose a Garage Door Company in Michigan",
+    description:
+      "A homeowner checklist for hiring a garage door company in Michigan: licensing basics, service area, warranties, and red flags to avoid.",
+    date: "2026-03-26",
+    readMinutes: 8,
+    category: "Guides",
+    sections: [
+      {
+        paragraphs: [
+          "A good garage door company should be easy to compare: clear service area, transparent pricing process, and the skills for your specific issue — springs, openers, installation, or emergency repair.",
+        ],
+      },
+      {
+        heading: "Confirm they actually serve your city",
+        paragraphs: [
+          "Ask whether your ZIP is in their regular route. A company two hours away may take longer in winter weather and charge for travel. City and region pages on Michigan Garage Pros make coverage easier to scan.",
+        ],
+      },
+      {
+        heading: "Match the company to the job",
+        paragraphs: [
+          "Spring replacement, opener programming, full door installation, and commercial doors are different skill sets. Look for service tags that match what you need, and ask about parts availability for your door brand.",
+        ],
+      },
+      {
+        heading: "Ask about warranty and what the visit includes",
+        paragraphs: [
+          "Clarify parts warranty, labor warranty, and whether balance testing, lubrication, or safety-reverse checks are included. Written estimates beat vague phone quotes.",
+        ],
+      },
+      {
+        heading: "Red flags",
+        paragraphs: [
+          "Be cautious with high-pressure 'today only' pricing, requests for full payment before work, or technicians who won't explain why a part failed. Reputable pros can describe the issue in plain language.",
+          "Shortlist two or three local companies, compare profiles, and request quotes so you can decide with real options — not the first flyer on the door.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "emergency-garage-door-repair-michigan",
+    title: "Emergency Garage Door Repair in Michigan: What to Do Next",
+    description:
+      "What counts as a garage door emergency, how to secure your home, and how to find same-day help across Michigan.",
+    date: "2026-04-03",
+    readMinutes: 5,
+    category: "Emergency",
+    sections: [
+      {
+        paragraphs: [
+          "A door stuck open overnight, a snapped spring, or a door off its tracks is more than an inconvenience — it can be a security and safety problem. Here's a calm order of operations for Michigan homeowners.",
+        ],
+      },
+      {
+        heading: "Make the area safe",
+        paragraphs: [
+          "Keep people and pets away from a damaged door. Do not try to force a door with a broken spring. If the door is open and won't close, park elsewhere if you can and secure the entrance to the house from the garage.",
+        ],
+      },
+      {
+        heading: "Gather a few details before you call",
+        paragraphs: [
+          "Note whether you heard a bang, whether the door is crooked, your door type if you know it, and your ZIP code. Photos help pros bring the right springs or parts.",
+        ],
+      },
+      {
+        heading: "Look for emergency or same-day availability",
+        paragraphs: [
+          "Filter for companies that advertise emergency service and confirm after-hours rates up front. In Metro Detroit, Grand Rapids, and other larger markets you often have more same-day options; in Northern Michigan or the U.P., call early and ask about travel windows.",
+        ],
+      },
+      {
+        heading: "Use the directory to move faster",
+        paragraphs: [
+          "Start with your ZIP on the Find Pros page, open a few company profiles, and call or request a quote. If you want matching without browsing, the quote form can route your request while you wait.",
+          "The goal is simple: get a qualified local tech on the way, then decide on permanent repairs once the door is safe again.",
+        ],
+      },
+    ],
+  },
+];
+
+export function getAllBlogPosts(): BlogPost[] {
+  return BLOG_POSTS.slice().sort((a, b) => b.date.localeCompare(a.date));
+}
+
+export function getBlogPost(slug: string): BlogPost | undefined {
+  return BLOG_POSTS.find((p) => p.slug === slug);
+}

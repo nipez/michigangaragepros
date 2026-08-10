@@ -96,8 +96,11 @@ export function Footer() {
               Company
             </div>
             <div className="grid gap-[9px] text-sm">
-              <Link href="/#how" className={FOOTER_LINK}>
-                About
+              <Link href="/blog/" className={FOOTER_LINK}>
+                Blog
+              </Link>
+              <Link href="/cities/" className={FOOTER_LINK}>
+                Cities & Regions
               </Link>
               <Link href="/get-a-quote/" className={FOOTER_LINK}>
                 Contact
@@ -134,11 +137,11 @@ export function CompactFooter() {
             <Link href="/cities/" className={FOOTER_LINK}>
               Cities
             </Link>
+            <Link href="/blog/" className={FOOTER_LINK}>
+              Blog
+            </Link>
             <Link href="/for-companies/" className={FOOTER_LINK}>
               For Companies
-            </Link>
-            <Link href="/#how" className={FOOTER_LINK}>
-              How It Works
             </Link>
           </div>
         </div>
