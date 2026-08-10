@@ -5,18 +5,72 @@ Two-sided local marketplace connecting Michigan homeowners with garage-door serv
 ## Stack
 
 - **Next.js 16** (App Router) + TypeScript + Tailwind CSS v4
-- **Deploy target: Cloudflare Workers** via [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare)
-- **Database: Cloudflare D1** (SQLite) for leads, claim requests, and company profiles
+- **Deploy target: Cloudflare Workers** via [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare) (not classic Pages static hosting)
+- **Database: Cloudflare D1** for leads, claim requests, and company profiles
 
-### Why Cloudflare
+## Cloudflare dashboard setup (Workers Builds)
 
-| Need | Cloudflare product |
+This app must be a **Worker** with OpenNext — not a classic Pages static project.
+
+### 1. Use the branch that has the app
+
+`main` currently only has a stub `test` file until [PR #1](https://github.com/nipez/michigangaragepros/pull/1) is merged.
+
+Until then, in the Worker → **Settings → Build**:
+
+- **Production branch:** `cursor/michigan-garage-pros-site-732a`  
+  (or merge PR #1 and keep `main`)
+
+### 2. Build / deploy commands
+
+| Setting | Value |
 |---|---|
-| SEO pages + SSR | Workers + OpenNext |
-| Leads / claims / listings | **D1** |
-| Future photos | R2 |
-| Future cache/sessions | KV |
-| Edge + custom domain | Workers custom domains |
+| **Build command** | `npm run cf:build` |
+| **Deploy command** | `npx wrangler deploy` |
+| **Root directory** | `/` (repo root) |
+| **Non-production deploy** | `npx wrangler versions upload` |
+
+Do **not** use classic Pages defaults like “framework: Next.js” + output directory `.next` / `out`.
+
+### 3. Create D1 and paste the ID
+
+```bash
+npx wrangler login
+npx wrangler d1 create michigangaragepros
+```
+
+Copy the returned `database_id` into `wrangler.jsonc` → `d1_databases[0].database_id`, commit, then:
+
+```bash
+npm run db:migrate:remote
+```
+
+In the dashboard, confirm **Bindings** shows `DB` → D1 `michigangaragepros`.
+
+### 4. Enable a public URL
+
+Worker → **Settings → Domains & Routes**:
+
+- Turn **workers.dev** **On** (screenshot showed it Disabled → “No URLs enabled”)
+- Optionally add custom domain `michigangaragepros.com`
+
+### 5. Retry the build
+
+Push a commit or click **Retry** on the failed build after the settings above are saved.
+
+## Local develop
+
+```bash
+npm install
+npm run db:migrate:local
+npm run dev
+```
+
+Preview in the Workers runtime:
+
+```bash
+npm run preview
+```
 
 ## Routes
 
@@ -31,58 +85,9 @@ Two-sided local marketplace connecting Michigan homeowners with garage-door serv
 | `POST /api/leads` | Persist quote leads to D1 |
 | `POST /api/claims` | Persist profile claim requests to D1 |
 
-## Develop
+## Why builds fail (checklist)
 
-```bash
-npm install
-npm run cf-typegen
-npm run db:migrate:local
-npm run dev
-```
-
-`next dev` uses local D1 simulation via `initOpenNextCloudflareForDev()`.
-
-## Preview in the Workers runtime
-
-```bash
-npm run preview
-```
-
-## Deploy
-
-1. Authenticate: `npx wrangler login`
-2. Create the D1 database once:
-
-```bash
-npx wrangler d1 create michigangaragepros
-```
-
-3. Paste the returned `database_id` into `wrangler.jsonc`.
-4. Apply migrations:
-
-```bash
-npm run db:migrate:remote
-```
-
-5. Deploy:
-
-```bash
-npm run deploy
-```
-
-Point `michigangaragepros.com` at the Worker (custom domain in the Cloudflare dashboard).
-
-## D1 schema
-
-Migrations live in `migrations/`:
-
-- `leads` — homeowner quote requests
-- `claim_requests` — contractor claim form submissions
-- `companies` (+ services / service areas) — seeded sample profiles
-
-## Next production work
-
-- Contractor auth / claim verification
-- ZIP/city search queries against D1
-- R2 for company photos
-- Lead routing email/notifications
+1. Building `main` before the app is merged → only `test` file present  
+2. Classic Pages build settings instead of `npm run cf:build` + `wrangler deploy`  
+3. Placeholder D1 `database_id` still in `wrangler.jsonc`  
+4. `workers.dev` disabled → no public URL even after a successful deploy  
