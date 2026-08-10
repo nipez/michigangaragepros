@@ -68,8 +68,29 @@ npm run preview
 | `/companies/[slug]/` | Company profile |
 | `/for-companies/` | Contractor acquisition |
 | `/get-a-quote/` | 5-step lead flow |
-| `POST /api/leads` | Persist quote leads to D1 |
-| `POST /api/claims` | Persist profile claim requests to D1 |
+| `POST /api/leads` | Persist quote leads to D1 + email admin inbox |
+| `POST /api/claims` | Persist profile claim requests to D1 + email admin |
+| `/admin/leads/` | Password-protected lead inbox (mark new/contacted/closed) |
+
+## Lead delivery (Resend + admin inbox)
+
+Quote requests still save to D1. To get emailed when a lead arrives, set Worker secrets:
+
+```bash
+npx wrangler secret put RESEND_API_KEY
+npx wrangler secret put LEAD_NOTIFY_TO          # your inbox
+npx wrangler secret put ADMIN_TOKEN             # long random string for /admin/leads
+# optional:
+npx wrangler secret put LEAD_NOTIFY_FROM        # verified Resend from-address
+```
+
+Then apply the notification columns migration:
+
+```bash
+npm run db:migrate:remote
+```
+
+Open `/admin/leads/`, sign in with `ADMIN_TOKEN`, and manage inbound quotes.
 
 ## Why builds fail (checklist)
 

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { getDb, getEnv } from "@/lib/db";
+import { sendClaimNotificationEmail } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    const env = await getEnv();
     const db = await getDb();
     const result = await db
       .prepare(
@@ -29,9 +31,23 @@ export async function POST(request: Request) {
       .bind(companyName, city)
       .run();
 
+    const id = result.meta.last_row_id;
+    const notify = await sendClaimNotificationEmail({
+      apiKey: env.RESEND_API_KEY,
+      to: env.LEAD_NOTIFY_TO,
+      from: env.LEAD_NOTIFY_FROM,
+      id: id ?? "unknown",
+      companyName,
+      city,
+    });
+    if (notify.status === "failed") {
+      console.error("claim notify failed", notify.error);
+    }
+
     return NextResponse.json({
       ok: true,
-      id: result.meta.last_row_id,
+      id,
+      notified: notify.status === "sent",
     });
   } catch (err) {
     console.error("claim insert failed", err);

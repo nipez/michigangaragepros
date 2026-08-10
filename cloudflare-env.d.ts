@@ -4,6 +4,14 @@
 interface CloudflareEnv {
   DB: D1Database;
   ASSETS: Fetcher;
+  /** Resend API key for lead/claim email delivery */
+  RESEND_API_KEY?: string;
+  /** Inbox that receives new lead/claim alerts */
+  LEAD_NOTIFY_TO?: string;
+  /** Optional verified from address, e.g. "Michigan Garage Pros <leads@michigangaragepros.com>" */
+  LEAD_NOTIFY_FROM?: string;
+  /** Shared secret for /admin/leads access */
+  ADMIN_TOKEN?: string;
 }
 
 declare namespace Cloudflare {
