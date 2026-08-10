@@ -27,7 +27,7 @@ export function useCompanyClaimStatus(companySlug: string): ClaimStatusView {
     (async () => {
       try {
         const res = await fetch(
-          `/api/claim-status/?slug=${encodeURIComponent(slug)}`,
+          `/api/claims/?slug=${encodeURIComponent(slug)}`,
           { signal: controller.signal },
         );
         const data = (await res.json().catch(() => ({}))) as {

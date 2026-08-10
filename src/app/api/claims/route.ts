@@ -1,10 +1,29 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { validateClaim, type ClaimRequest } from "@/lib/claim";
-import { assertClaimAllowed } from "@/lib/claimStatus";
+import { assertClaimAllowed, getCompanyClaimStatus } from "@/lib/claimStatus";
 import { formatClaimNotify, notifyOperator } from "@/lib/notify";
 
 export const runtime = "nodejs";
+
+/** Lightweight claim-state lookup for company profile badges/CTAs. */
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const slug = (searchParams.get("slug") ?? "").trim();
+  if (!slug) {
+    return NextResponse.json({ error: "Missing slug" }, { status: 400 });
+  }
+
+  const status = await getCompanyClaimStatus(slug);
+  return NextResponse.json(
+    { slug, status },
+    {
+      headers: {
+        "Cache-Control": "private, max-age=0, must-revalidate",
+      },
+    },
+  );
+}
 
 export async function POST(request: Request) {
   let body: Partial<ClaimRequest>;
