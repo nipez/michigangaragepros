@@ -68,7 +68,7 @@ export function CompanyProfilePage({ company }: { company: Company }) {
                 </span>
               )}
               <Link
-                href="/get-a-quote/"
+                href={`/get-a-quote/?company=${encodeURIComponent(company.slug)}`}
                 className="btn-primary !rounded-[11px] !px-[22px] !py-[13px] !text-[15px] !font-extrabold"
               >
                 Request a Quote →
@@ -133,7 +133,7 @@ export function CompanyProfilePage({ company }: { company: Company }) {
               Tell us what you need — {company.name} will follow up directly.
             </p>
             <Link
-              href="/get-a-quote/"
+              href={`/get-a-quote/?company=${encodeURIComponent(company.slug)}`}
               className="block rounded-[11px] bg-bright-blue py-3.5 text-center text-[15px] font-extrabold text-white hover:bg-michigan-blue hover:text-white"
             >
               Start Your Request →

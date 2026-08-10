@@ -6,6 +6,7 @@ export type Lead = {
   phone: string;
   email: string;
   timing: string;
+  companySlug?: string;
 };
 
 export type LeadState = {

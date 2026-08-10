@@ -44,7 +44,10 @@ export function LeadForm({
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(lead),
+        body: JSON.stringify({
+          ...lead,
+          companySlug: lead.companySlug || undefined,
+        }),
       });
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as {
