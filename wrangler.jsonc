@@ -18,8 +18,7 @@
     {
       "binding": "DB",
       "database_name": "michigangaragepros",
-      // Replace with the ID from: npx wrangler d1 create michigangaragepros
-      "database_id": "00000000-0000-0000-0000-000000000001",
+      "database_id": "beb5b737-d0a3-479e-8343-4b7eb2b7fb1a",
       "migrations_dir": "migrations"
     }
   ]
