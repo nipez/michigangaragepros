@@ -25,27 +25,36 @@ export function useCompanyClaimStatus(companySlug: string): ClaimStatusView {
     const controller = new AbortController();
 
     (async () => {
-      try {
-        const res = await fetch(
-          `/api/claims/?slug=${encodeURIComponent(slug)}`,
-          { signal: controller.signal },
-        );
-        const data = (await res.json().catch(() => ({}))) as {
-          status?: ClaimStatus;
-        };
-        if (cancelled) return;
-        if (
-          data.status === "claimed" ||
-          data.status === "pending" ||
-          data.status === "unclaimed"
-        ) {
-          setStatus(data.status);
-          return;
+      // OpenNext occasionally returns transient 405/404 under concurrency;
+      // retry a couple times before falling back to unclaimed.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const res = await fetch(
+            `/api/claims/?slug=${encodeURIComponent(slug)}`,
+            { signal: controller.signal },
+          );
+          const data = (await res.json().catch(() => ({}))) as {
+            status?: ClaimStatus;
+          };
+          if (cancelled) return;
+          if (
+            data.status === "claimed" ||
+            data.status === "pending" ||
+            data.status === "unclaimed"
+          ) {
+            setStatus(data.status);
+            return;
+          }
+          if (res.ok) {
+            setStatus("unclaimed");
+            return;
+          }
+        } catch {
+          if (cancelled) return;
         }
-        setStatus("unclaimed");
-      } catch {
-        if (!cancelled) setStatus("unclaimed");
+        await new Promise((r) => setTimeout(r, 150 * (attempt + 1)));
       }
+      if (!cancelled) setStatus("unclaimed");
     })();
 
     return () => {
