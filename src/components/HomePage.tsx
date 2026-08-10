@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { getHomepageCities } from "@/data/cities";
-import { getTopCompanies } from "@/data/companies";
+import type { City } from "@/data/cities";
+import type { Company } from "@/data/companies";
 import { SERVICES } from "@/data/services";
 import {
   HOW_IT_WORKS,
@@ -22,7 +22,12 @@ import { LeadModal } from "./LeadModal";
 import { MobileCta } from "./MobileCta";
 import type { Lead } from "@/lib/lead";
 
-export function HomePage() {
+type HomePageProps = {
+  topCompanies: Company[];
+  homepageCities: City[];
+};
+
+export function HomePage({ topCompanies, homepageCities }: HomePageProps) {
   const router = useRouter();
   const [heroService, setHeroService] = useState("");
   const [heroLoc, setHeroLoc] = useState("");
@@ -30,7 +35,6 @@ export function HomePage() {
   const [modalStep, setModalStep] = useState(1);
   const [modalLead, setModalLead] = useState<Partial<Lead>>({});
 
-  const topCompanies = getTopCompanies(3);
   const canFind = !!heroLoc.trim();
 
   const openQuote = (lead: Partial<Lead> = {}, step = 1) => {
@@ -247,7 +251,7 @@ export function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2.5">
-            {getHomepageCities().map((city) => (
+            {homepageCities.map((city) => (
               <Link
                 key={city.slug}
                 href={`/cities/${city.slug}/`}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CITIES, getCitiesByRegion } from "@/data/cities";
-import { getCompaniesForCity } from "@/data/companies";
+import { getCompanyCountForCity } from "@/data/companies";
 import { REGIONS, regionSlugFromName } from "@/data/regions";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
@@ -125,7 +125,7 @@ export function CitiesIndexPage() {
                   .slice()
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map((city) => {
-                    const count = getCompaniesForCity(city.slug).length;
+                    const count = getCompanyCountForCity(city.slug);
                     return (
                       <Link
                         key={city.slug}

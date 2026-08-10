@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  fairShuffleCompanies,
-  type Company,
-} from "@/data/companies";
+import type { Company } from "@/data/companies";
+import { fairShuffleCompanies } from "@/lib/companyOrder";
 import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 
 type ShuffledCompanyGridProps = {

@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { getCityBySlug } from "@/data/cities";
-import { getCompaniesForCity, getTopCompanies } from "@/data/companies";
+import {
+  getCompaniesForCity,
+  getCompanyCountForCity,
+} from "@/data/companies";
 import { REGIONS, type Region } from "@/data/regions";
 import { SERVICES } from "@/data/services";
 import { getCitiesByRegion } from "@/data/cities";
@@ -20,14 +23,16 @@ export function RegionPage({ region }: { region: Region }) {
     .map((slug) => getCityBySlug(slug))
     .filter((c): c is NonNullable<typeof c> => Boolean(c));
 
-  const companySlugs = new Set<string>();
+  const companyBySlug = new Map<string, ReturnType<typeof getCompaniesForCity>[number]>();
   for (const city of cities) {
     for (const company of getCompaniesForCity(city.slug)) {
-      companySlugs.add(company.slug);
+      if (!companyBySlug.has(company.slug)) {
+        companyBySlug.set(company.slug, company);
+      }
     }
   }
-  const sampleCompanies = getTopCompanies(50)
-    .filter((c) => companySlugs.has(c.slug))
+  const sampleCompanies = [...companyBySlug.values()]
+    .sort((a, b) => Number(!!b.featured) - Number(!!a.featured) || a.name.localeCompare(b.name))
     .slice(0, 4);
   const hasPaidFeatured = sampleCompanies.some((c) => c.featured);
 
@@ -207,7 +212,7 @@ export function RegionPage({ region }: { region: Region }) {
         ) : null}
         <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
           {cities.map((city) => {
-            const count = getCompaniesForCity(city.slug).length;
+            const count = getCompanyCountForCity(city.slug);
             return (
               <Link
                 key={city.slug}

@@ -5505,7 +5505,43 @@ export function getOrganicCompanies(limit = 3): Company[] {
     .slice(0, limit);
 }
 
+/** Inverted index: city slug → companies serving that city (featured first). */
+let cityCompaniesIndex: Map<string, Company[]> | null = null;
+
+function ensureCityCompaniesIndex() {
+  if (cityCompaniesIndex) return cityCompaniesIndex;
+
+  const buckets = new Map<string, Company[]>();
+  for (const company of COMPANIES) {
+    const slugs = new Set<string>();
+    if (company.citySlug) slugs.add(company.citySlug);
+    for (const area of company.serviceArea) {
+      slugs.add(citySlug(area));
+    }
+    for (const slug of slugs) {
+      const list = buckets.get(slug);
+      if (list) list.push(company);
+      else buckets.set(slug, [company]);
+    }
+  }
+
+  const indexed = new Map<string, Company[]>();
+  for (const [slug, list] of buckets) {
+    const featured = list.filter((c) => c.featured);
+    const organic = list.filter((c) => !c.featured);
+    indexed.set(slug, [...featured, ...organic]);
+  }
+
+  cityCompaniesIndex = indexed;
+  return indexed;
+}
+
 export function getCompaniesForCity(citySlugParam: string): Company[] {
+  const indexed = ensureCityCompaniesIndex();
+  const fromIndex = indexed.get(citySlugParam);
+  if (fromIndex) return fromIndex;
+
+  // Fallback for unmatched slug aliases (rare).
   const city = getCityBySlug(citySlugParam);
   const matched = COMPANIES.filter((c) =>
     servesCity(c, citySlugParam, city?.name),
@@ -5515,21 +5551,12 @@ export function getCompaniesForCity(citySlugParam: string): Company[] {
   return [...featured, ...organic];
 }
 
+export function getCompanyCountForCity(citySlugParam: string): number {
+  return getCompaniesForCity(citySlugParam).length;
+}
+
 export function getAllCompaniesSorted(): Company[] {
   const featured = COMPANIES.filter((c) => c.featured);
   const organic = COMPANIES.filter((c) => !c.featured).sort(byName);
-  return [...featured, ...organic];
-}
-
-/** Fisher–Yates shuffle (mutates a copy). Featured listings stay pinned first. */
-export function fairShuffleCompanies(companies: Company[]): Company[] {
-  const featured = companies.filter((c) => c.featured);
-  const organic = companies.filter((c) => !c.featured);
-  for (let i = organic.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const tmp = organic[i]!;
-    organic[i] = organic[j]!;
-    organic[j] = tmp;
-  }
   return [...featured, ...organic];
 }
