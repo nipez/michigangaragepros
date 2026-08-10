@@ -8,6 +8,7 @@ import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
 import { LineIcon, PinIcon } from "./Icons";
+import { ServiceHeroSearch } from "./ServiceHeroSearch";
 
 const CITY_LINKS = [
   "Detroit",
@@ -41,26 +42,10 @@ export function ServicePage({ service }: { service: Service }) {
           <p className="mb-[30px] max-w-[58ch] text-lg leading-[1.55] text-hero-muted text-pretty">
             {service.heroSub}
           </p>
-          <div className="max-w-[640px] rounded-[14px] bg-white p-4 shadow-[0_24px_60px_rgba(4,16,28,0.45)]">
-            <form
-              data-form-row="1"
-              className="flex gap-2.5"
-              action="/get-a-quote/"
-            >
-              <input type="hidden" name="service" value={service.name} />
-              <input
-                name="zip"
-                placeholder="ZIP code or city"
-                className="field-input flex-1"
-              />
-              <Link
-                href={`/get-a-quote/?service=${encodeURIComponent(service.name)}`}
-                className="on-dark-solid flex h-[50px] shrink-0 items-center justify-center whitespace-nowrap rounded-[10px] bg-bright-blue px-[26px] text-[15px] font-extrabold text-white hover:bg-michigan-blue"
-              >
-                {service.findLabel}
-              </Link>
-            </form>
-          </div>
+          <ServiceHeroSearch
+            serviceName={service.name}
+            findLabel={service.findLabel}
+          />
         </div>
       </section>
 
@@ -193,7 +178,14 @@ export function ServicePage({ service }: { service: Service }) {
       </section>
 
       <section className="container-site pt-14 pb-[88px] md:pt-16">
-        <CtaBand title={service.ctaTitle} subtitle={service.ctaSub} />
+        <CtaBand
+          title={service.ctaTitle}
+          subtitle={service.ctaSub}
+          primaryLabel={service.findLabel}
+          primaryHref={`/pros/?service=${encodeURIComponent(service.name)}`}
+          secondaryLabel="Get a Free Quote"
+          secondaryHref={`/get-a-quote/?service=${encodeURIComponent(service.name)}`}
+        />
       </section>
 
       <CompactFooter />

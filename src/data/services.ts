@@ -20,10 +20,10 @@ export const SERVICES: Service[] = [
     icon: "wrench",
     heroTitle: "Garage Door Repair in Michigan",
     heroSub:
-      "Broken, stuck, noisy, or off-track — compare local companies that repair residential garage doors, then request a free quote.",
+      "Broken, stuck, noisy, or off-track — enter your ZIP to see local companies that repair residential garage doors.",
     ctaTitle: "Need Your Garage Door Fixed?",
     ctaSub:
-      "Tell us what's happening and where you are — we'll match you with local repair pros.",
+      "Browse local repair companies near you, or request quotes if you'd rather get matched.",
     findLabel: "Find Repair Pros →",
   },
   {
@@ -34,10 +34,10 @@ export const SERVICES: Service[] = [
     icon: "spring",
     heroTitle: "Broken Spring Repair in Michigan",
     heroSub:
-      "A broken torsion or extension spring is a common emergency — compare local pros who can replace it safely.",
+      "A broken torsion or extension spring is a common emergency — enter your ZIP to see local pros who can replace it safely.",
     ctaTitle: "Need a Spring Replaced?",
     ctaSub:
-      "Tell us what happened and your ZIP — we'll match you with local spring repair pros.",
+      "See spring-repair companies serving your area, or request quotes if you want us to match you.",
     findLabel: "Find Spring Pros →",
   },
   {
@@ -48,10 +48,10 @@ export const SERVICES: Service[] = [
     icon: "opener",
     heroTitle: "Garage Door Opener Repair in Michigan",
     heroSub:
-      "Opener not responding, grinding, or failing mid-cycle — find local technicians for repair or replacement.",
+      "Opener not responding, grinding, or failing mid-cycle — enter your ZIP to find local technicians for repair or replacement.",
     ctaTitle: "Need Opener Help?",
     ctaSub:
-      "Share your issue and location — we'll connect you with opener specialists nearby.",
+      "Browse opener specialists near you, or request quotes if you'd rather get matched.",
     findLabel: "Find Opener Pros →",
   },
   {
@@ -62,10 +62,10 @@ export const SERVICES: Service[] = [
     icon: "install",
     heroTitle: "New Garage Door Installation in Michigan",
     heroSub:
-      "Compare local companies for new residential garage doors, upgrades, and full replacements.",
+      "Enter your ZIP to compare local companies for new residential garage doors, upgrades, and full replacements.",
     ctaTitle: "Ready for a New Door?",
     ctaSub:
-      "Tell us about your project — we'll match you with new-door installation pros in your area.",
+      "Browse installation companies in your area, or request quotes for your project.",
     findLabel: "Find New Door Pros →",
   },
   {
@@ -76,10 +76,10 @@ export const SERVICES: Service[] = [
     icon: "maintenance",
     heroTitle: "Garage Door Maintenance in Michigan",
     heroSub:
-      "Tune-ups, lubrication, and safety checks — find local pros who keep doors running quietly and reliably.",
+      "Tune-ups, lubrication, and safety checks — enter your ZIP to see local pros who keep doors running quietly and reliably.",
     ctaTitle: "Schedule Maintenance?",
     ctaSub:
-      "Tell us what you need and where you are — we'll match you with local maintenance pros.",
+      "Browse maintenance pros near you, or request quotes if you'd rather get matched.",
     findLabel: "Find Maintenance Pros →",
   },
   {
@@ -90,10 +90,10 @@ export const SERVICES: Service[] = [
     icon: "emergency",
     heroTitle: "Emergency Garage Door Service in Michigan",
     heroSub:
-      "Door stuck open, spring snapped, or locked out — connect with local pros offering same-day and after-hours help.",
+      "Door stuck open, spring snapped, or locked out — enter your ZIP to see local pros offering same-day and after-hours help.",
     ctaTitle: "Need Help Fast?",
     ctaSub:
-      "Tell us what's happening — we'll match you with emergency-ready pros near you.",
+      "See emergency-ready companies near you right away, or request a quote for a faster match.",
     findLabel: "Find Emergency Pros →",
   },
 ];
