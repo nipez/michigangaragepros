@@ -34,6 +34,7 @@ export async function GET() {
       .all();
     return NextResponse.json({ leads: results ?? [] });
   }
+}
 
 export async function PATCH(request: Request) {
   const env = await getEnv();
