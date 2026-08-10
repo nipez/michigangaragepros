@@ -51,7 +51,14 @@ export function CompanyCard({
       <div className="mb-1.5 text-[17px] font-extrabold text-navy">
         {company.name}
       </div>
-      <div className="mb-3.5 text-[13.5px] text-muted">{company.city}</div>
+      <div className="mb-1 text-[13.5px] text-muted">{company.city}</div>
+      {company.phone ? (
+        <div className="mb-3.5 text-[13px] font-semibold text-navy">
+          {company.phone}
+        </div>
+      ) : (
+        <div className="mb-3.5" />
+      )}
       {!compact && company.tags.length > 0 && (
         <div className="mb-2 flex flex-wrap gap-[7px]">
           {company.tags.map((t) => (

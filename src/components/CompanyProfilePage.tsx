@@ -171,6 +171,34 @@ export function CompanyProfilePage({ company }: { company: Company }) {
               Business Info
             </h3>
             <div className="grid gap-2.5 text-sm text-body-secondary">
+              {company.address && (
+                <div className="flex justify-between gap-3">
+                  <span className="shrink-0 text-faint">Address</span>
+                  <span className="text-right font-semibold">{company.address}</span>
+                </div>
+              )}
+              {company.phone && (
+                <div className="flex justify-between gap-3">
+                  <span className="text-faint">Phone</span>
+                  <a
+                    href={`tel:${company.phone}`}
+                    className="font-semibold text-michigan-blue hover:underline"
+                  >
+                    {company.phone}
+                  </a>
+                </div>
+              )}
+              {company.phoneAlt && (
+                <div className="flex justify-between gap-3">
+                  <span className="text-faint">Alt phone</span>
+                  <a
+                    href={`tel:${company.phoneAlt}`}
+                    className="font-semibold text-michigan-blue hover:underline"
+                  >
+                    {company.phoneAlt}
+                  </a>
+                </div>
+              )}
               <div className="flex justify-between gap-3">
                 <span className="text-faint">Hours</span>
                 <span className="font-semibold">{company.hours}</span>
@@ -181,6 +209,18 @@ export function CompanyProfilePage({ company }: { company: Company }) {
                   <span className="font-semibold text-success">
                     {company.emergencyHours}
                   </span>
+                </div>
+              )}
+              {company.sourceType && (
+                <div className="flex justify-between gap-3">
+                  <span className="text-faint">Verified via</span>
+                  <span className="text-right font-semibold">{company.sourceType}</span>
+                </div>
+              )}
+              {company.confidence && (
+                <div className="flex justify-between gap-3">
+                  <span className="text-faint">Confidence</span>
+                  <span className="font-semibold">{company.confidence}</span>
                 </div>
               )}
               <div className="flex justify-between gap-3">
@@ -197,6 +237,19 @@ export function CompanyProfilePage({ company }: { company: Company }) {
                     className="font-semibold text-michigan-blue hover:underline"
                   >
                     Visit site
+                  </a>
+                </div>
+              )}
+              {company.sourceUrl && (
+                <div className="flex justify-between gap-3">
+                  <span className="text-faint">Source</span>
+                  <a
+                    href={company.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-michigan-blue hover:underline"
+                  >
+                    View listing
                   </a>
                 </div>
               )}
