@@ -1,164 +1,149 @@
 import Link from "next/link";
-import { REGIONS, type Region } from "@/data/regions";
+import { MICHIGAN_COUNTY_PATHS } from "@/data/michiganCountyPaths";
+import {
+  REGIONS,
+  getRegionSlugForCounty,
+  type Region,
+} from "@/data/regions";
 
 type MichiganRegionMapProps = {
   activeSlug?: string;
-  /** When true, regions link to their pages. */
   interactive?: boolean;
   className?: string;
+  /** Show county names for the active region under the map. */
+  showCounties?: boolean;
+};
+
+const REGION_FILL: Record<string, string> = {
+  southeast: "#2F80ED",
+  west: "#1769AA",
+  central: "#3D8BDB",
+  southwest: "#1F6FAF",
+  north: "#5BA3E0",
+  "upper-peninsula": "#0F4C81",
 };
 
 /**
- * Stylized Michigan map with approximate region shapes for visual orientation.
- * Not a survey map — meant to show where each directory region sits in the state.
+ * Real Michigan county map (US Census TIGER / CC0) with directory regions highlighted.
  */
 export function MichiganRegionMap({
   activeSlug,
   interactive = true,
   className = "",
+  showCounties = true,
 }: MichiganRegionMapProps) {
   const active = REGIONS.find((r) => r.slug === activeSlug);
 
   return (
     <div className={className}>
-      <svg
-        viewBox="0 0 360 420"
-        role="img"
-        aria-label={
-          active
-            ? `Map of Michigan highlighting ${active.title}`
-            : "Map of Michigan regions"
-        }
-        className="h-auto w-full"
-      >
-        <defs>
-          <linearGradient id="miWater" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#D7EAF8" />
-            <stop offset="100%" stopColor="#B9D7F0" />
-          </linearGradient>
-        </defs>
-        <rect width="360" height="420" rx="24" fill="url(#miWater)" />
-
-        {/* Upper Peninsula */}
-        <RegionPath
-          region={REGIONS.find((r) => r.mapKey === "upper-peninsula")!}
-          d="M48 78 L92 52 L168 48 L236 62 L268 88 L248 118 L190 128 L128 122 L78 108 Z"
-          activeSlug={activeSlug}
-          interactive={interactive}
-        />
-
-        {/* Northern Lower Peninsula */}
-        <RegionPath
-          region={REGIONS.find((r) => r.mapKey === "north")!}
-          d="M118 148 L188 138 L236 152 L248 198 L210 218 L150 220 L118 198 Z"
-          activeSlug={activeSlug}
-          interactive={interactive}
-        />
-
-        {/* West Michigan */}
-        <RegionPath
-          region={REGIONS.find((r) => r.mapKey === "west")!}
-          d="M96 224 L148 222 L168 268 L160 318 L112 332 L88 292 L90 248 Z"
-          activeSlug={activeSlug}
-          interactive={interactive}
-        />
-
-        {/* Central Michigan */}
-        <RegionPath
-          region={REGIONS.find((r) => r.mapKey === "central")!}
-          d="M152 224 L208 220 L228 268 L218 318 L170 322 L152 278 Z"
-          activeSlug={activeSlug}
-          interactive={interactive}
-        />
-
-        {/* Southwest Michigan */}
-        <RegionPath
-          region={REGIONS.find((r) => r.mapKey === "southwest")!}
-          d="M112 336 L168 326 L186 362 L160 392 L118 388 L98 358 Z"
-          activeSlug={activeSlug}
-          interactive={interactive}
-        />
-
-        {/* Southeast Michigan */}
-        <RegionPath
-          region={REGIONS.find((r) => r.mapKey === "southeast")!}
-          d="M174 326 L230 318 L268 348 L262 392 L210 398 L178 368 Z"
-          activeSlug={activeSlug}
-          interactive={interactive}
-        />
-
-        <text
-          x="180"
-          y="28"
-          textAnchor="middle"
-          fill="#164A75"
-          fontSize="13"
-          fontWeight="700"
-        >
-          Michigan regions
-        </text>
-      </svg>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        {REGIONS.map((region) => {
-          const isActive = region.slug === activeSlug;
-          const classNameChip = isActive
-            ? "rounded-full bg-bright-blue px-3 py-1.5 text-[12.5px] font-bold text-white"
-            : "rounded-full border border-border bg-white px-3 py-1.5 text-[12.5px] font-semibold text-navy transition-colors hover:border-bright-blue hover:text-michigan-blue";
-          if (!interactive) {
-            return (
-              <span key={region.slug} className={classNameChip}>
-                {region.name}
-              </span>
-            );
+      <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#C5DFF0] p-3 shadow-[0_16px_40px_rgba(4,16,28,0.25)] sm:p-4">
+        <svg
+          viewBox="0 0 810 810"
+          role="img"
+          aria-label={
+            active
+              ? `Map of Michigan highlighting ${active.title} counties`
+              : "Map of Michigan counties by region"
           }
-          return (
-            <Link
-              key={region.slug}
-              href={`/regions/${region.slug}/`}
-              className={classNameChip}
-            >
-              {region.name}
-            </Link>
-          );
-        })}
+          className="h-auto w-full"
+        >
+          <rect width="810" height="810" fill="#C5DFF0" />
+          <g transform="translate(5,5)" stroke="#F7FBFF" strokeWidth="1.1">
+            {MICHIGAN_COUNTY_PATHS.map((county) => {
+              const regionSlug = getRegionSlugForCounty(county.id);
+              const isActive = !activeSlug || regionSlug === activeSlug;
+              const base = regionSlug
+                ? REGION_FILL[regionSlug] ?? "#8AA3B8"
+                : "#8AA3B8";
+              const fill = activeSlug
+                ? isActive
+                  ? "#2F80ED"
+                  : "#9BB4C9"
+                : base;
+              const opacity = activeSlug ? (isActive ? 1 : 0.45) : 0.92;
+
+              const title = `${county.id} County${
+                regionSlug
+                  ? ` · ${REGIONS.find((r) => r.slug === regionSlug)?.title}`
+                  : ""
+              }`;
+
+              if (!interactive || !regionSlug) {
+                return (
+                  <path
+                    key={county.id}
+                    d={county.d}
+                    fill={fill}
+                    opacity={opacity}
+                  >
+                    <title>{title}</title>
+                  </path>
+                );
+              }
+
+              return (
+                <a
+                  key={county.id}
+                  href={`/regions/${regionSlug}/`}
+                  aria-label={title}
+                >
+                  <path d={county.d} fill={fill} opacity={opacity}>
+                    <title>{title}</title>
+                  </path>
+                </a>
+              );
+            })}
+          </g>
+        </svg>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          {REGIONS.map((region) => {
+            const isActive = region.slug === activeSlug;
+            const chipClass = isActive
+              ? "rounded-full bg-bright-blue px-3 py-1.5 text-[12.5px] font-bold text-white"
+              : "rounded-full border border-[#7FA8C8] bg-white/90 px-3 py-1.5 text-[12.5px] font-semibold text-navy transition-colors hover:border-bright-blue hover:text-michigan-blue";
+            if (!interactive) {
+              return (
+                <span key={region.slug} className={chipClass}>
+                  {region.name}
+                </span>
+              );
+            }
+            return (
+              <Link key={region.slug} href={`/regions/${region.slug}/`} className={chipClass}>
+                {region.name}
+              </Link>
+            );
+          })}
+        </div>
       </div>
+
+      {showCounties && active ? <CountyList region={active} /> : null}
+      {showCounties && !active ? (
+        <p className="mt-3 mb-0 text-[13px] leading-[1.5] text-[#D7E8F5]">
+          Real Michigan county map — click a region or county to explore coverage.
+        </p>
+      ) : null}
     </div>
   );
 }
 
-function RegionPath({
-  region,
-  d,
-  activeSlug,
-  interactive,
-}: {
-  region: Region;
-  d: string;
-  activeSlug?: string;
-  interactive: boolean;
-}) {
-  const isActive = !activeSlug || region.slug === activeSlug;
-  const fill = isActive ? "#2F80ED" : "#8AA3B8";
-  const opacity = activeSlug ? (isActive ? 1 : 0.35) : 0.85;
-
-  const path = (
-    <path
-      d={d}
-      fill={fill}
-      opacity={opacity}
-      stroke="#FFFFFF"
-      strokeWidth="3"
-      className={interactive ? "transition-opacity hover:opacity-100" : undefined}
-    >
-      <title>{region.title}</title>
-    </path>
-  );
-
-  if (!interactive) return path;
+function CountyList({ region }: { region: Region }) {
   return (
-    <a href={`/regions/${region.slug}/`} aria-label={region.title}>
-      {path}
-    </a>
+    <div className="mt-4 rounded-xl border border-white/15 bg-white/10 p-4 backdrop-blur-[2px]">
+      <div className="mb-2 text-[12.5px] font-extrabold uppercase tracking-[1px] text-[#A8D4F5]">
+        {region.counties.length} counties in {region.title}
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {region.counties.map((county) => (
+          <span
+            key={county}
+            className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[12px] font-semibold text-[#E8F1F8]"
+          >
+            {county}
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }

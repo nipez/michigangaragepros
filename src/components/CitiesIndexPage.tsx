@@ -78,13 +78,19 @@ export function CitiesIndexPage() {
                 className="rounded-2xl border border-border bg-white p-6 transition-colors hover:border-bright-blue hover:text-inherit"
               >
                 <div className="mb-2 text-[12.5px] font-bold uppercase tracking-[1px] text-faint">
-                  {count} cities
+                  {region.counties.length} counties · {count} cities
                 </div>
                 <div className="mb-2 text-lg font-extrabold text-navy">
                   {region.title}
                 </div>
                 <p className="m-0 text-[14.5px] leading-[1.55] text-muted">
                   {region.tagline}
+                </p>
+                <p className="mt-3 mb-0 text-[13px] leading-[1.5] text-faint">
+                  {region.counties.slice(0, 4).join(", ")}
+                  {region.counties.length > 4
+                    ? `, +${region.counties.length - 4} more`
+                    : ""}
                 </p>
                 <div className="mt-4 text-[14px] font-bold text-michigan-blue">
                   Explore region →

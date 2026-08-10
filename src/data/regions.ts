@@ -5,10 +5,11 @@ export type Region = {
   tagline: string;
   description: string;
   coverageNote: string;
+  /** County names matching IDs in the Michigan county SVG. */
+  counties: string[];
   highlights: string[];
   commonIssues: string[];
   hubCitySlugs: string[];
-  /** Approximate map region key used by MichiganRegionMap */
   mapKey:
     | "southeast"
     | "west"
@@ -38,7 +39,18 @@ export const REGIONS: Region[] = [
     description:
       "Southeast Michigan covers Detroit, the tri-county suburbs, Ann Arbor, and Downriver communities. Homeowners here deal with older housing stock, freeze-thaw winters, and busy same-day repair demand — especially for broken springs, openers that fail in the cold, and emergency service when a door is stuck open overnight.",
     coverageNote:
-      "Wayne, Oakland, Macomb, Washtenaw, and nearby Downriver / western suburbs.",
+      "Wayne, Oakland, Macomb, Washtenaw, Livingston, Monroe, St. Clair, Lapeer, and Lenawee counties.",
+    counties: [
+      "Wayne",
+      "Oakland",
+      "Macomb",
+      "Washtenaw",
+      "Livingston",
+      "Monroe",
+      "St. Clair",
+      "Lapeer",
+      "Lenawee",
+    ],
     highlights: [
       "Largest concentration of garage-door companies in our directory",
       "Strong coverage for emergency and same-day spring repair",
@@ -61,7 +73,7 @@ export const REGIONS: Region[] = [
     mapKey: "southeast",
     seoTitle: "Garage Door Pros in Southeast Michigan",
     seoDescription:
-      "Find garage door repair, spring replacement, openers, and installation companies across Detroit, Ann Arbor, and Southeast Michigan suburbs.",
+      "Find garage door repair, spring replacement, openers, and installation companies across Wayne, Oakland, Macomb, Washtenaw, and Southeast Michigan counties.",
   },
   {
     slug: "west",
@@ -71,7 +83,21 @@ export const REGIONS: Region[] = [
     description:
       "West Michigan centers on Grand Rapids and stretches toward Holland, Muskegon, and lakeshore communities. New construction and established neighborhoods both drive demand for installation, tune-ups, and reliable repair — with lake-effect snow and humidity that can wear cables, rollers, and weather seals faster.",
     coverageNote:
-      "Kent County, Ottawa County, Muskegon, and surrounding West Michigan markets.",
+      "Kent, Ottawa, Muskegon, Allegan, Newaygo, Oceana, Mason, Lake, Mecosta, Montcalm, Ionia, and Barry counties.",
+    counties: [
+      "Kent",
+      "Ottawa",
+      "Muskegon",
+      "Allegan",
+      "Newaygo",
+      "Oceana",
+      "Mason",
+      "Lake",
+      "Mecosta",
+      "Montcalm",
+      "Ionia",
+      "Barry",
+    ],
     highlights: [
       "Grand Rapids is a major hub for residential and commercial service",
       "Lakeshore towns need weather-ready doors and seals",
@@ -94,7 +120,7 @@ export const REGIONS: Region[] = [
     mapKey: "west",
     seoTitle: "Garage Door Pros in West Michigan",
     seoDescription:
-      "Compare garage door companies in Grand Rapids, Holland, Muskegon, and West Michigan for repair, installation, and emergency service.",
+      "Compare garage door companies in Kent, Ottawa, Muskegon, and West Michigan counties for repair, installation, and emergency service.",
   },
   {
     slug: "central",
@@ -102,9 +128,29 @@ export const REGIONS: Region[] = [
     title: "Central Michigan",
     tagline: "Lansing, Flint, Midland, and the heart of the Lower Peninsula",
     description:
-      "Central Michigan includes the capital region, Flint, and the Tri-Cities corridor. Homeowners look for dependable spring repair, opener service, and maintenance that can handle Mid-Michigan winters — plus clear coverage across Lansing suburbs and mid-state markets.",
+      "Central Michigan includes the capital region, Flint, the Tri-Cities corridor, and the Thumb. Homeowners look for dependable spring repair, opener service, and maintenance that can handle Mid-Michigan winters — plus clear coverage across Lansing suburbs and mid-state markets.",
     coverageNote:
-      "Lansing / East Lansing, Flint, Saginaw, Midland, Bay City, and nearby mid-state cities.",
+      "Ingham, Eaton, Clinton, Genesee, Saginaw, Midland, Bay, Jackson, and surrounding mid-state and Thumb counties.",
+    counties: [
+      "Ingham",
+      "Eaton",
+      "Clinton",
+      "Genesee",
+      "Saginaw",
+      "Midland",
+      "Bay",
+      "Gratiot",
+      "Isabella",
+      "Shiawassee",
+      "Gladwin",
+      "Clare",
+      "Osceola",
+      "Jackson",
+      "Huron",
+      "Tuscola",
+      "Sanilac",
+      "Arenac",
+    ],
     highlights: [
       "Statewide midpoint with strong multi-city service areas",
       "Capital-region and Tri-Cities coverage in one browse path",
@@ -127,7 +173,7 @@ export const REGIONS: Region[] = [
     mapKey: "central",
     seoTitle: "Garage Door Pros in Central Michigan",
     seoDescription:
-      "Find local garage door pros in Lansing, Flint, Midland, Saginaw, and Central Michigan for repair, springs, openers, and maintenance.",
+      "Find local garage door pros in Ingham, Genesee, Saginaw, Midland, Bay, and Central Michigan counties.",
   },
   {
     slug: "southwest",
@@ -137,7 +183,17 @@ export const REGIONS: Region[] = [
     description:
       "Southwest Michigan covers Kalamazoo, Battle Creek, Portage, and neighboring communities. Residents often need repair and installation help for both established neighborhoods and growing suburbs — with winter performance and quiet, reliable openers high on the list.",
     coverageNote:
-      "Kalamazoo County, Battle Creek, Portage, and nearby Southwest Michigan towns.",
+      "Kalamazoo, Calhoun, Branch, St. Joseph, Cass, Berrien, Van Buren, and Hillsdale counties.",
+    counties: [
+      "Kalamazoo",
+      "Calhoun",
+      "Branch",
+      "St. Joseph",
+      "Cass",
+      "Berrien",
+      "Van Buren",
+      "Hillsdale",
+    ],
     highlights: [
       "Kalamazoo / Portage is a natural comparison cluster",
       "Battle Creek and surrounding towns share overlapping service areas",
@@ -160,7 +216,7 @@ export const REGIONS: Region[] = [
     mapKey: "southwest",
     seoTitle: "Garage Door Pros in Southwest Michigan",
     seoDescription:
-      "Browse garage door companies in Kalamazoo, Battle Creek, Portage, and Southwest Michigan for repair, installation, and emergency help.",
+      "Browse garage door companies in Kalamazoo, Calhoun, Berrien, and Southwest Michigan counties for repair, installation, and emergency help.",
   },
   {
     slug: "north",
@@ -170,7 +226,30 @@ export const REGIONS: Region[] = [
     description:
       "Northern Michigan stretches from Traverse City and the Grand Traverse area through Petoskey, Cadillac, and other Up North communities. Long winters, lake-effect snow, and seasonal homes make durable doors, emergency spring repair, and trusted local coverage especially important.",
     coverageNote:
-      "Traverse City, Petoskey, Cadillac, and surrounding Northern Lower Peninsula markets.",
+      "Grand Traverse, Emmet, Charlevoix, Antrim, Leelanau, and neighboring Northern Lower Peninsula counties.",
+    counties: [
+      "Grand Traverse",
+      "Leelanau",
+      "Benzie",
+      "Manistee",
+      "Wexford",
+      "Missaukee",
+      "Roscommon",
+      "Crawford",
+      "Kalkaska",
+      "Antrim",
+      "Charlevoix",
+      "Emmet",
+      "Cheboygan",
+      "Otsego",
+      "Montmorency",
+      "Alpena",
+      "Alcona",
+      "Iosco",
+      "Ogemaw",
+      "Oscoda",
+      "Presque Isle",
+    ],
     highlights: [
       "Seasonal and year-round homes both need reliable door service",
       "Emergency spring and opener help matters in heavy snow months",
@@ -193,7 +272,7 @@ export const REGIONS: Region[] = [
     mapKey: "north",
     seoTitle: "Garage Door Pros in Northern Michigan",
     seoDescription:
-      "Find garage door repair and installation pros in Traverse City, Petoskey, Cadillac, and Northern Michigan.",
+      "Find garage door repair and installation pros in Grand Traverse, Emmet, Charlevoix, and Northern Michigan counties.",
   },
   {
     slug: "upper-peninsula",
@@ -203,7 +282,24 @@ export const REGIONS: Region[] = [
     description:
       "The Upper Peninsula has fewer metro hubs — and that makes finding a nearby garage-door pro even more valuable. From Marquette to Escanaba and surrounding U.P. communities, homeowners need companies that understand long winters, remote service areas, and doors that have to work when temperatures plunge.",
     coverageNote:
-      "Marquette, Escanaba, Gladstone, Menominee, Houghton, and nearby U.P. markets.",
+      "All 15 Upper Peninsula counties, including Marquette, Delta, Chippewa, Houghton, and Menominee.",
+    counties: [
+      "Marquette",
+      "Alger",
+      "Schoolcraft",
+      "Luce",
+      "Chippewa",
+      "Mackinac",
+      "Delta",
+      "Menominee",
+      "Dickinson",
+      "Iron",
+      "Baraga",
+      "Houghton",
+      "Keweenaw",
+      "Ontonagon",
+      "Gogebic",
+    ],
     highlights: [
       "Focused U.P. listings so you are not sorting southern Michigan results",
       "Winter-ready repair and opener support",
@@ -226,9 +322,19 @@ export const REGIONS: Region[] = [
     mapKey: "upper-peninsula",
     seoTitle: "Garage Door Pros in Michigan's Upper Peninsula",
     seoDescription:
-      "Compare garage door companies in Marquette, Escanaba, and the Upper Peninsula for repair, springs, openers, and emergency service.",
+      "Compare garage door companies across Upper Peninsula counties including Marquette, Delta, Chippewa, and Houghton.",
   },
 ];
+
+const COUNTY_TO_REGION_SLUG: Record<string, string> = (() => {
+  const map: Record<string, string> = {};
+  for (const region of REGIONS) {
+    for (const county of region.counties) {
+      map[county] = region.slug;
+    }
+  }
+  return map;
+})();
 
 export function getRegionBySlug(slug: string): Region | undefined {
   return REGIONS.find((r) => r.slug === slug);
@@ -236,6 +342,10 @@ export function getRegionBySlug(slug: string): Region | undefined {
 
 export function getRegionByName(name: string): Region | undefined {
   return REGIONS.find((r) => r.name === name);
+}
+
+export function getRegionSlugForCounty(countyName: string): string | undefined {
+  return COUNTY_TO_REGION_SLUG[countyName];
 }
 
 export function regionSlugFromName(name: string): string {

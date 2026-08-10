@@ -129,6 +129,27 @@ export function RegionPage({ region }: { region: Region }) {
 
       <section className="container-site pt-[72px]">
         <h2 className="mb-3 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
+          Counties in {region.title}
+        </h2>
+        <p className="mb-6 max-w-[62ch] text-[15.5px] leading-[1.6] text-muted">
+          Our {region.title} directory coverage includes these Michigan
+          counties. Pick a nearby city below to compare local garage-door
+          companies.
+        </p>
+        <div className="flex flex-wrap gap-2.5">
+          {region.counties.map((county) => (
+            <span
+              key={county}
+              className="rounded-full border border-border bg-white px-3.5 py-2 text-[13.5px] font-semibold text-navy"
+            >
+              {county} County
+            </span>
+          ))}
+        </div>
+      </section>
+
+      <section className="container-site pt-[72px]">
+        <h2 className="mb-3 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
           Common Garage Door Needs in {region.name} Michigan
         </h2>
         <p className="mb-6 max-w-[60ch] text-[15.5px] leading-[1.6] text-muted">
