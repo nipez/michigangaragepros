@@ -4,10 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { getHomepageCities } from "@/data/cities";
-import {
-  getFeaturedCompany,
-  getOrganicCompanies,
-} from "@/data/companies";
+import { getTopCompanies } from "@/data/companies";
 import { SERVICES } from "@/data/services";
 import {
   HOW_IT_WORKS,
@@ -15,7 +12,7 @@ import {
   SERVICE_OPTIONS,
   TRUST_POINTS,
 } from "@/data/site";
-import { CompanyCard } from "./CompanyCard";
+import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 import { CtaBand } from "./CtaBand";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
@@ -31,8 +28,7 @@ export function HomePage() {
   const [modalStep, setModalStep] = useState(1);
   const [modalLead, setModalLead] = useState<Partial<Lead>>({});
 
-  const featured = getFeaturedCompany();
-  const organics = getOrganicCompanies(3);
+  const topCompanies = getTopCompanies(3);
   const canFind = !!heroLoc.trim();
 
   const openQuote = (lead: Partial<Lead> = {}, step = 1) => {
@@ -200,12 +196,9 @@ export function HomePage() {
             Browse all companies →
           </Link>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
-          <CompanyCard
-            company={featured}
-            onQuoteClick={() => openQuote()}
-          />
-          {organics.map((c) => (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <BeFeaturedCard />
+          {topCompanies.map((c) => (
             <CompanyCard
               key={c.slug}
               company={c}

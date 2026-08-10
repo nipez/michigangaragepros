@@ -62,7 +62,6 @@ export const COMPANIES: Company[] = [
     city: "Grand Rapids, MI",
     citySlug: "grand-rapids",
     tags: ["Repair", "Installation", "Openers", "Emergency"],
-    featured: true,
     emergency: true,
     about:
       "M&M Garage Doors is a five-star rated Michigan garage door company serving Metro Detroit, Ann Arbor, Kent County, and Traverse City. LiftMaster dealers focused on residential repair, installation, and preventive maintenance.",
@@ -1445,8 +1444,13 @@ export function getCompanyBySlug(slug: string): Company | undefined {
   return COMPANIES.find((c) => c.slug === slug);
 }
 
-export function getFeaturedCompany(): Company {
-  return COMPANIES.find((c) => c.featured) ?? COMPANIES[0];
+export function getFeaturedCompany(): Company | undefined {
+  return COMPANIES.find((c) => c.featured);
+}
+
+/** Top companies by reviews/rating. Paid featured listings (when any) sort first. */
+export function getTopCompanies(limit = 4): Company[] {
+  return getAllCompaniesSorted().slice(0, limit);
 }
 
 export function getOrganicCompanies(limit = 3): Company[] {

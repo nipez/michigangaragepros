@@ -1,12 +1,9 @@
 import Link from "next/link";
-import {
-  getFeaturedCompany,
-  getOrganicCompanies,
-} from "@/data/companies";
+import { getTopCompanies } from "@/data/companies";
 import { CITIES } from "@/data/cities";
 import { SERVICES, type Service } from "@/data/services";
 import { COMMON_PROBLEMS } from "@/data/site";
-import { CompanyCard } from "./CompanyCard";
+import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
@@ -21,8 +18,7 @@ const CITY_LINKS = [
 ];
 
 export function ServicePage({ service }: { service: Service }) {
-  const featured = getFeaturedCompany();
-  const organics = getOrganicCompanies(3);
+  const topCompanies = getTopCompanies(3);
   const related = SERVICES.filter((s) => s.slug !== service.slug);
 
   return (
@@ -105,9 +101,9 @@ export function ServicePage({ service }: { service: Service }) {
             Top-rated Michigan companies
           </span>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
-          <CompanyCard company={featured} compact />
-          {organics.map((c) => (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <BeFeaturedCard />
+          {topCompanies.map((c) => (
             <CompanyCard key={c.slug} company={c} compact />
           ))}
         </div>

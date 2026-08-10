@@ -3,13 +3,14 @@ import type { City } from "@/data/cities";
 import { citySlug, getCityBySlug } from "@/data/cities";
 import { getCompaniesForCity } from "@/data/companies";
 import { SERVICES } from "@/data/services";
-import { CompanyRow } from "./CompanyCard";
+import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
 
 export function CityPage({ city }: { city: City }) {
   const companies = getCompaniesForCity(city.slug);
+  const hasPaidFeatured = companies.some((c) => c.featured);
 
   return (
     <>
@@ -64,9 +65,10 @@ export function CityPage({ city }: { city: City }) {
           </span>
         </div>
         {companies.length > 0 ? (
-          <div className="grid gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {!hasPaidFeatured && <BeFeaturedCard cityName={city.name} />}
             {companies.map((c) => (
-              <CompanyRow key={c.slug} company={c} />
+              <CompanyCard key={c.slug} company={c} />
             ))}
           </div>
         ) : (

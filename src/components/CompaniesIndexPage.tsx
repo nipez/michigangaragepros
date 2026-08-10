@@ -2,11 +2,12 @@ import Link from "next/link";
 import { getAllCompaniesSorted } from "@/data/companies";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
-import { CompanyRow } from "./CompanyCard";
+import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 import { CtaBand } from "./CtaBand";
 
 export function CompaniesIndexPage() {
   const companies = getAllCompaniesSorted();
+  const hasPaidFeatured = companies.some((c) => c.featured);
 
   return (
     <>
@@ -55,9 +56,10 @@ export function CompaniesIndexPage() {
             {companies.length} listings · sorted by reviews
           </span>
         </div>
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {!hasPaidFeatured && <BeFeaturedCard />}
           {companies.map((c) => (
-            <CompanyRow key={c.slug} company={c} />
+            <CompanyCard key={c.slug} company={c} />
           ))}
         </div>
       </section>

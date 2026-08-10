@@ -266,6 +266,20 @@
   box-shadow: 0 10px 30px rgba(47, 128, 237, 0.1);
 }
 
+.company-card.be-featured-card {
+  border: 1.5px dashed #9bb8d4;
+  background:
+    linear-gradient(180deg, #f4f8fc 0%, #ffffff 55%);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.company-card.be-featured-card:hover {
+  border-color: var(--bright-blue);
+  border-style: solid;
+  box-shadow: 0 10px 28px rgba(47, 128, 237, 0.12);
+  transform: translateY(-1px);
+}
+
 .field-input {
   width: 100%;
   height: 50px;

@@ -41,15 +41,13 @@ export function CompanyCard({
   );
 
   return (
-    <div className={`company-card ${company.featured ? "is-featured" : ""}`}>
+    <div className={`company-card h-full ${company.featured ? "is-featured" : ""}`}>
       {company.featured ? (
         <div className="mb-3.5 flex items-center gap-2">
           <span className="featured-badge">Featured Pro</span>
           <span className="text-[11px] font-semibold text-faint">Sponsored</span>
         </div>
-      ) : (
-        <div className="mt-[34px]" />
-      )}
+      ) : null}
       <div className="mb-1.5 text-[17px] font-extrabold text-navy">
         {company.name}
       </div>
@@ -85,6 +83,36 @@ export function CompanyCard({
         {quote}
       </div>
     </div>
+  );
+}
+
+/** CTA slot for unpaid featured placement — shown at the top of listing grids. */
+export function BeFeaturedCard({
+  cityName,
+}: {
+  cityName?: string;
+}) {
+  return (
+    <Link
+      href="/for-companies/#featured"
+      className="company-card be-featured-card group h-full no-underline hover:text-inherit"
+    >
+      <div className="mb-3.5">
+        <span className="featured-badge">Be Featured</span>
+      </div>
+      <div className="mb-2 text-[17px] font-extrabold text-navy">
+        {cityName
+          ? `Stand out in ${cityName}`
+          : "Get top placement"}
+      </div>
+      <p className="mb-5 m-0 flex-1 text-[14px] leading-[1.55] text-muted text-pretty">
+        Put your company first in local results with a clearly labeled Featured
+        Pro card — free profiles stay free.
+      </p>
+      <span className="btn-primary mt-auto inline-flex w-full items-center justify-center !py-2.5 group-hover:bg-cta-hover">
+        Learn about Featured →
+      </span>
+    </Link>
   );
 }
 
