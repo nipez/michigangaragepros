@@ -6,7 +6,7 @@ import { Logo } from "./Logo";
 import { MenuIcon } from "./Icons";
 
 const NAV = [
-  { href: "/#pros", label: "Find a Pro", id: "pros" },
+  { href: "/pros/", label: "Find a Pro", id: "pros" },
   { href: "/garage-door-repair/", label: "Services", id: "services" },
   { href: "/cities/", label: "Cities", id: "cities" },
   { href: "/#how", label: "How It Works", id: "how" },

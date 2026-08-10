@@ -53,8 +53,8 @@ export const PRO_BENEFITS = [
 export const HOW_IT_WORKS = [
   {
     step: "01",
-    title: "Tell Us What You Need",
-    desc: "Choose your service and location.",
+    title: "Enter Your ZIP or City",
+    desc: "See garage-door companies serving your area right away.",
   },
   {
     step: "02",

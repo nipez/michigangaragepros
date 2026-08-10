@@ -125,7 +125,7 @@ export function CompactFooter() {
         <div className="mb-[26px] flex flex-wrap items-center justify-between gap-7">
           <Logo footer />
           <div className="flex flex-wrap gap-[22px] text-sm">
-            <Link href="/#pros" className={FOOTER_LINK}>
+            <Link href="/pros/" className={FOOTER_LINK}>
               Find a Pro
             </Link>
             <Link href="/garage-door-repair/" className={FOOTER_LINK}>

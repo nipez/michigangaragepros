@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getHomepageCities } from "@/data/cities";
 import { getTopCompanies } from "@/data/companies";
@@ -22,6 +23,7 @@ import { MobileCta } from "./MobileCta";
 import type { Lead } from "@/lib/lead";
 
 export function HomePage() {
+  const router = useRouter();
   const [heroService, setHeroService] = useState("");
   const [heroLoc, setHeroLoc] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -39,10 +41,10 @@ export function HomePage() {
 
   const heroFind = () => {
     if (!canFind) return;
-    openQuote(
-      { service: heroService, zip: heroLoc },
-      heroService ? 2 : 1,
-    );
+    const params = new URLSearchParams();
+    params.set("q", heroLoc.trim());
+    if (heroService) params.set("service", heroService);
+    router.push(`/pros/?${params.toString()}`);
   };
 
   return (
@@ -68,7 +70,14 @@ export function HomePage() {
               connect with a professional in your area.
             </p>
             <div className="rounded-2xl bg-white p-[22px] shadow-[0_24px_60px_rgba(4,16,28,0.45)]">
-              <div data-form-row="1" className="flex items-end gap-3">
+              <form
+                data-form-row="1"
+                className="flex items-end gap-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  heroFind();
+                }}
+              >
                 <label className="block flex-[1.2]">
                   <span className="mb-[7px] block text-[13px] font-bold text-navy">
                     What do you need help with?
@@ -95,11 +104,11 @@ export function HomePage() {
                     onChange={(e) => setHeroLoc(e.target.value)}
                     placeholder="ZIP code or city"
                     className="field-input"
+                    autoComplete="postal-code"
                   />
                 </label>
                 <button
-                  type="button"
-                  onClick={heroFind}
+                  type="submit"
                   disabled={!canFind}
                   className="h-[50px] shrink-0 rounded-[10px] border-none px-[26px] text-[15px] font-extrabold text-white transition-colors"
                   style={{
@@ -109,20 +118,30 @@ export function HomePage() {
                 >
                   Find Pros →
                 </button>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-[18px] text-[13.5px] font-semibold text-muted">
-                <span className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-success">✓</span> Local
-                  companies
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-success">✓</span> Compare
-                  services
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-success">✓</span> Free to
-                  homeowners
-                </span>
+              </form>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-[13.5px] font-semibold text-muted">
+                <div className="flex flex-wrap gap-[18px]">
+                  <span className="flex items-center gap-1.5">
+                    <span className="font-extrabold text-success">✓</span> Browse
+                    local companies
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="font-extrabold text-success">✓</span> No
+                    quote form required
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    openQuote(
+                      { service: heroService, zip: heroLoc },
+                      heroService ? 2 : 1,
+                    )
+                  }
+                  className="text-[13.5px] font-bold text-michigan-blue hover:underline"
+                >
+                  Or get matched quotes →
+                </button>
               </div>
             </div>
           </div>
