@@ -8,31 +8,24 @@ Two-sided local marketplace connecting Michigan homeowners with garage-door serv
 - **Deploy target: Cloudflare Workers** via [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare) (not classic Pages static hosting)
 - **Database: Cloudflare D1** for leads, claim requests, and company profiles
 
-## Cloudflare dashboard setup (Workers Builds)
+## Cloudflare Workers Builds
 
 This app must be a **Worker** with OpenNext — not a classic Pages static project.
 
-### 1. Use the branch that has the app
-
-`main` currently only has a stub `test` file until [PR #1](https://github.com/nipez/michigangaragepros/pull/1) is merged.
-
-Until then, in the Worker → **Settings → Build**:
-
-- **Production branch:** `cursor/michigan-garage-pros-site-732a`  
-  (or merge PR #1 and keep `main`)
-
-### 2. Build / deploy commands
+Workers Builds is wired to GitHub (`main` + preview branches). Required commands:
 
 | Setting | Value |
 |---|---|
 | **Build command** | `npm run cf:build` |
-| **Deploy command** | `npx wrangler deploy` |
+| **Deploy command (main)** | `npx wrangler deploy` |
+| **Deploy command (other branches)** | `npx wrangler versions upload` |
 | **Root directory** | `/` (repo root) |
-| **Non-production deploy** | `npx wrangler versions upload` |
+
+If Git deploys fail with `Could not find compiled Open Next config`, the build command is missing or empty — set it to `npm run cf:build` and retry.
 
 Do **not** use classic Pages defaults like “framework: Next.js” + output directory `.next` / `out`.
 
-### 3. Create D1 and paste the ID
+### D1
 
 ```bash
 npx wrangler login
@@ -45,18 +38,11 @@ Copy the returned `database_id` into `wrangler.jsonc` → `d1_databases[0].datab
 npm run db:migrate:remote
 ```
 
-In the dashboard, confirm **Bindings** shows `DB` → D1 `michigangaragepros`.
+Confirm **Bindings** shows `DB` → D1 `michigangaragepros`.
 
-### 4. Enable a public URL
+### Public URL
 
-Worker → **Settings → Domains & Routes**:
-
-- Turn **workers.dev** **On** (screenshot showed it Disabled → “No URLs enabled”)
-- Optionally add custom domain `michigangaragepros.com`
-
-### 5. Retry the build
-
-Push a commit or click **Retry** on the failed build after the settings above are saved.
+Worker → **Settings → Domains & Routes**: enable **workers.dev**, and optionally add `michigangaragepros.com`.
 
 ## Local develop
 
