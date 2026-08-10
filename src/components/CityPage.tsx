@@ -18,11 +18,11 @@ export function CityPage({ city }: { city: City }) {
       <section className="hero-gradient">
         <div className="container-site py-14 pb-16">
           <div className="mb-[18px] text-[13.5px] font-semibold text-[#8AA3B8]">
-            <Link href="/" className="text-[#8AA3B8] hover:text-white">
+            <Link href="/" className="on-dark-link">
               Home
             </Link>
-            <span className="mx-1.5">/</span>
-            <Link href="/cities/" className="text-[#8AA3B8] hover:text-white">
+            <span className="mx-1.5 text-[#8AA3B8]">/</span>
+            <Link href="/cities/" className="on-dark-link">
               Cities
             </Link>
             <span className="mx-1.5">/</span>
@@ -39,13 +39,13 @@ export function CityPage({ city }: { city: City }) {
           <div className="flex flex-wrap gap-3">
             <Link
               href="/get-a-quote/"
-              className="inline-block rounded-xl bg-bright-blue px-[26px] py-3.5 text-[15.5px] font-extrabold text-white hover:bg-cta-hover hover:text-white"
+              className="on-dark-solid inline-block rounded-xl bg-bright-blue px-[26px] py-3.5 text-[15.5px] font-extrabold text-white hover:bg-cta-hover"
             >
               Get a Free Quote →
             </Link>
             <Link
               href="#city-pros"
-              className="inline-block rounded-xl border-[1.5px] border-white/35 px-[26px] py-3.5 text-[15.5px] font-bold text-white hover:bg-white/8 hover:text-white"
+              className="on-dark-link inline-block rounded-xl border-[1.5px] border-white/35 px-[26px] py-3.5 text-[15.5px] font-bold text-white hover:bg-white/8"
             >
               Browse Companies
             </Link>

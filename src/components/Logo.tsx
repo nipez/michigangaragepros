@@ -12,7 +12,7 @@ export function Logo({
 }) {
   if (footer) {
     return (
-      <Link href={href} className="flex items-center gap-2.5">
+      <Link href={href} className="footer-nav-link flex items-center gap-2.5">
         <div className="grid size-8 place-items-center rounded-lg bg-[rgba(124,192,244,0.15)]">
           <LogoMark size={18} />
         </div>

@@ -37,13 +37,13 @@ export function ForCompaniesPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="#claim"
-                className="inline-block rounded-xl bg-bright-blue px-7 py-[15px] text-base font-extrabold text-white hover:bg-cta-hover hover:text-white"
+                className="on-dark-solid inline-block rounded-xl bg-bright-blue px-7 py-[15px] text-base font-extrabold text-white hover:bg-cta-hover"
               >
                 Claim Your Free Profile
               </Link>
               <Link
                 href="#featured"
-                className="inline-block rounded-xl border-[1.5px] border-white/35 px-7 py-[15px] text-base font-bold text-white hover:bg-white/8 hover:text-white"
+                className="on-dark-link inline-block rounded-xl border-[1.5px] border-white/35 px-7 py-[15px] text-base font-bold text-white hover:bg-white/8"
               >
                 Learn About Pro Profiles
               </Link>

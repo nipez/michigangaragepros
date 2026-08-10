@@ -26,11 +26,11 @@ export function CitiesIndexPage() {
       <section className="hero-gradient">
         <div className="container-site py-14 pb-16">
           <div className="mb-[18px] text-[13.5px] font-semibold text-[#8AA3B8]">
-            <Link href="/" className="text-[#8AA3B8] hover:text-white">
+            <Link href="/" className="on-dark-link">
               Home
             </Link>
-            <span className="mx-1.5">/</span>
-            <span className="text-footer-link">Cities</span>
+            <span className="mx-1.5 text-[#8AA3B8]">/</span>
+            <span className="text-[#E8F1F8]">Cities</span>
           </div>
           <h1 className="mb-3.5 max-w-[22ch] text-[clamp(32px,3.8vw,48px)] font-extrabold leading-[1.1] tracking-[-1px] text-balance">
             Garage Door Pros by Michigan City
@@ -42,7 +42,7 @@ export function CitiesIndexPage() {
           </p>
           <Link
             href="/get-a-quote/"
-            className="inline-block rounded-xl bg-bright-blue px-[26px] py-3.5 text-[15.5px] font-extrabold text-white hover:bg-cta-hover hover:text-white"
+            className="on-dark-solid inline-block rounded-xl bg-bright-blue px-[26px] py-3.5 text-[15.5px] font-extrabold text-white hover:bg-cta-hover"
           >
             Get a Free Quote →
           </Link>

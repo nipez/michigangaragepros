@@ -21,8 +21,8 @@
   --tag-bg: #f2f6fa;
   --star: #f5a623;
   --hero-muted: #b9cdde;
-  --footer-link: #d7e4ef;
-  --footer-accent: #9ad0f5;
+  --footer-link: #e8f1f8;
+  --footer-accent: #b7dbf7;
   --disabled: #b9cdde;
   --content: 1240px;
   --gutter: 24px;
@@ -293,30 +293,37 @@
   color: #fff;
 }
 
-/* Dark surfaces: keep links light so michigan-blue never sits on navy.
-   Exclude filled CTA buttons so they keep white text on bright-blue fills. */
-.hero-gradient a:not(.btn-primary):not(.btn-navy):not([class*="bg-bright-blue"]):not([class*="bg-navy"]) {
-  color: #d7e4ef;
+/* Dark surfaces: force light link text (!important beats any leftover a color). */
+footer a,
+a.footer-nav-link {
+  color: var(--footer-link) !important;
 }
 
-.hero-gradient a:not(.btn-primary):not(.btn-navy):not([class*="bg-bright-blue"]):not([class*="bg-navy"]):hover {
-  color: #fff;
+footer a:hover,
+a.footer-nav-link:hover {
+  color: #fff !important;
 }
 
-.cta-gradient a:not(.btn-primary):not(.btn-navy):not([class*="bg-bright-blue"]):not([class*="bg-navy"]) {
-  color: #fff;
+.hero-gradient a,
+.cta-gradient a,
+a.on-dark-link {
+  color: #e8f1f8 !important;
 }
 
-.cta-gradient a:not(.btn-primary):not(.btn-navy):not([class*="bg-bright-blue"]):not([class*="bg-navy"]):hover {
-  color: #fff;
+.hero-gradient a:hover,
+.cta-gradient a:hover,
+a.on-dark-link:hover {
+  color: #fff !important;
 }
 
-footer a {
-  color: var(--footer-link);
-}
-
-footer a:hover {
-  color: #fff;
+.hero-gradient a.btn-primary,
+.hero-gradient a.btn-navy,
+.hero-gradient a[class*="bg-bright-blue"],
+.cta-gradient a.btn-primary,
+.cta-gradient a.btn-navy,
+.cta-gradient a[class*="bg-bright-blue"],
+a.on-dark-solid {
+  color: #fff !important;
 }
 
 .featured-badge {

@@ -32,11 +32,11 @@ export function ServicePage({ service }: { service: Service }) {
       <section className="hero-gradient">
         <div className="container-site py-14 pb-16">
           <div className="mb-[18px] text-[13.5px] font-semibold text-[#8AA3B8]">
-            <Link href="/" className="text-[#8AA3B8] hover:text-white">
+            <Link href="/" className="on-dark-link">
               Home
             </Link>
             <span className="mx-1.5">/</span>
-            <span className="text-footer-link">{service.name}</span>
+            <span className="text-[#E8F1F8]">{service.name}</span>
           </div>
           <h1 className="mb-3.5 max-w-[22ch] text-[clamp(32px,3.8vw,48px)] font-extrabold leading-[1.1] tracking-[-1px] text-balance">
             {service.heroTitle}
@@ -58,7 +58,7 @@ export function ServicePage({ service }: { service: Service }) {
               />
               <Link
                 href={`/get-a-quote/?service=${encodeURIComponent(service.name)}`}
-                className="flex h-[50px] shrink-0 items-center justify-center whitespace-nowrap rounded-[10px] bg-bright-blue px-[26px] text-[15px] font-extrabold text-white hover:bg-michigan-blue hover:text-white"
+                className="on-dark-solid flex h-[50px] shrink-0 items-center justify-center whitespace-nowrap rounded-[10px] bg-bright-blue px-[26px] text-[15px] font-extrabold text-white hover:bg-michigan-blue"
               >
                 {service.findLabel}
               </Link>

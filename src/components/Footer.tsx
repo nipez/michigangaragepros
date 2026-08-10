@@ -14,6 +14,9 @@ const FOOTER_CITIES = [
   "Holland",
 ];
 
+const FOOTER_LINK =
+  "footer-nav-link text-[14px] font-medium transition-colors";
+
 export function Footer() {
   return (
     <footer className="bg-navy-dark text-white">
@@ -37,11 +40,7 @@ export function Footer() {
             </div>
             <div className="grid gap-[9px] text-sm">
               {SERVICES.map((s) => (
-                <Link
-                  key={s.slug}
-                  href={`/${s.slug}/`}
-                  className="text-footer-link hover:text-white"
-                >
+                <Link key={s.slug} href={`/${s.slug}/`} className={FOOTER_LINK}>
                   {s.name === "Broken Springs"
                     ? "Broken Spring Repair"
                     : s.name === "Garage Door Openers"
@@ -64,7 +63,7 @@ export function Footer() {
                   <Link
                     key={name}
                     href={`/cities/${city?.slug ?? name.toLowerCase().replace(/\s+/g, "-")}/`}
-                    className="text-footer-link hover:text-white"
+                    className={FOOTER_LINK}
                   >
                     {name}
                   </Link>
@@ -77,19 +76,19 @@ export function Footer() {
               For Companies
             </div>
             <div className="grid gap-[9px] text-sm">
-              <Link href="/companies/" className="text-footer-link hover:text-white">
+              <Link href="/companies/" className={FOOTER_LINK}>
                 Browse Companies
               </Link>
-              <Link href="/for-companies/#claim" className="text-footer-link hover:text-white">
+              <Link href="/for-companies/#claim" className={FOOTER_LINK}>
                 Claim Your Profile
               </Link>
-              <Link href="/for-companies/" className="text-footer-link hover:text-white">
+              <Link href="/for-companies/" className={FOOTER_LINK}>
                 Contractor Login
               </Link>
-              <Link href="/for-companies/" className="text-footer-link hover:text-white">
+              <Link href="/for-companies/" className={FOOTER_LINK}>
                 Get More Leads
               </Link>
-              <Link href="/for-companies/#featured" className="text-footer-link hover:text-white">
+              <Link href="/for-companies/#featured" className={FOOTER_LINK}>
                 Featured Listings
               </Link>
             </div>
@@ -99,17 +98,17 @@ export function Footer() {
               Company
             </div>
             <div className="grid gap-[9px] text-sm">
-              <Link href="/#how" className="text-footer-link hover:text-white">
+              <Link href="/#how" className={FOOTER_LINK}>
                 About
               </Link>
-              <Link href="/get-a-quote/" className="text-footer-link hover:text-white">
+              <Link href="/get-a-quote/" className={FOOTER_LINK}>
                 Contact
               </Link>
-              <Link href="/#how" className="text-footer-link hover:text-white">
+              <Link href="/#how" className={FOOTER_LINK}>
                 How It Works
               </Link>
-              <span className="text-[#8AA3B8]">Privacy</span>
-              <span className="text-[#8AA3B8]">Terms</span>
+              <span className="text-[#E8F1F8]">Privacy</span>
+              <span className="text-[#E8F1F8]">Terms</span>
             </div>
           </div>
         </div>
@@ -128,22 +127,19 @@ export function CompactFooter() {
         <div className="mb-[26px] flex flex-wrap items-center justify-between gap-7">
           <Logo footer />
           <div className="flex flex-wrap gap-[22px] text-sm">
-            <Link href="/#pros" className="text-footer-link hover:text-white">
+            <Link href="/#pros" className={FOOTER_LINK}>
               Find a Pro
             </Link>
-            <Link
-              href="/garage-door-repair/"
-              className="text-footer-link hover:text-white"
-            >
+            <Link href="/garage-door-repair/" className={FOOTER_LINK}>
               Services
             </Link>
-            <Link href="/cities/" className="text-footer-link hover:text-white">
+            <Link href="/cities/" className={FOOTER_LINK}>
               Cities
             </Link>
-            <Link href="/for-companies/" className="text-footer-link hover:text-white">
+            <Link href="/for-companies/" className={FOOTER_LINK}>
               For Companies
             </Link>
-            <Link href="/#how" className="text-footer-link hover:text-white">
+            <Link href="/#how" className={FOOTER_LINK}>
               How It Works
             </Link>
           </div>

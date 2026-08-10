@@ -39,7 +39,7 @@ export function CtaBand({
         ) : (
           <Link
             href={primaryHref}
-            className="inline-block rounded-xl bg-bright-blue px-7 py-[15px] text-base font-extrabold text-white transition-colors hover:bg-cta-hover hover:text-white"
+            className="on-dark-solid inline-block rounded-xl bg-bright-blue px-7 py-[15px] text-base font-extrabold text-white transition-colors hover:bg-cta-hover"
           >
             {primaryLabel}
           </Link>
@@ -47,7 +47,7 @@ export function CtaBand({
         {secondaryLabel && secondaryHref && (
           <Link
             href={secondaryHref}
-            className="inline-block rounded-xl border-[1.5px] border-white/35 px-7 py-[15px] text-base font-bold text-white transition-colors hover:bg-white/8 hover:text-white"
+            className="on-dark-link inline-block rounded-xl border-[1.5px] border-white/35 px-7 py-[15px] text-base font-bold text-white transition-colors hover:bg-white/8"
           >
             {secondaryLabel}
           </Link>
