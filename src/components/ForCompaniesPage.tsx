@@ -132,7 +132,7 @@ export function ForCompaniesPage() {
                 Your Company Name
               </div>
               <div className="mb-2.5 text-[12.5px] text-muted">
-                Your city, MI · Repair · Installation · Emergency
+                Your city, MI · Repair · New Door Installation · Emergency
               </div>
               <div className="mb-1.5 h-[9px] rounded-[5px] bg-[#EEF2F6]" />
               <div className="h-[9px] w-[70%] rounded-[5px] bg-[#EEF2F6]" />

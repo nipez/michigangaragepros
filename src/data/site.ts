@@ -5,7 +5,7 @@ export const SERVICE_OPTIONS = [
   "Garage Door Repair",
   "Broken Spring",
   "Garage Door Opener",
-  "Installation",
+  "New Door Installation",
   "Maintenance",
   "Emergency Service",
   "Other",

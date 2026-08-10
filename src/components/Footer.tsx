@@ -45,9 +45,7 @@ export function Footer() {
                     ? "Broken Spring Repair"
                     : s.name === "Garage Door Openers"
                       ? "Garage Door Opener Repair"
-                      : s.name === "Garage Door Installation"
-                        ? "Installation"
-                        : s.name}
+                      : s.name}
                 </Link>
               ))}
             </div>

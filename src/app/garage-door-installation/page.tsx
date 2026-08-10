@@ -4,9 +4,9 @@ import { getServiceBySlug } from "@/data/services";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Garage Door Installation in Michigan",
+  title: "New Garage Door Installation in Michigan",
   description:
-    "Compare local Michigan companies for new residential garage door installation. Free quotes.",
+    "Compare local Michigan companies for new garage door installation and full replacements. Free quotes.",
 };
 
 export default function Page() {

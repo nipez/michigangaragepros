@@ -56,17 +56,17 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "garage-door-installation",
-    name: "Garage Door Installation",
-    shortName: "Installation",
-    desc: "Find local professionals for new garage door installation.",
+    name: "New Door Installation",
+    shortName: "New Doors",
+    desc: "Find local professionals for new garage door installation and full replacements.",
     icon: "install",
-    heroTitle: "Garage Door Installation in Michigan",
+    heroTitle: "New Garage Door Installation in Michigan",
     heroSub:
-      "Compare local companies for new residential garage door installation, upgrades, and full replacements.",
+      "Compare local companies for new residential garage doors, upgrades, and full replacements.",
     ctaTitle: "Ready for a New Door?",
     ctaSub:
-      "Tell us about your project — we'll match you with installation pros in your area.",
-    findLabel: "Find Install Pros →",
+      "Tell us about your project — we'll match you with new-door installation pros in your area.",
+    findLabel: "Find New Door Pros →",
   },
   {
     slug: "maintenance",
@@ -105,7 +105,7 @@ export function getServiceBySlug(slug: string): Service | undefined {
 export const RELATED_SERVICE_LINKS = [
   { href: "/broken-springs/", label: "Broken Spring Repair" },
   { href: "/garage-door-openers/", label: "Garage Door Opener Repair" },
-  { href: "/garage-door-installation/", label: "Installation" },
+  { href: "/garage-door-installation/", label: "New Door Installation" },
   { href: "/maintenance/", label: "Maintenance" },
   { href: "/emergency-service/", label: "Emergency Service" },
 ] as const;
