@@ -340,6 +340,25 @@ a.on-dark-solid {
   color: #fff !important;
 }
 
+/* Light chips sitting inside dark heroes (region map legend) */
+.hero-gradient a.map-region-chip,
+.cta-gradient a.map-region-chip,
+a.map-region-chip {
+  color: #102a43 !important;
+}
+
+.hero-gradient a.map-region-chip:hover,
+.cta-gradient a.map-region-chip:hover,
+a.map-region-chip:hover {
+  color: #1769aa !important;
+}
+
+.hero-gradient a.map-region-chip.is-active,
+.cta-gradient a.map-region-chip.is-active,
+a.map-region-chip.is-active {
+  color: #fff !important;
+}
+
 .featured-badge {
   background: var(--bright-blue);
   color: #fff;

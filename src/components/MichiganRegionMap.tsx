@@ -100,17 +100,25 @@ export function MichiganRegionMap({
           {REGIONS.map((region) => {
             const isActive = region.slug === activeSlug;
             const chipClass = isActive
-              ? "rounded-full bg-bright-blue px-3 py-1.5 text-[12.5px] font-bold text-white"
-              : "rounded-full border border-[#7FA8C8] bg-white/90 px-3 py-1.5 text-[12.5px] font-semibold text-navy transition-colors hover:border-bright-blue hover:text-michigan-blue";
+              ? "map-region-chip is-active rounded-full bg-bright-blue px-3 py-1.5 text-[12.5px] font-bold"
+              : "map-region-chip rounded-full border border-[#7FA8C8] bg-white px-3 py-1.5 text-[12.5px] font-semibold transition-colors hover:border-bright-blue";
             if (!interactive) {
               return (
-                <span key={region.slug} className={chipClass}>
+                <span
+                  key={region.slug}
+                  className={chipClass}
+                  style={isActive ? undefined : { color: "#102a43" }}
+                >
                   {region.name}
                 </span>
               );
             }
             return (
-              <Link key={region.slug} href={`/regions/${region.slug}/`} className={chipClass}>
+              <Link
+                key={region.slug}
+                href={`/regions/${region.slug}/`}
+                className={chipClass}
+              >
                 {region.name}
               </Link>
             );
