@@ -40,7 +40,7 @@ export function CompaniesIndexPage() {
               href="/for-companies/"
               className="on-dark-link inline-block rounded-xl border-[1.5px] border-white/35 px-[26px] py-3.5 text-[15.5px] font-bold text-white hover:bg-white/8"
             >
-              Claim Your Profile
+              Claim Your Page
             </Link>
           </div>
         </div>
@@ -61,9 +61,9 @@ export function CompaniesIndexPage() {
       <section className="container-site my-[72px] mb-[88px]">
         <CtaBand
           title="Own a Garage Door Company in Michigan?"
-          subtitle="Claim your free profile, update your services, and start receiving homeowner leads."
-          primaryHref="/for-companies/"
-          primaryLabel="Claim Your Profile →"
+          subtitle="Claim your free page, update your services, and start receiving homeowner leads."
+          primaryHref="/for-companies/#claim"
+          primaryLabel="Claim Your Page →"
         />
       </section>
 

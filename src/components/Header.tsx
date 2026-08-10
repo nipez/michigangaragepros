@@ -24,7 +24,7 @@ export function Header({
   active,
   onQuoteClick,
   quoteHref = "/get-a-quote/",
-  claimHref = "/for-companies/",
+  claimHref = "/for-companies/#claim",
 }: HeaderProps) {
   const [open, setOpen] = useState(false);
 
@@ -62,7 +62,7 @@ export function Header({
             href={claimHref}
             className="btn-outline hidden lg:inline-flex"
           >
-            Claim Your Profile
+            Claim Your Page
           </Link>
           {quoteButton}
           <button
@@ -95,7 +95,7 @@ export function Header({
               className="nav-pill"
               onClick={() => setOpen(false)}
             >
-              Claim Your Profile
+              Claim Your Page
             </Link>
           </div>
         </div>

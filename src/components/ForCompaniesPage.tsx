@@ -1,14 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { HOW_IT_WORKS_PROS, PRO_BENEFITS } from "@/data/site";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 
-export function ForCompaniesPage() {
-  const [companyName, setCompanyName] = useState("");
-  const [city, setCity] = useState("");
+function ForCompaniesPageInner() {
+  const searchParams = useSearchParams();
+  const [companyName, setCompanyName] = useState(
+    () => searchParams.get("company") ?? "",
+  );
+  const [city, setCity] = useState(() => searchParams.get("city") ?? "");
   const [claimed, setClaimed] = useState(false);
 
   return (
@@ -31,14 +35,14 @@ export function ForCompaniesPage() {
             <p className="mb-[30px] max-w-[52ch] text-lg leading-[1.55] text-hero-muted text-pretty">
               Homeowners come to Michigan Garage Pros when they need repair,
               installation, maintenance, or emergency service. Claim your
-              profile so they find your company first.
+              page so they find your company first.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
                 href="#claim"
                 className="on-dark-solid inline-block rounded-xl bg-bright-blue px-7 py-[15px] text-base font-extrabold text-white hover:bg-cta-hover"
               >
-                Claim Your Free Profile
+                Claim Your Free Page
               </Link>
               <Link
                 href="#featured"
@@ -147,7 +151,7 @@ export function ForCompaniesPage() {
       <section id="claim" className="container-site my-20 mb-[88px]">
         <div className="cta-gradient px-[clamp(36px,5vw,64px)] py-[clamp(36px,5vw,64px)] text-center">
           <h2 className="mb-3 text-[clamp(26px,3.2vw,40px)] font-extrabold tracking-[-0.8px]">
-            Claim Your Free Profile
+            Claim Your Free Page
           </h2>
           <p className="mx-auto mb-7 max-w-[52ch] text-[16.5px] leading-[1.6] text-hero-muted">
             Tell us about your company and we&apos;ll set up your listing.
@@ -156,7 +160,7 @@ export function ForCompaniesPage() {
             <div className="mx-auto max-w-[640px] rounded-[14px] bg-white p-6 text-navy">
               <div className="mb-2 text-lg font-extrabold">Request received</div>
               <p className="m-0 text-sm text-muted">
-                We&apos;ll follow up about your free profile shortly.
+                We&apos;ll follow up about your free page shortly.
               </p>
             </div>
           ) : (
@@ -199,7 +203,7 @@ export function ForCompaniesPage() {
                 type="submit"
                 className="h-12 shrink-0 whitespace-nowrap rounded-[10px] border-none bg-bright-blue px-6 text-[15px] font-extrabold text-white transition-colors hover:bg-michigan-blue"
               >
-                Claim Profile →
+                Claim Page →
               </button>
             </form>
           )}
@@ -211,5 +215,13 @@ export function ForCompaniesPage() {
 
       <CompactFooter />
     </>
+  );
+}
+
+export function ForCompaniesPage() {
+  return (
+    <Suspense fallback={null}>
+      <ForCompaniesPageInner />
+    </Suspense>
   );
 }

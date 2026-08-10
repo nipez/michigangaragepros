@@ -71,7 +71,7 @@ export const HOW_IT_WORKS = [
 export const HOW_IT_WORKS_PROS = [
   {
     step: "01",
-    title: "Claim Your Profile",
+    title: "Claim Your Page",
     desc: "Find your company listing and verify that you own the business. It's free.",
   },
   {

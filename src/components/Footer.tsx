@@ -78,7 +78,7 @@ export function Footer() {
                 Browse Companies
               </Link>
               <Link href="/for-companies/#claim" className={FOOTER_LINK}>
-                Claim Your Profile
+                Claim Your Page
               </Link>
               <Link href="/for-companies/" className={FOOTER_LINK}>
                 Contractor Login

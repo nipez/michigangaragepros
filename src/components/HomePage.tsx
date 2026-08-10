@@ -353,7 +353,7 @@ export function HomePage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/for-companies/#claim" className="btn-navy">
-                Claim Your Free Profile
+                Claim Your Free Page
               </Link>
               <Link href="/for-companies/#featured" className="btn-outline !rounded-xl !px-6 !py-3.5 !text-[15px]">
                 Learn About Pro Profiles
