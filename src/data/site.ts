@@ -72,7 +72,7 @@ export const HOW_IT_WORKS_PROS = [
   {
     step: "01",
     title: "Claim Your Page",
-    desc: "Find your company listing and verify that you own the business. It's free.",
+    desc: "Submit your company details and a contact so we can verify ownership. It's free.",
   },
   {
     step: "02",
