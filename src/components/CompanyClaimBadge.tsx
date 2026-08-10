@@ -1,9 +1,8 @@
 "use client";
 
-import { Suspense } from "react";
 import { useCompanyClaimStatus } from "@/hooks/useCompanyClaimStatus";
 
-function CompanyClaimBadgeInner({ companySlug }: { companySlug: string }) {
+export function CompanyClaimBadge({ companySlug }: { companySlug: string }) {
   const status = useCompanyClaimStatus(companySlug);
   if (status === "claimed") {
     return (
@@ -20,12 +19,4 @@ function CompanyClaimBadgeInner({ companySlug }: { companySlug: string }) {
     );
   }
   return null;
-}
-
-export function CompanyClaimBadge({ companySlug }: { companySlug: string }) {
-  return (
-    <Suspense fallback={null}>
-      <CompanyClaimBadgeInner companySlug={companySlug} />
-    </Suspense>
-  );
 }

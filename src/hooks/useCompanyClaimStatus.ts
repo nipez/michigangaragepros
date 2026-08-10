@@ -1,43 +1,59 @@
 "use client";
 
-import { use, useMemo } from "react";
+import { useEffect, useState } from "react";
 import type { ClaimStatus } from "@/lib/claimStatus";
 
-const statusCache = new Map<string, Promise<ClaimStatus>>();
-
-function fetchClaimStatus(slug: string): Promise<ClaimStatus> {
-  const cached = statusCache.get(slug);
-  if (cached) return cached;
-
-  const promise = fetch(`/api/claims/status?slug=${encodeURIComponent(slug)}`)
-    .then(async (res) => {
-      const data = (await res.json().catch(() => ({}))) as {
-        status?: ClaimStatus;
-      };
-      if (
-        data.status === "claimed" ||
-        data.status === "pending" ||
-        data.status === "unclaimed"
-      ) {
-        return data.status;
-      }
-      return "unclaimed" as const;
-    })
-    .catch(() => "unclaimed" as const);
-
-  statusCache.set(slug, promise);
-  return promise;
-}
+export type ClaimStatusView = ClaimStatus | "loading";
 
 /**
  * Load claim status from the lightweight D1-backed API so company HTML
  * can stay statically generated (avoids Worker 1102 on profile SSR).
+ *
+ * Starts as "loading" on the client; SSR/prerender keeps the loading UI
+ * without issuing network requests during the build.
  */
-export function useCompanyClaimStatus(companySlug: string): ClaimStatus {
+export function useCompanyClaimStatus(companySlug: string): ClaimStatusView {
   const slug = companySlug.trim();
-  const promise = useMemo(
-    () => (slug ? fetchClaimStatus(slug) : Promise.resolve("unclaimed" as const)),
-    [slug],
+  const [status, setStatus] = useState<ClaimStatusView>(
+    slug ? "loading" : "unclaimed",
   );
-  return use(promise);
+
+  useEffect(() => {
+    if (!slug) return;
+
+    let cancelled = false;
+    const controller = new AbortController();
+
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/claims/status?slug=${encodeURIComponent(slug)}`,
+          { signal: controller.signal },
+        );
+        const data = (await res.json().catch(() => ({}))) as {
+          status?: ClaimStatus;
+        };
+        if (cancelled) return;
+        if (
+          data.status === "claimed" ||
+          data.status === "pending" ||
+          data.status === "unclaimed"
+        ) {
+          setStatus(data.status);
+          return;
+        }
+        setStatus("unclaimed");
+      } catch {
+        if (!cancelled) setStatus("unclaimed");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [slug]);
+
+  if (!slug) return "unclaimed";
+  return status;
 }

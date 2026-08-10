@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Suspense } from "react";
 import { useCompanyClaimStatus } from "@/hooks/useCompanyClaimStatus";
 
 type CompanyClaimCardProps = {
@@ -10,25 +9,25 @@ type CompanyClaimCardProps = {
   companySlug: string;
 };
 
-function ClaimCardLoading() {
-  return (
-    <div className="rounded-2xl border border-border bg-bg p-[26px]">
-      <h3 className="mb-1.5 text-lg font-extrabold text-navy">
-        Checking ownership…
-      </h3>
-      <p className="m-0 text-[13.5px] leading-[1.55] text-muted text-pretty">
-        Looking up whether this listing is available to claim.
-      </p>
-    </div>
-  );
-}
-
-function CompanyClaimCardInner({
+export function CompanyClaimCard({
   companyName,
   companyCity,
   companySlug,
 }: CompanyClaimCardProps) {
   const status = useCompanyClaimStatus(companySlug);
+
+  if (status === "loading") {
+    return (
+      <div className="rounded-2xl border border-border bg-bg p-[26px]">
+        <h3 className="mb-1.5 text-lg font-extrabold text-navy">
+          Checking ownership…
+        </h3>
+        <p className="m-0 text-[13.5px] leading-[1.55] text-muted text-pretty">
+          Looking up whether this listing is available to claim.
+        </p>
+      </div>
+    );
+  }
 
   if (status === "claimed") {
     return (
@@ -85,13 +84,5 @@ function CompanyClaimCardInner({
         Claim This Page →
       </Link>
     </div>
-  );
-}
-
-export function CompanyClaimCard(props: CompanyClaimCardProps) {
-  return (
-    <Suspense fallback={<ClaimCardLoading />}>
-      <CompanyClaimCardInner {...props} />
-    </Suspense>
   );
 }
