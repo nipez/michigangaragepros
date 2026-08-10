@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { CITIES } from "@/data/cities";
+import { getHomepageCities } from "@/data/cities";
 import {
   getFeaturedCompany,
   getOrganicCompanies,
@@ -192,11 +192,11 @@ export function HomePage() {
               Garage Door Pros Near You
             </h2>
             <p className="m-0 text-base text-muted">
-              Sample profiles shown for illustration — real local companies
-              appear based on your location.
+              Local Michigan companies — compare ratings, services, and service
+              areas across the state.
             </p>
           </div>
-          <Link href="#cities" className="text-[15px] font-bold">
+          <Link href="/companies/" className="text-[15px] font-bold">
             Browse all companies →
           </Link>
         </div>
@@ -230,12 +230,12 @@ export function HomePage() {
               across the state. Choose your city to see companies serving your
               area.
             </p>
-            <Link href="/cities/grand-rapids/" className="btn-navy !px-5 !py-3 !text-[14.5px]">
+            <Link href="/cities/" className="btn-navy !px-5 !py-3 !text-[14.5px]">
               View All Michigan Cities →
             </Link>
           </div>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2.5">
-            {CITIES.map((city) => (
+            {getHomepageCities().map((city) => (
               <Link
                 key={city.slug}
                 href={`/cities/${city.slug}/`}

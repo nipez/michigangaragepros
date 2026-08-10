@@ -17,6 +17,10 @@ export function CompanyProfilePage({ company }: { company: Company }) {
               Home
             </Link>
             <span className="mx-1.5">/</span>
+            <Link href="/companies/" className="text-faint hover:text-michigan-blue">
+              Companies
+            </Link>
+            <span className="mx-1.5">/</span>
             <Link
               href={`/cities/${company.citySlug}/`}
               className="text-faint hover:text-michigan-blue"
@@ -223,6 +227,19 @@ export function CompanyProfilePage({ company }: { company: Company }) {
                 <span className="text-faint">On platform</span>
                 <span className="font-semibold">{company.onPlatform}</span>
               </div>
+              {company.website && (
+                <div className="flex justify-between gap-3">
+                  <span className="text-faint">Website</span>
+                  <a
+                    href={company.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-michigan-blue hover:underline"
+                  >
+                    Visit site
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>

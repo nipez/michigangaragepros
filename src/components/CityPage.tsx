@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { City } from "@/data/cities";
+import { citySlug, getCityBySlug } from "@/data/cities";
 import { getCompaniesForCity } from "@/data/companies";
 import { SERVICES } from "@/data/services";
 import { CompanyRow } from "./CompanyCard";
@@ -9,10 +10,6 @@ import { CtaBand } from "./CtaBand";
 
 export function CityPage({ city }: { city: City }) {
   const companies = getCompaniesForCity(city.slug);
-  const display =
-    companies.length > 0
-      ? companies
-      : getCompaniesForCity("grand-rapids");
 
   return (
     <>
@@ -25,7 +22,9 @@ export function CityPage({ city }: { city: City }) {
               Home
             </Link>
             <span className="mx-1.5">/</span>
-            <span className="text-[#8AA3B8]">Cities</span>
+            <Link href="/cities/" className="text-[#8AA3B8] hover:text-white">
+              Cities
+            </Link>
             <span className="mx-1.5">/</span>
             <span className="text-footer-link">{city.name}</span>
           </div>
@@ -60,14 +59,29 @@ export function CityPage({ city }: { city: City }) {
             Companies Serving {city.name}
           </h2>
           <span className="text-[13px] text-faint">
-            Sample profiles for illustration
+            {companies.length}{" "}
+            {companies.length === 1 ? "company" : "companies"} listed
           </span>
         </div>
-        <div className="grid gap-4">
-          {display.map((c) => (
-            <CompanyRow key={c.slug} company={c} />
-          ))}
-        </div>
+        {companies.length > 0 ? (
+          <div className="grid gap-4">
+            {companies.map((c) => (
+              <CompanyRow key={c.slug} company={c} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-border bg-white p-8 text-[15.5px] leading-[1.6] text-muted">
+            We&apos;re still adding companies for {city.name}.{" "}
+            <Link href="/get-a-quote/" className="font-bold text-michigan-blue">
+              Request a free quote
+            </Link>{" "}
+            and we&apos;ll match you with pros nearby, or{" "}
+            <Link href="/companies/" className="font-bold text-michigan-blue">
+              browse all Michigan companies
+            </Link>
+            .
+          </div>
+        )}
       </section>
 
       <section className="container-site pt-[72px]">
@@ -101,14 +115,28 @@ export function CityPage({ city }: { city: City }) {
               Nearby Communities
             </h3>
             <div className="flex flex-wrap gap-2.5">
-              {city.nearby.map((n) => (
-                <span
-                  key={n}
-                  className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text"
-                >
-                  {n}
-                </span>
-              ))}
+              {city.nearby.map((n) => {
+                const nearby = getCityBySlug(citySlug(n));
+                if (nearby) {
+                  return (
+                    <Link
+                      key={n}
+                      href={`/cities/${nearby.slug}/`}
+                      className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
+                    >
+                      {n}
+                    </Link>
+                  );
+                }
+                return (
+                  <span
+                    key={n}
+                    className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text"
+                  >
+                    {n}
+                  </span>
+                );
+              })}
             </div>
           </div>
         </div>

@@ -102,7 +102,7 @@ export function ServicePage({ service }: { service: Service }) {
             Companies Offering {service.name}
           </h2>
           <span className="text-[13px] text-faint">
-            Sample profiles for illustration
+            Top-rated Michigan companies
           </span>
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">

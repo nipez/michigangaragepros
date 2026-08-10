@@ -8,7 +8,7 @@ import { MenuIcon } from "./Icons";
 const NAV = [
   { href: "/#pros", label: "Find a Pro", id: "pros" },
   { href: "/garage-door-repair/", label: "Services", id: "services" },
-  { href: "/cities/grand-rapids/", label: "Cities", id: "cities" },
+  { href: "/cities/", label: "Cities", id: "cities" },
   { href: "/#how", label: "How It Works", id: "how" },
   { href: "/for-companies/", label: "For Companies", id: "for-companies" },
 ] as const;

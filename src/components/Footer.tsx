@@ -77,6 +77,9 @@ export function Footer() {
               For Companies
             </div>
             <div className="grid gap-[9px] text-sm">
+              <Link href="/companies/" className="text-footer-link hover:text-white">
+                Browse Companies
+              </Link>
               <Link href="/for-companies/#claim" className="text-footer-link hover:text-white">
                 Claim Your Profile
               </Link>
@@ -134,10 +137,7 @@ export function CompactFooter() {
             >
               Services
             </Link>
-            <Link
-              href="/cities/grand-rapids/"
-              className="text-footer-link hover:text-white"
-            >
+            <Link href="/cities/" className="text-footer-link hover:text-white">
               Cities
             </Link>
             <Link href="/for-companies/" className="text-footer-link hover:text-white">
