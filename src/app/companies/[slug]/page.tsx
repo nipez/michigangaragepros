@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CompanyProfilePage } from "@/components/CompanyProfilePage";
 import { COMPANIES, getCompanyBySlug } from "@/data/companies";
-import { getCompanyClaimStatus } from "@/lib/claimStatus";
-
-export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return COMPANIES.map((c) => ({ slug: c.slug }));
@@ -32,6 +29,7 @@ export default async function Page({
   const { slug } = await params;
   const company = getCompanyBySlug(slug);
   if (!company) notFound();
-  const claimStatus = await getCompanyClaimStatus(company.slug);
-  return <CompanyProfilePage company={company} claimStatus={claimStatus} />;
+  // Claim status is fetched client-side so this page stays statically generated
+  // and avoids Worker 1102 from SSR'ing the full companies dataset.
+  return <CompanyProfilePage company={company} />;
 }

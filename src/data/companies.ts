@@ -5481,8 +5481,16 @@ function servesCity(company: Company, citySlugParam: string, cityName?: string) 
   });
 }
 
+let companiesBySlug: Map<string, Company> | null = null;
+
+function ensureCompaniesBySlug() {
+  if (companiesBySlug) return companiesBySlug;
+  companiesBySlug = new Map(COMPANIES.map((c) => [c.slug, c]));
+  return companiesBySlug;
+}
+
 export function getCompanyBySlug(slug: string): Company | undefined {
-  return COMPANIES.find((c) => c.slug === slug);
+  return ensureCompaniesBySlug().get(slug);
 }
 
 export function getFeaturedCompany(): Company | undefined {

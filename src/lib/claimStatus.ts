@@ -15,31 +15,31 @@ export async function getCompanyClaimStatus(
   try {
     const db = await getDb();
 
-    const company = await db
-      .prepare(`SELECT claimed FROM companies WHERE slug = ? LIMIT 1`)
-      .bind(slug)
-      .first<{ claimed: number | null }>();
-    if (company && Number(company.claimed) === 1) return "claimed";
-
-    const approved = await db
+    // One round-trip: companies.claimed wins, else latest claim_requests status.
+    const row = await db
       .prepare(
-        `SELECT id FROM claim_requests
-         WHERE company_slug = ? AND status = 'approved'
-         LIMIT 1`,
+        `SELECT
+           (SELECT claimed FROM companies WHERE slug = ?1 LIMIT 1) AS claimed,
+           (SELECT status FROM claim_requests
+             WHERE company_slug = ?1
+               AND status IN ('approved', 'pending', 'new')
+             ORDER BY
+               CASE status
+                 WHEN 'approved' THEN 0
+                 WHEN 'pending' THEN 1
+                 ELSE 2
+               END,
+               created_at DESC
+             LIMIT 1) AS request_status`,
       )
       .bind(slug)
-      .first();
-    if (approved) return "claimed";
+      .first<{ claimed: number | null; request_status: string | null }>();
 
-    const pending = await db
-      .prepare(
-        `SELECT id FROM claim_requests
-         WHERE company_slug = ? AND status IN ('new', 'pending')
-         LIMIT 1`,
-      )
-      .bind(slug)
-      .first();
-    if (pending) return "pending";
+    if (row && Number(row.claimed) === 1) return "claimed";
+    if (row?.request_status === "approved") return "claimed";
+    if (row?.request_status === "pending" || row?.request_status === "new") {
+      return "pending";
+    }
 
     return "unclaimed";
   } catch (err) {
