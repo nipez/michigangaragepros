@@ -3,14 +3,13 @@ import type { City } from "@/data/cities";
 import { citySlug, getCityBySlug } from "@/data/cities";
 import { getCompaniesForCity } from "@/data/companies";
 import { SERVICES } from "@/data/services";
-import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
+import { ShuffledCompanyGrid } from "./ShuffledCompanyGrid";
 
 export function CityPage({ city }: { city: City }) {
   const companies = getCompaniesForCity(city.slug);
-  const hasPaidFeatured = companies.some((c) => c.featured);
 
   return (
     <>
@@ -65,12 +64,7 @@ export function CityPage({ city }: { city: City }) {
           </span>
         </div>
         {companies.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {!hasPaidFeatured && <BeFeaturedCard cityName={city.name} />}
-            {companies.map((c) => (
-              <CompanyCard key={c.slug} company={c} />
-            ))}
-          </div>
+          <ShuffledCompanyGrid companies={companies} cityName={city.name} />
         ) : (
           <div className="rounded-2xl border border-border bg-white p-8 text-[15.5px] leading-[1.6] text-muted">
             We&apos;re still adding companies for {city.name}.{" "}

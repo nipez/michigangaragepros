@@ -2,12 +2,11 @@ import Link from "next/link";
 import { getAllCompaniesSorted } from "@/data/companies";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
-import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 import { CtaBand } from "./CtaBand";
+import { ShuffledCompanyGrid } from "./ShuffledCompanyGrid";
 
 export function CompaniesIndexPage() {
   const companies = getAllCompaniesSorted();
-  const hasPaidFeatured = companies.some((c) => c.featured);
 
   return (
     <>
@@ -53,15 +52,10 @@ export function CompaniesIndexPage() {
             All Companies
           </h2>
           <span className="text-[13px] text-faint">
-            {companies.length} listings · A–Z
+            {companies.length} listings · order rotates each visit
           </span>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {!hasPaidFeatured && <BeFeaturedCard />}
-          {companies.map((c) => (
-            <CompanyCard key={c.slug} company={c} />
-          ))}
-        </div>
+        <ShuffledCompanyGrid companies={companies} />
       </section>
 
       <section className="container-site my-[72px] mb-[88px]">

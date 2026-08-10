@@ -5511,12 +5511,25 @@ export function getCompaniesForCity(citySlugParam: string): Company[] {
     servesCity(c, citySlugParam, city?.name),
   );
   const featured = matched.filter((c) => c.featured);
-  const organic = matched.filter((c) => !c.featured).sort(byName);
+  const organic = matched.filter((c) => !c.featured);
   return [...featured, ...organic];
 }
 
 export function getAllCompaniesSorted(): Company[] {
   const featured = COMPANIES.filter((c) => c.featured);
   const organic = COMPANIES.filter((c) => !c.featured).sort(byName);
+  return [...featured, ...organic];
+}
+
+/** Fisher–Yates shuffle (mutates a copy). Featured listings stay pinned first. */
+export function fairShuffleCompanies(companies: Company[]): Company[] {
+  const featured = companies.filter((c) => c.featured);
+  const organic = companies.filter((c) => !c.featured);
+  for (let i = organic.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = organic[i]!;
+    organic[i] = organic[j]!;
+    organic[j] = tmp;
+  }
   return [...featured, ...organic];
 }

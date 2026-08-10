@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { getHomepageCities } from "@/data/cities";
 import { findLocalPros } from "@/lib/locationSearch";
-import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { PinIcon } from "./Icons";
 import { ProsSearchForm } from "./ProsSearchForm";
+import { ShuffledCompanyGrid } from "./ShuffledCompanyGrid";
 
 type ProsSearchPageProps = {
   query: string;
@@ -17,7 +17,6 @@ export function ProsSearchPage({ query, service }: ProsSearchPageProps) {
   const result = hasQuery ? findLocalPros(query, service) : null;
   const companies = result?.companies ?? [];
   const city = result?.city ?? null;
-  const hasPaidFeatured = companies.some((c) => c.featured);
 
   const locationLabel = city
     ? result?.zip
@@ -121,28 +120,21 @@ export function ProsSearchPage({ query, service }: ProsSearchPageProps) {
             </div>
 
             {companies.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {!hasPaidFeatured && (
-                  <BeFeaturedCard cityName={city?.name} />
-                )}
-                {companies.map((c) => (
-                  <CompanyCard
-                    key={c.slug}
-                    company={c}
-                    quoteHref={
-                      result?.zip
-                        ? `/get-a-quote/?zip=${encodeURIComponent(result.zip)}${
-                            service
-                              ? `&service=${encodeURIComponent(service)}`
-                              : ""
-                          }`
-                        : service
-                          ? `/get-a-quote/?service=${encodeURIComponent(service)}`
-                          : "/get-a-quote/"
-                    }
-                  />
-                ))}
-              </div>
+              <ShuffledCompanyGrid
+                companies={companies}
+                cityName={city?.name}
+                quoteHref={
+                  result?.zip
+                    ? `/get-a-quote/?zip=${encodeURIComponent(result.zip)}${
+                        service
+                          ? `&service=${encodeURIComponent(service)}`
+                          : ""
+                      }`
+                    : service
+                      ? `/get-a-quote/?service=${encodeURIComponent(service)}`
+                      : "/get-a-quote/"
+                }
+              />
             ) : (
               <div className="rounded-2xl border border-border bg-white p-8 text-[15.5px] leading-[1.6] text-muted">
                 We couldn&apos;t find companies for that location yet.{" "}
