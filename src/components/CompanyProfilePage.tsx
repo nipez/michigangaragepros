@@ -165,7 +165,7 @@ export function CompanyProfilePage({ company }: { company: Company }) {
               accurate listing — free to claim.
             </p>
             <Link
-              href={`/for-companies/?company=${encodeURIComponent(company.name)}&city=${encodeURIComponent(company.city.replace(/,?\s*MI$/, ""))}#claim`}
+              href={`/for-companies/?company=${encodeURIComponent(company.name)}&city=${encodeURIComponent(company.city.replace(/,?\s*MI$/, ""))}&slug=${encodeURIComponent(company.slug)}#claim`}
               className="block rounded-[11px] border-[1.5px] border-bright-blue bg-white py-3.5 text-center text-[15px] font-extrabold text-michigan-blue transition-colors hover:bg-bright-blue hover:text-white"
             >
               Claim This Page →

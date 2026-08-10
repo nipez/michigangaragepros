@@ -1,32 +1,51 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { validateClaim, type ClaimRequest } from "@/lib/claim";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  let body: { companyName?: string; city?: string };
+  let body: Partial<ClaimRequest>;
   try {
-    body = (await request.json()) as { companyName?: string; city?: string };
+    body = (await request.json()) as Partial<ClaimRequest>;
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const companyName = body.companyName?.trim() ?? "";
-  const city = body.city?.trim() ?? "";
-  if (!companyName || !city) {
-    return NextResponse.json(
-      { error: "Company name and city are required" },
-      { status: 400 },
-    );
+  const claim: ClaimRequest = {
+    companyName: body.companyName?.trim() ?? "",
+    city: body.city?.trim() ?? "",
+    contactName: body.contactName?.trim() ?? "",
+    email: body.email?.trim() ?? "",
+    phone: body.phone?.trim() ?? "",
+    website: body.website?.trim() ?? "",
+    companySlug: body.companySlug?.trim() ?? "",
+    notes: body.notes?.trim() ?? "",
+  };
+
+  const error = validateClaim(claim);
+  if (error) {
+    return NextResponse.json({ error }, { status: 400 });
   }
 
   try {
     const db = await getDb();
     const result = await db
       .prepare(
-        `INSERT INTO claim_requests (company_name, city) VALUES (?, ?)`,
+        `INSERT INTO claim_requests (
+           company_name, city, contact_name, email, phone, website, company_slug, notes
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       )
-      .bind(companyName, city)
+      .bind(
+        claim.companyName,
+        claim.city,
+        claim.contactName,
+        claim.email,
+        claim.phone,
+        claim.website || null,
+        claim.companySlug || null,
+        claim.notes || null,
+      )
       .run();
 
     return NextResponse.json({

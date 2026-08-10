@@ -2,18 +2,17 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { HOW_IT_WORKS_PROS, PRO_BENEFITS } from "@/data/site";
+import { ClaimForm } from "./ClaimForm";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 
 function ForCompaniesPageInner() {
   const searchParams = useSearchParams();
-  const [companyName, setCompanyName] = useState(
-    () => searchParams.get("company") ?? "",
-  );
-  const [city, setCity] = useState(() => searchParams.get("city") ?? "");
-  const [claimed, setClaimed] = useState(false);
+  const initialCompanyName = searchParams.get("company") ?? "";
+  const initialCity = searchParams.get("city") ?? "";
+  const initialCompanySlug = searchParams.get("slug") ?? "";
 
   return (
     <>
@@ -149,66 +148,22 @@ function ForCompaniesPageInner() {
       </section>
 
       <section id="claim" className="container-site my-20 mb-[88px]">
-        <div className="cta-gradient px-[clamp(36px,5vw,64px)] py-[clamp(36px,5vw,64px)] text-center">
+        <div className="cta-gradient px-[clamp(28px,4vw,56px)] py-[clamp(36px,5vw,64px)] text-center">
           <h2 className="mb-3 text-[clamp(26px,3.2vw,40px)] font-extrabold tracking-[-0.8px]">
             Claim Your Free Page
           </h2>
-          <p className="mx-auto mb-7 max-w-[52ch] text-[16.5px] leading-[1.6] text-hero-muted">
-            Tell us about your company and we&apos;ll set up your listing.
+          <p className="mx-auto mb-7 max-w-[48ch] text-[16.5px] leading-[1.6] text-hero-muted">
+            Leave your contact details so we can verify ownership and turn on
+            your listing.
           </p>
-          {claimed ? (
-            <div className="mx-auto max-w-[640px] rounded-[14px] bg-white p-6 text-navy">
-              <div className="mb-2 text-lg font-extrabold">Request received</div>
-              <p className="m-0 text-sm text-muted">
-                We&apos;ll follow up about your free page shortly.
-              </p>
-            </div>
-          ) : (
-            <form
-              data-form-row="1"
-              className="mx-auto flex max-w-[640px] gap-2.5 rounded-[14px] bg-white p-3"
-              onSubmit={async (e) => {
-                e.preventDefault();
-                if (!companyName.trim() || !city.trim()) return;
-                try {
-                  const res = await fetch("/api/claims", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      companyName: companyName.trim(),
-                      city: city.trim(),
-                    }),
-                  });
-                  if (!res.ok) throw new Error("claim failed");
-                  setClaimed(true);
-                } catch {
-                  // Keep form visible; claim endpoint may be unavailable in plain next dev without D1
-                  setClaimed(true);
-                }
-              }}
-            >
-              <input
-                placeholder="Company name"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className="field-input min-w-0 flex-1 !h-12"
-              />
-              <input
-                placeholder="City"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="field-input min-w-0 flex-[0.7] !h-12"
-              />
-              <button
-                type="submit"
-                className="h-12 shrink-0 whitespace-nowrap rounded-[10px] border-none bg-bright-blue px-6 text-[15px] font-extrabold text-white transition-colors hover:bg-michigan-blue"
-              >
-                Claim Page →
-              </button>
-            </form>
-          )}
+          <ClaimForm
+            initialCompanyName={initialCompanyName}
+            initialCity={initialCity}
+            initialCompanySlug={initialCompanySlug}
+          />
           <div className="mt-4 text-[13px] text-[#8AA3B8]">
-            Free to claim · No credit card required
+            Free to claim · No credit card required · Stored securely in our
+            claim inbox
           </div>
         </div>
       </section>
