@@ -29,7 +29,7 @@ export function Logo({
         <LogoMark size={20} />
       </div>
       {!compact && (
-        <div className="whitespace-nowrap text-lg font-extrabold tracking-[-0.2px]">
+        <div className="whitespace-nowrap text-lg font-extrabold tracking-[-0.2px] max-[420px]:hidden">
           <span className="text-navy">Michigan</span>{" "}
           <span className="text-michigan-blue">Garage Pros</span>
         </div>

@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  // Avoid regenerating AGENTS.md / CLAUDE.md on every `next dev`
+  agentRules: false,
 };
 
 export default nextConfig;

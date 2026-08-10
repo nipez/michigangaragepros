@@ -346,4 +346,8 @@ textarea {
   [data-foot-grid] {
     grid-template-columns: 1fr 1fr !important;
   }
+
+  body {
+    padding-bottom: 84px;
+  }
 }
