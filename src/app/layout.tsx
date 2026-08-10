@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | Michigan Garage Pros",
   },
   description:
-    "Compare local Michigan garage-door companies, see services and reviews, and request a free quote. Free for homeowners.",
+    "Compare local Michigan garage-door companies, see services and coverage, and request a free quote. Free for homeowners.",
   metadataBase: new URL("https://michigangaragepros.com"),
 };
 

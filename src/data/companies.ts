@@ -1,16 +1,9 @@
 import { citySlug, getCityBySlug } from "./cities";
 
-export type Review = {
-  name: string;
-  stars: number;
-  location: string;
-  when: string;
-  body: string;
-};
-
 export type Company = {
   slug: string;
   name: string;
+  /** Seed-only placeholders — not shown until synced from a verified source (e.g. Google). */
   rating: number;
   reviews: number;
   city: string;
@@ -1406,30 +1399,6 @@ export const COMPANIES: Company[] = [
   },
 ];
 
-export const SAMPLE_REVIEWS: Review[] = [
-  {
-    name: "Sarah M.",
-    stars: 5,
-    location: "Grand Rapids",
-    when: "2 weeks ago",
-    body: "Spring snapped on a Sunday morning and they were out the same afternoon. Fair price, quick work, and they walked me through what failed.",
-  },
-  {
-    name: "David R.",
-    stars: 5,
-    location: "Kentwood",
-    when: "1 month ago",
-    body: "Replaced our 20-year-old door and opener. Showed up on time, cleaned up after, and the new door is whisper quiet.",
-  },
-  {
-    name: "Jennifer L.",
-    stars: 4,
-    location: "Walker",
-    when: "2 months ago",
-    body: "Good communication and solid repair work on our off-track door. Scheduling took a couple days during a busy week.",
-  },
-];
-
 function servesCity(company: Company, citySlugParam: string, cityName?: string) {
   if (company.citySlug === citySlugParam) return true;
   return company.serviceArea.some((area) => {
@@ -1448,7 +1417,11 @@ export function getFeaturedCompany(): Company | undefined {
   return COMPANIES.find((c) => c.featured);
 }
 
-/** Top companies by reviews/rating. Paid featured listings (when any) sort first. */
+function byName(a: Company, b: Company) {
+  return a.name.localeCompare(b.name);
+}
+
+/** Top companies for homepage/service grids. Paid featured listings (when any) sort first. */
 export function getTopCompanies(limit = 4): Company[] {
   return getAllCompaniesSorted().slice(0, limit);
 }
@@ -1456,7 +1429,7 @@ export function getTopCompanies(limit = 4): Company[] {
 export function getOrganicCompanies(limit = 3): Company[] {
   return COMPANIES.filter((c) => !c.featured)
     .slice()
-    .sort((a, b) => b.reviews - a.reviews || b.rating - a.rating)
+    .sort(byName)
     .slice(0, limit);
 }
 
@@ -1466,16 +1439,12 @@ export function getCompaniesForCity(citySlugParam: string): Company[] {
     servesCity(c, citySlugParam, city?.name),
   );
   const featured = matched.filter((c) => c.featured);
-  const organic = matched
-    .filter((c) => !c.featured)
-    .sort((a, b) => b.reviews - a.reviews || b.rating - a.rating);
+  const organic = matched.filter((c) => !c.featured).sort(byName);
   return [...featured, ...organic];
 }
 
 export function getAllCompaniesSorted(): Company[] {
   const featured = COMPANIES.filter((c) => c.featured);
-  const organic = COMPANIES.filter((c) => !c.featured).sort(
-    (a, b) => b.reviews - a.reviews || b.rating - a.rating,
-  );
+  const organic = COMPANIES.filter((c) => !c.featured).sort(byName);
   return [...featured, ...organic];
 }

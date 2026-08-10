@@ -1,9 +1,8 @@
 import Link from "next/link";
 import type { Company } from "@/data/companies";
-import { SAMPLE_REVIEWS } from "@/data/companies";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
-import { BoltIcon, LogoMark, Stars } from "./Icons";
+import { BoltIcon, LogoMark } from "./Icons";
 
 export function CompanyProfilePage({ company }: { company: Company }) {
   return (
@@ -45,10 +44,6 @@ export function CompanyProfilePage({ company }: { company: Company }) {
                   )}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-[15px]">
-                  <Stars rating={company.rating} />
-                  <strong>{company.rating.toFixed(1)}</strong>
-                  <span className="text-muted">· {company.reviews} reviews</span>
-                  <span className="text-[#C4CFDA]">|</span>
                   <span className="text-muted">{company.city}</span>
                   {company.emergency && (
                     <>
@@ -127,41 +122,6 @@ export function CompanyProfilePage({ company }: { company: Company }) {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border bg-white p-7">
-            <div className="mb-5 flex items-center justify-between gap-4">
-              <h2 className="m-0 text-xl font-extrabold text-navy">Reviews</h2>
-              <div className="text-sm text-muted">
-                <Stars rating={company.rating} className="mr-1" />
-                <strong className="text-text">{company.rating.toFixed(1)}</strong> ·{" "}
-                {company.reviews} reviews
-              </div>
-            </div>
-            <div className="grid gap-[18px]">
-              {SAMPLE_REVIEWS.map((r, i) => (
-                <div
-                  key={r.name}
-                  className={
-                    i < SAMPLE_REVIEWS.length - 1
-                      ? "border-b border-[#EEF2F6] pb-[18px]"
-                      : ""
-                  }
-                >
-                  <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
-                    <span className="text-[14.5px] font-bold text-navy">
-                      {r.name}
-                    </span>
-                    <Stars rating={r.stars} className="text-[13px]" />
-                    <span className="text-[12.5px] text-faint">
-                      {r.location} · {r.when}
-                    </span>
-                  </div>
-                  <p className="m-0 text-[14.5px] leading-[1.6] text-body-secondary">
-                    {r.body}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
         <div className="sticky top-[92px] grid gap-5">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Company } from "@/data/companies";
-import { BoltIcon, Stars } from "./Icons";
+import { BoltIcon } from "./Icons";
 
 type CompanyCardProps = {
   company: Company;
@@ -50,11 +50,6 @@ export function CompanyCard({
       ) : null}
       <div className="mb-1.5 text-[17px] font-extrabold text-navy">
         {company.name}
-      </div>
-      <div className="mb-1 flex items-center gap-[7px] text-sm">
-        <Stars rating={company.rating} />
-        <strong>{company.rating.toFixed(1)}</strong>
-        <span className="text-muted">· {company.reviews} reviews</span>
       </div>
       <div className="mb-3.5 text-[13.5px] text-muted">{company.city}</div>
       {!compact && company.tags.length > 0 && (
@@ -139,13 +134,7 @@ export function CompanyRow({
           </div>
         )}
         <div className="mb-1.5 text-lg font-extrabold text-navy">{company.name}</div>
-        <div className="mb-2 flex items-center gap-[7px] text-sm">
-          <Stars rating={company.rating} />
-          <strong>{company.rating.toFixed(1)}</strong>
-          <span className="text-muted">
-            · {company.reviews} reviews · {company.city}
-          </span>
-        </div>
+        <div className="mb-2 text-sm text-muted">{company.city}</div>
         <div className="flex flex-wrap gap-[7px]">
           {company.tags.map((t) => (
             <span key={t} className="tag-pill">

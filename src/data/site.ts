@@ -59,7 +59,7 @@ export const HOW_IT_WORKS = [
   {
     step: "02",
     title: "Compare Local Pros",
-    desc: "Review companies, services, ratings, and service areas.",
+    desc: "Compare companies, services, and service areas.",
   },
   {
     step: "03",
@@ -104,7 +104,7 @@ export const TRUST_POINTS = [
   {
     id: "compare",
     title: "Compare Your Options",
-    desc: "See services, locations, reviews, and company information in one place.",
+    desc: "See services, locations, and company information in one place.",
   },
   {
     id: "free",

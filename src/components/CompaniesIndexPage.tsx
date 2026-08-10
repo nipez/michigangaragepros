@@ -27,7 +27,7 @@ export function CompaniesIndexPage() {
           </h1>
           <p className="mb-[30px] max-w-[58ch] text-lg leading-[1.55] text-hero-muted text-pretty">
             Browse {companies.length} garage door service companies across
-            Michigan. Compare services, ratings, and service areas — then request
+            Michigan. Compare services and service areas — then request
             a free quote.
           </p>
           <div className="flex flex-wrap gap-3">
@@ -53,7 +53,7 @@ export function CompaniesIndexPage() {
             All Companies
           </h2>
           <span className="text-[13px] text-faint">
-            {companies.length} listings · sorted by reviews
+            {companies.length} listings · A–Z
           </span>
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

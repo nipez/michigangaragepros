@@ -17,7 +17,7 @@ export async function generateMetadata({
   if (!company) return { title: "Company Not Found" };
   return {
     title: company.name,
-    description: `${company.name} — garage door service in ${company.city}. ${company.rating} stars from ${company.reviews} reviews.`,
+    description: `${company.name} — garage door service in ${company.city}. Compare services and request a free quote.`,
   };
 }
 

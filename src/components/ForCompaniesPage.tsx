@@ -5,7 +5,6 @@ import { useState } from "react";
 import { HOW_IT_WORKS_PROS, PRO_BENEFITS } from "@/data/site";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
-import { Stars } from "./Icons";
 
 export function ForCompaniesPage() {
   const [companyName, setCompanyName] = useState("");
@@ -101,7 +100,7 @@ export function ForCompaniesPage() {
             </h2>
             <p className="mb-[18px] text-base leading-[1.6] text-muted text-pretty">
               Every company gets a free profile, and search results are ranked by
-              relevance, coverage, and reviews — never by payment alone. Featured
+              relevance and coverage — never by payment alone. Featured
               placement adds extra exposure, clearly labeled as sponsored.
             </p>
             <div className="grid gap-2.5 text-[14.5px] font-semibold text-text">
@@ -133,7 +132,7 @@ export function ForCompaniesPage() {
                 Your Company Name
               </div>
               <div className="mb-2.5 text-[12.5px] text-muted">
-                <Stars rating={5} className="mr-1" /> Your rating · Your city, MI
+                Your city, MI · Repair · Installation · Emergency
               </div>
               <div className="mb-1.5 h-[9px] rounded-[5px] bg-[#EEF2F6]" />
               <div className="h-[9px] w-[70%] rounded-[5px] bg-[#EEF2F6]" />

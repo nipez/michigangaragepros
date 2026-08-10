@@ -64,7 +64,7 @@ export function HomePage() {
               Find a Trusted Garage Door Pro in Michigan
             </h1>
             <p className="mb-8 max-w-[52ch] text-[19px] leading-[1.55] text-hero-muted text-pretty">
-              Compare local garage-door companies, see services and reviews, and
+              Compare local garage-door companies, see services and coverage, and
               connect with a professional in your area.
             </p>
             <div className="rounded-2xl bg-white p-[22px] shadow-[0_24px_60px_rgba(4,16,28,0.45)]">
@@ -188,7 +188,7 @@ export function HomePage() {
               Garage Door Pros Near You
             </h2>
             <p className="m-0 text-base text-muted">
-              Local Michigan companies — compare ratings, services, and service
+              Local Michigan companies — compare services and service
               areas across the state.
             </p>
           </div>
