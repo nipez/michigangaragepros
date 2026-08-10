@@ -17,7 +17,7 @@ import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 import { CtaBand } from "./CtaBand";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
-import { KeyIcon, LineIcon, PinIcon } from "./Icons";
+import { LineIcon, PinIcon } from "./Icons";
 import { LeadModal } from "./LeadModal";
 import { MobileCta } from "./MobileCta";
 import type { Lead } from "@/lib/lead";
@@ -152,26 +152,13 @@ export function HomePage({ topCompanies, homepageCities }: HomePageProps) {
           <div data-hero-img="1" className="relative min-h-[460px]">
             <div className="absolute inset-0 overflow-hidden rounded-[18px]">
               <Image
-                src="/hero-collage.png"
-                alt="Garage door technician serving a Michigan home"
+                src="/hero-collage.webp"
+                alt="Michigan garage door technicians and local support team"
                 fill
                 priority
                 className="object-cover"
                 sizes="(max-width: 1020px) 100vw, 560px"
               />
-            </div>
-            <div className="pointer-events-none absolute bottom-5 left-5 flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-[0_12px_32px_rgba(4,16,28,0.35)]">
-              <div className="grid size-[38px] place-items-center rounded-[10px] bg-icon-tile">
-                <KeyIcon size={20} />
-              </div>
-              <div>
-                <div className="text-[13.5px] font-bold text-navy">
-                  Local pro on the way
-                </div>
-                <div className="text-xs text-muted">
-                  Same-day options in most cities
-                </div>
-              </div>
             </div>
           </div>
         </div>
