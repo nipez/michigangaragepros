@@ -7,6 +7,7 @@ import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
+import { LineIcon, PinIcon } from "./Icons";
 
 const CITY_LINKS = [
   "Detroit",
@@ -109,51 +110,89 @@ export function ServicePage({ service }: { service: Service }) {
         </div>
       </section>
 
-      <section className="container-site pt-[72px]">
-        <div
-          data-two-col="1"
-          className="grid items-start gap-12"
-          style={{ gridTemplateColumns: "1fr 1fr" }}
-        >
-          <div>
-            <h3 className="mb-[18px] text-xl font-extrabold text-navy">
-              Related Services
-            </h3>
-            <div className="flex flex-wrap gap-2.5">
-              {related.map((s) => (
-                <Link
-                  key={s.slug}
-                  href={`/${s.slug}/`}
-                  className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
-                >
-                  {s.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h3 className="mb-[18px] text-xl font-extrabold text-navy">
-              {service.name} by City
-            </h3>
-            <div className="flex flex-wrap gap-2.5">
-              {CITY_LINKS.map((name) => {
-                const city = CITIES.find((c) => c.name === name);
-                return (
+      <section className="mt-[72px] border-y border-border bg-bg">
+        <div className="container-site py-14 md:py-16">
+          <div
+            data-two-col="1"
+            className="grid items-stretch gap-5 md:gap-6"
+            style={{ gridTemplateColumns: "1fr 1fr" }}
+          >
+            <div className="rounded-2xl border border-border bg-white p-6 md:p-7">
+              <h3 className="mb-1.5 text-xl font-extrabold text-navy">
+                Related Services
+              </h3>
+              <p className="mb-5 text-[14.5px] leading-[1.55] text-muted">
+                Explore other garage-door help Michigan homeowners look for.
+              </p>
+              <div className="grid gap-2.5">
+                {related.map((s) => (
                   <Link
-                    key={name}
-                    href={`/cities/${city?.slug ?? ""}/`}
-                    className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
+                    key={s.slug}
+                    href={`/${s.slug}/`}
+                    className="group flex items-center gap-3 rounded-xl border border-border bg-bg px-3.5 py-3 transition-colors hover:border-bright-blue hover:bg-white hover:text-inherit"
                   >
-                    {name}
+                    <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-icon-tile text-michigan-blue">
+                      <LineIcon name={s.icon} size={18} />
+                    </span>
+                    <span className="min-w-0 flex-1 text-[14.5px] font-bold text-navy group-hover:text-michigan-blue">
+                      {s.name}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="text-[15px] font-extrabold text-bright-blue transition-transform group-hover:translate-x-0.5"
+                    >
+                      →
+                    </span>
                   </Link>
-                );
-              })}
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-white p-6 md:p-7">
+              <h3 className="mb-1.5 text-xl font-extrabold text-navy">
+                {service.name} by City
+              </h3>
+              <p className="mb-5 text-[14.5px] leading-[1.55] text-muted">
+                Jump to local company listings in major Michigan markets.
+              </p>
+              <div className="grid gap-2.5 sm:grid-cols-2">
+                {CITY_LINKS.map((name) => {
+                  const city = CITIES.find((c) => c.name === name);
+                  return (
+                    <Link
+                      key={name}
+                      href={`/cities/${city?.slug ?? ""}/`}
+                      className="group flex items-center gap-2.5 rounded-xl border border-border bg-bg px-3.5 py-3 transition-colors hover:border-bright-blue hover:bg-white hover:text-inherit"
+                    >
+                      <PinIcon
+                        size={14}
+                        className="shrink-0 text-faint transition-colors group-hover:text-michigan-blue"
+                      />
+                      <span className="min-w-0 flex-1 text-[14.5px] font-bold text-navy group-hover:text-michigan-blue">
+                        {name}
+                      </span>
+                      <span
+                        aria-hidden
+                        className="text-[15px] font-extrabold text-bright-blue transition-transform group-hover:translate-x-0.5"
+                      >
+                        →
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+              <Link
+                href="/cities/"
+                className="mt-4 inline-flex text-[14px] font-bold text-michigan-blue hover:underline"
+              >
+                View all Michigan cities →
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="container-site my-[72px] mb-[88px]">
+      <section className="container-site pt-14 pb-[88px] md:pt-16">
         <CtaBand title={service.ctaTitle} subtitle={service.ctaSub} />
       </section>
 
