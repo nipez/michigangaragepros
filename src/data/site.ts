@@ -95,6 +95,37 @@ export const COMMON_PROBLEMS = [
   "Worn rollers, cables, or hinges",
 ] as const;
 
+/** Maps common-problem chips on service pages to consumer guides. */
+export const COMMON_PROBLEM_GUIDES: Record<
+  (typeof COMMON_PROBLEMS)[number],
+  { slug: string; blurb: string }
+> = {
+  "Door won't open or close": {
+    slug: "garage-door-wont-open-or-close",
+    blurb: "Safe checks before you call a pro",
+  },
+  "Door is off track": {
+    slug: "garage-door-off-track",
+    blurb: "Why forcing it makes things worse",
+  },
+  "Loud grinding or squeaking": {
+    slug: "garage-door-noisy-grinding-squeaking",
+    blurb: "What the sound usually means",
+  },
+  "Damaged panels or dents": {
+    slug: "garage-door-dent-panel-repair-or-replace",
+    blurb: "Repair vs replace after impact",
+  },
+  "Door reverses before closing": {
+    slug: "garage-door-reverses-before-closing",
+    blurb: "Sensors, limits, and binding",
+  },
+  "Worn rollers, cables, or hinges": {
+    slug: "garage-door-rollers-cables-hinges-wear",
+    blurb: "Catch wear before a bigger failure",
+  },
+};
+
 export const TRUST_POINTS = [
   {
     id: "local",

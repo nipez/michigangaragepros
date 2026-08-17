@@ -245,6 +245,289 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: "garage-door-wont-open-or-close",
+    title: "Garage Door Won't Open or Close? What to Check First",
+    description:
+      "A practical Michigan homeowner checklist when your garage door won't open or close — power, sensors, locks, springs — and when to stop and call a pro.",
+    date: "2026-04-12",
+    readMinutes: 8,
+    category: "Repair",
+    sections: [
+      {
+        paragraphs: [
+          "A door that refuses to move is one of the most common calls Michigan homeowners make. The cause might be as simple as a misaligned sensor — or as serious as a broken spring. Work through safe checks first so you do not damage the opener or the door.",
+          "If you already heard a loud bang, see a crooked door, or notice frayed cables, skip DIY troubleshooting and call a local repair company.",
+        ],
+      },
+      {
+        heading: "1. Confirm power and the wall control",
+        paragraphs: [
+          "Make sure the opener is plugged in and the outlet has power. Reset any tripped GFCI. Try the hard-wired wall button. If the wall button works but remotes do not, replace remote batteries before assuming the opener failed.",
+        ],
+      },
+      {
+        heading: "2. Check the photo-eye sensors",
+        paragraphs: [
+          "Near the floor on each track you will see small sensors. Wipe dirt, cobwebs, or snow off the lenses and make sure both lights are steady. If either light blinks, realign the brackets until both stay solid — a blocked beam often stops the door from closing.",
+        ],
+      },
+      {
+        heading: "3. Look for a lock or emergency release",
+        paragraphs: [
+          "Some doors have a sliding lock near the top center. Unlock it. Also check the red emergency release cord: after a power outage people sometimes leave the door disconnected from the trolley. Re-engage it per your opener’s instructions before testing again.",
+        ],
+      },
+      {
+        heading: "4. Test balance carefully (optional)",
+        paragraphs: [
+          "With the opener disconnected, try lifting the door halfway by hand. A healthy door should hold roughly mid-travel. If it feels extremely heavy or drops hard, the spring system is the problem — reconnect nothing and call a pro. Do not adjust torsion springs yourself.",
+        ],
+      },
+      {
+        heading: "5. Michigan-specific gotchas",
+        paragraphs: [
+          "In winter, weather seals freeze to the floor and sensors get buried in snow. In humid summers, warped tracks or sticky rollers show up after storms. For cold-weather specifics, see our guide to a garage door that will not open in a Michigan winter.",
+        ],
+      },
+      {
+        heading: "When to call for repair",
+        paragraphs: [
+          "Call if the opener strains and the door does not move, the door is crooked, cables look damaged, or nothing changes after sensor and power checks. Browse companies near your ZIP on Find Pros, or request a quote with a short description of what happens when you press the button.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "garage-door-off-track",
+    title: "Garage Door Off Track: What It Means and What Not to Do",
+    description:
+      "Learn why garage doors leave their tracks, how to keep the area safe, and why forcing an off-track door usually makes a Michigan repair more expensive.",
+    date: "2026-04-14",
+    readMinutes: 7,
+    category: "Repair",
+    sections: [
+      {
+        paragraphs: [
+          "An off-track door looks dramatic: rollers popped out, panels twisted, or one side hanging lower than the other. It is also one of the easiest repairs to make worse if you force the opener or try to hammer the door back into place.",
+        ],
+      },
+      {
+        heading: "Common causes",
+        paragraphs: [
+          "Bent tracks from vehicle impact, worn rollers, broken cables, or an unbalanced spring can pull a door out of alignment. Soft Michigan soil and settling garages sometimes contribute to track brackets shifting over years.",
+        ],
+      },
+      {
+        heading: "Make the area safe first",
+        paragraphs: [
+          "Unplug the opener or flip its breaker so nobody accidentally runs the motor. Keep kids, pets, and cars clear. If the door is partially open and unstable, do not stand underneath it.",
+        ],
+      },
+      {
+        heading: "What not to do",
+        paragraphs: [
+          "Do not keep hitting the remote. Do not pry panels with a crowbar. Do not loosen torsion springs. DIY “fixes” often crack panels or snap cables, turning a track repair into a full door replacement.",
+        ],
+      },
+      {
+        heading: "What a technician typically does",
+        paragraphs: [
+          "A pro will support the door, inspect rollers and cables, straighten or replace track sections, re-seat rollers, then rebalance and test the safety reverse. Ask them to check spring condition while they are there — an unbalanced door is a frequent root cause.",
+        ],
+      },
+      {
+        heading: "Getting help in Michigan",
+        paragraphs: [
+          "Search your city or ZIP for repair companies that list track and spring work. Send photos of both tracks if you request a quote — that helps the tech bring the right parts the first visit.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "garage-door-noisy-grinding-squeaking",
+    title: "Noisy Garage Door? Grinding and Squeaking Explained",
+    description:
+      "Decode grinding, squeaking, and scraping garage door sounds — what you can lubricate safely, and which noises mean call a Michigan repair pro now.",
+    date: "2026-04-16",
+    readMinutes: 7,
+    category: "Maintenance",
+    sections: [
+      {
+        paragraphs: [
+          "Garage doors should not sound like a freight train. New noises are useful diagnostics: metal-on-metal grinding often means worn rollers or dry hinges, while a sudden harsh grind during travel can signal a failing opener gear.",
+        ],
+      },
+      {
+        heading: "Squeaks vs scrapes vs grinds",
+        paragraphs: [
+          "Light squeaks on hinges or springs often respond to the right lubricant. Scraping usually means the door is rubbing a track or weather seal. Deep grinding from the motor head is different — that can be internal opener wear.",
+        ],
+      },
+      {
+        heading: "Safe DIY maintenance",
+        paragraphs: [
+          "Use a garage-door lubricant (not WD-40 as a long-term fix) on steel roller stems, hinges, and bearings as the manufacturer allows. Wipe excess so dust does not cake on. Do not spray inside the opener housing or soak nylon rollers that are designed to stay dry.",
+        ],
+      },
+      {
+        heading: "When noise means stop using the door",
+        paragraphs: [
+          "Stop and call a pro if you hear grinding plus vibration from the opener, popping from cables, or the door shakes violently in the tracks. Continuing to run a failing gear kit or frayed cable can leave you with a door that will not open at all.",
+        ],
+      },
+      {
+        heading: "Michigan climate note",
+        paragraphs: [
+          "Road salt, cold metal contraction, and dry winter air accelerate wear on rollers and hinges. A quick fall tune-up — lubrication, balance check, and hardware inspection — prevents a lot of January emergency calls.",
+        ],
+      },
+      {
+        heading: "Next step",
+        paragraphs: [
+          "If lubrication does not quiet the door within a day or two, browse local maintenance and repair companies and describe the sound and when it happens (opening, closing, or mid-travel). That detail speeds diagnosis.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "garage-door-dent-panel-repair-or-replace",
+    title: "Dented Garage Door Panels: Repair or Replace?",
+    description:
+      "How to decide whether a dented or damaged garage door panel can be repaired, sectionally replaced, or needs a full new door — with Michigan cost and curb-appeal context.",
+    date: "2026-04-18",
+    readMinutes: 8,
+    category: "Guides",
+    sections: [
+      {
+        paragraphs: [
+          "Basketball hits, bike handlebars, and bumper taps leave dents that bother homeowners as much for looks as for function. Not every dent requires a whole new door — but some damage is structural.",
+        ],
+      },
+      {
+        heading: "Cosmetic dents vs structural damage",
+        paragraphs: [
+          "A shallow dent on a single panel that still seals and travels smoothly is often cosmetic. Cracked paint that invites rust, creased steel that binds in the track, or a panel that no longer sits flush with neighbors is a bigger job.",
+        ],
+      },
+      {
+        heading: "Sectional doors can sometimes swap one panel",
+        paragraphs: [
+          "Many Michigan homes use sectional doors. If your model is still produced, a tech may replace only the damaged section. Older or discontinued styles may not match, which pushes you toward a full replacement for appearance.",
+        ],
+      },
+      {
+        heading: "When full replacement makes more sense",
+        paragraphs: [
+          "Consider a new door if insulation is outdated, multiple panels are damaged, the door is single-layer steel rusting through, or you were already planning a curb-appeal upgrade. Pairing a new door with an opener refresh can be efficient if both are aging.",
+        ],
+      },
+      {
+        heading: "Insurance and storm damage",
+        paragraphs: [
+          "Wind, hail, and vehicle impact may be insurance claims. Photograph damage before repairs, and ask the company for an itemized estimate that separates panel work from hardware or opener upgrades.",
+        ],
+      },
+      {
+        heading: "Get comparable local options",
+        paragraphs: [
+          "Shortlist install and repair companies that serve your city, share photos from straight on and at an angle, and ask for repair-vs-replace recommendations in writing. Browse installation pros or start a quote if you want several Michigan companies to respond.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "garage-door-reverses-before-closing",
+    title: "Garage Door Reverses Before Closing? Fix the Real Cause",
+    description:
+      "Why garage doors reverse before they hit the floor — photo eyes, force settings, binding tracks — and how Michigan homeowners can troubleshoot safely.",
+    date: "2026-04-20",
+    readMinutes: 7,
+    category: "Repair",
+    sections: [
+      {
+        paragraphs: [
+          "If your door goes down, then backs up before touching the ground, the opener thinks it hit an obstacle or lost the sensor beam. That safety behavior is good — but it is frustrating when nothing is in the way.",
+        ],
+      },
+      {
+        heading: "Start with the photo eyes",
+        paragraphs: [
+          "Clean both sensor lenses and confirm they face each other with steady indicator lights. Sun glare in late afternoon, spider webs, and snow buildup are common Michigan triggers. Temporarily shade the sensors while testing if bright light seems to be the issue.",
+        ],
+      },
+      {
+        heading: "Look for binding or uneven travel",
+        paragraphs: [
+          "A door that sticks in the tracks can trip the opener’s force sensor. Watch both sides as it closes. Scraping sounds, a tilted top section, or a weather seal catching on an uneven floor slab are clues.",
+        ],
+      },
+      {
+        heading: "Be careful with force and limit settings",
+        paragraphs: [
+          "Openers have travel limits and force adjustments. Turning force up to “fix” a reverse can hide a broken spring or binding door and creates a safety risk. If basic sensor cleaning does not help, have a technician set limits and test the safety reverse with a board on the floor.",
+        ],
+      },
+      {
+        heading: "Other frequent causes",
+        paragraphs: [
+          "Loose sensor wires, a failing logic board, worn rollers, or an unbalanced spring can all cause nuisance reversing. After a power outage, some openers need a limit reset.",
+        ],
+      },
+      {
+        heading: "Get it fixed properly",
+        paragraphs: [
+          "If the door still reverses after sensor cleaning and visual checks, browse opener-repair companies near you or request a quote. Mention whether the reverse happens every time or only at certain times of day — that helps isolate glare vs mechanical binding.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "garage-door-rollers-cables-hinges-wear",
+    title: "Worn Garage Door Rollers, Cables, and Hinges: Catch It Early",
+    description:
+      "How to spot worn rollers, frayed cables, and loose hinges on a garage door — plus why replacing hardware early prevents Michigan emergency breakdowns.",
+    date: "2026-04-22",
+    readMinutes: 8,
+    category: "Maintenance",
+    sections: [
+      {
+        paragraphs: [
+          "Hardware wear is quiet until it is not. Plastic rollers flat-spot, cables fray strand by strand, and hinges loosen until the door shakes through every cycle. Catching these parts early is cheaper than replacing a damaged panel or opener.",
+        ],
+      },
+      {
+        heading: "Rollers",
+        paragraphs: [
+          "Steel rollers with ball bearings last longer than basic nylon rollers, but all of them wear. Look for cracked wheels, flat spots, or rollers that barely turn. Rumbling in the tracks is a classic sign. Upgrading rollers during a tune-up is a common, high-value maintenance job.",
+        ],
+      },
+      {
+        heading: "Cables",
+        paragraphs: [
+          "Lift cables should sit neatly on the drums. Fraying, rust rust-through, or a cable off the drum is urgent — stop using the door. Cable failure can drop a door or bend the shaft. Cable work pairs with spring service; do not attempt it without proper tools and training.",
+        ],
+      },
+      {
+        heading: "Hinges and brackets",
+        paragraphs: [
+          "Center and end hinges take constant stress. Bent hinges, missing fasteners, or elongated bolt holes mean the door sections are shifting. Tighten only hardware that is meant to be adjusted; if holes are wallowed out, replace the hinge.",
+        ],
+      },
+      {
+        heading: "A simple seasonal inspection",
+        paragraphs: [
+          "Twice a year — before winter and after — look at cables from a safe distance, listen for new noise, and note any screws on the floor (a hint that hardware is backing out). Add lubrication where appropriate and schedule a professional tune-up if the door is over five years old and has never been serviced.",
+        ],
+      },
+      {
+        heading: "Find maintenance help",
+        paragraphs: [
+          "Search Michigan Garage Pros for companies offering maintenance or repair in your city. Ask for a safety inspection that includes rollers, cables, springs, and the reverse test — not just a quick spray of lubricant.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getAllBlogPosts(): BlogPost[] {

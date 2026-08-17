@@ -3,7 +3,7 @@ import { getTopCompanies } from "@/data/companies";
 import { getCityBySlug } from "@/data/cities";
 import { PRIORITY_CITY_SLUGS } from "@/data/growth";
 import { SERVICES, type Service } from "@/data/services";
-import { COMMON_PROBLEMS } from "@/data/site";
+import { COMMON_PROBLEM_GUIDES, COMMON_PROBLEMS } from "@/data/site";
 import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
@@ -57,19 +57,28 @@ export function ServicePage({ service }: { service: Service }) {
             </h2>
             <p className="m-0 text-base leading-[1.6] text-muted text-pretty">
               Not sure what&apos;s wrong? These are the issues Michigan
-              homeowners request repair help for most often. A local pro can
-              diagnose the exact cause on-site.
+              homeowners hit most often — each opens a practical guide with
+              safe checks and when to call a local pro.
             </p>
           </div>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-3">
-            {COMMON_PROBLEMS.map((p) => (
-              <div
-                key={p}
-                className="rounded-xl border border-border bg-white px-[18px] py-4 text-[15px] font-semibold text-text"
-              >
-                {p}
-              </div>
-            ))}
+            {COMMON_PROBLEMS.map((p) => {
+              const guide = COMMON_PROBLEM_GUIDES[p];
+              return (
+                <Link
+                  key={p}
+                  href={`/blog/${guide.slug}/`}
+                  className="group rounded-xl border border-border bg-white px-[18px] py-4 no-underline transition-colors hover:border-bright-blue hover:text-inherit"
+                >
+                  <div className="text-[15px] font-semibold text-text group-hover:text-michigan-blue">
+                    {p}
+                  </div>
+                  <div className="mt-1.5 text-[12.5px] font-semibold text-faint group-hover:text-bright-blue">
+                    {guide.blurb} →
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

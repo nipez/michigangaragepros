@@ -16,6 +16,11 @@ function formatDate(date: string) {
 export function BlogPostPage({ post }: { post: BlogPost }) {
   const related = getAllBlogPosts()
     .filter((p) => p.slug !== post.slug)
+    .sort((a, b) => {
+      const aSame = Number(a.category === post.category);
+      const bSame = Number(b.category === post.category);
+      return bSame - aSame || b.date.localeCompare(a.date);
+    })
     .slice(0, 3);
 
   return (
