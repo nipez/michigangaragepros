@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getAllBlogPosts } from "@/data/blog";
+import { getAllBlogPosts, getBlogImage } from "@/data/blog";
+import { BlogPostImage } from "./BlogPostImage";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
@@ -39,31 +40,42 @@ export function BlogIndexPage() {
       </section>
 
       <section className="container-site py-[72px]">
-        <div className="grid gap-4">
-          {posts.map((post) => (
-            <Link
-              key={post.slug}
-              href={`/blog/${post.slug}/`}
-              className="group rounded-2xl border border-border bg-white p-6 transition-colors hover:border-bright-blue hover:text-inherit md:p-7"
-            >
-              <div className="mb-3 flex flex-wrap items-center gap-3 text-[12.5px] font-bold uppercase tracking-[0.8px] text-faint">
-                <span className="rounded-full bg-icon-tile px-2.5 py-1 text-michigan-blue">
-                  {post.category}
-                </span>
-                <span>{formatDate(post.date)}</span>
-                <span>{post.readMinutes} min read</span>
-              </div>
-              <h2 className="mb-2 text-[clamp(20px,2.2vw,26px)] font-extrabold tracking-[-0.4px] text-navy group-hover:text-michigan-blue">
-                {post.title}
-              </h2>
-              <p className="m-0 max-w-[70ch] text-[15.5px] leading-[1.6] text-muted">
-                {post.description}
-              </p>
-              <div className="mt-4 text-[14px] font-bold text-michigan-blue">
-                Read guide →
-              </div>
-            </Link>
-          ))}
+        <div className="grid gap-5">
+          {posts.map((post) => {
+            const image = getBlogImage(post);
+            return (
+              <Link
+                key={post.slug}
+                href={`/blog/${post.slug}/`}
+                className="group grid overflow-hidden rounded-2xl border border-border bg-white transition-colors hover:border-bright-blue hover:text-inherit md:grid-cols-[220px_1fr]"
+              >
+                <div className="blog-index-thumb min-h-[160px] border-b border-border md:border-b-0 md:border-r">
+                  <BlogPostImage
+                    image={image}
+                    placeholderHint={`${post.slug}.webp`}
+                  />
+                </div>
+                <div className="p-6 md:p-7">
+                  <div className="mb-3 flex flex-wrap items-center gap-3 text-[12.5px] font-bold uppercase tracking-[0.8px] text-faint">
+                    <span className="rounded-full bg-icon-tile px-2.5 py-1 text-michigan-blue">
+                      {post.category}
+                    </span>
+                    <span>{formatDate(post.date)}</span>
+                    <span>{post.readMinutes} min read</span>
+                  </div>
+                  <h2 className="mb-2 text-[clamp(20px,2.2vw,26px)] font-extrabold tracking-[-0.4px] text-navy group-hover:text-michigan-blue">
+                    {post.title}
+                  </h2>
+                  <p className="m-0 max-w-[70ch] text-[15.5px] leading-[1.6] text-muted">
+                    {post.description}
+                  </p>
+                  <div className="mt-4 text-[14px] font-bold text-michigan-blue">
+                    Read guide →
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

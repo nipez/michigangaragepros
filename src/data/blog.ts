@@ -3,6 +3,13 @@ export type BlogSection = {
   paragraphs: string[];
 };
 
+export type BlogImage = {
+  /** Path under /public, e.g. /blog/broken-garage-door-spring-signs.webp */
+  src: string;
+  alt: string;
+  caption?: string;
+};
+
 export type BlogPost = {
   slug: string;
   title: string;
@@ -10,8 +17,19 @@ export type BlogPost = {
   date: string;
   readMinutes: number;
   category: string;
+  /** Optional override; defaults to /blog/{slug}.webp for drop-in images. */
+  image?: BlogImage;
   sections: BlogSection[];
 };
+
+/** Default image path convention — drop files in public/blog/{slug}.webp */
+export function getBlogImage(post: BlogPost): BlogImage {
+  if (post.image) return post.image;
+  return {
+    src: `/blog/${post.slug}.webp`,
+    alt: post.title,
+  };
+}
 
 export const BLOG_POSTS: BlogPost[] = [
   {
