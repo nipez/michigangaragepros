@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { FEATURED_PLANS } from "@/data/growth";
 import { HOW_IT_WORKS_PROS, PRO_BENEFITS } from "@/data/site";
 import { ClaimForm } from "./ClaimForm";
+import { FeaturedInterestForm } from "./FeaturedInterestForm";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 
@@ -32,9 +34,9 @@ function ForCompaniesPageInner() {
               Get In Front of Michigan Homeowners Looking for You
             </h1>
             <p className="mb-[30px] max-w-[52ch] text-lg leading-[1.55] text-hero-muted text-pretty">
-              Homeowners come to Michigan Garage Pros when they need repair,
-              installation, maintenance, or emergency service. Claim your
-              page so they find your company first.
+              Homeowners come to Michigan Garage Pros for repair, installation,
+              and emergency help by city and ZIP — not by hunting brand names.
+              Claim free, then Feature where you want demand.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
@@ -47,7 +49,7 @@ function ForCompaniesPageInner() {
                 href="#featured"
                 className="on-dark-link inline-block rounded-xl border-[1.5px] border-white/35 px-7 py-[15px] text-base font-bold text-white hover:bg-white/8"
               >
-                Learn About Pro Profiles
+                Featured from $149/mo
               </Link>
             </div>
           </div>
@@ -92,36 +94,62 @@ function ForCompaniesPageInner() {
       </section>
 
       <section id="featured" className="container-site pt-20">
+        <div className="mb-10 max-w-[60ch]">
+          <h2 className="mb-3 text-[clamp(26px,3vw,36px)] font-extrabold tracking-[-0.8px] text-navy">
+            Featured Placement Pricing
+          </h2>
+          <p className="m-0 text-base leading-[1.6] text-muted text-pretty">
+            Organic results stay relevance-based. Featured is clearly labeled
+            Sponsored — the fastest path to revenue while city SEO compounds.
+          </p>
+        </div>
+
+        <div className="mb-10 grid gap-4 md:grid-cols-3">
+          {FEATURED_PLANS.map((plan) => (
+            <div
+              key={plan.id}
+              className="rounded-2xl border border-border bg-white p-6"
+            >
+              <div className="mb-1 text-[15px] font-extrabold text-navy">
+                {plan.name}
+              </div>
+              <div className="mb-3 text-[32px] font-extrabold tracking-[-1px] text-michigan-blue">
+                ${plan.priceMonthly}
+                <span className="text-[14px] font-bold text-muted">/mo</span>
+              </div>
+              <p className="mb-4 text-[14px] leading-[1.55] text-muted">
+                {plan.blurb}
+              </p>
+              <ul className="m-0 grid list-none gap-2 p-0">
+                {plan.includes.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 text-[13.5px] font-semibold text-text"
+                  >
+                    <span className="mt-0.5 grid size-[18px] shrink-0 place-items-center rounded-full bg-icon-tile text-[10px] font-extrabold text-michigan-blue">
+                      ✓
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
         <div
           data-two-col="1"
-          className="grid items-center gap-12 rounded-[20px] border border-border bg-white p-[clamp(32px,4vw,56px)]"
-          style={{ gridTemplateColumns: "1fr 1fr" }}
+          className="grid items-start gap-10 rounded-[20px] border border-border bg-bg p-[clamp(28px,4vw,48px)]"
+          style={{ gridTemplateColumns: "0.95fr 1.05fr" }}
         >
           <div>
-            <h2 className="mb-3 text-[clamp(24px,2.8vw,32px)] font-extrabold tracking-[-0.7px] text-navy">
-              Stand Out with Featured Placement
-            </h2>
-            <p className="mb-[18px] text-base leading-[1.6] text-muted text-pretty">
-              Every company gets a free profile, and search results are ranked by
-              relevance and coverage — never by payment alone. Featured
-              placement adds extra exposure, clearly labeled as sponsored.
+            <h3 className="mb-2 text-[22px] font-extrabold text-navy">
+              Request Featured inventory
+            </h3>
+            <p className="mb-5 text-[15px] leading-[1.55] text-muted">
+              Tell us your market and plan. We confirm availability and send
+              payment details — Stripe checkout comes next.
             </p>
-            <div className="grid gap-2.5 text-[14.5px] font-semibold text-text">
-              {[
-                "Top-of-page visibility in your cities",
-                "Highlighted card with a Featured Pro badge",
-                'Transparent "Sponsored" labeling homeowners trust',
-              ].map((t) => (
-                <div key={t} className="flex items-center gap-2.5">
-                  <span className="grid size-[22px] shrink-0 place-items-center rounded-full bg-icon-tile text-xs font-extrabold text-michigan-blue">
-                    ✓
-                  </span>
-                  {t}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="rounded-2xl border border-border bg-bg p-6">
             <div className="rounded-[14px] border-[1.5px] border-bright-blue bg-white p-5 shadow-[0_10px_30px_rgba(47,128,237,0.12)]">
               <div className="mb-3 flex items-center gap-2">
                 <span className="featured-badge !text-[10.5px] !px-2">
@@ -140,10 +168,12 @@ function ForCompaniesPageInner() {
               <div className="mb-1.5 h-[9px] rounded-[5px] bg-[#EEF2F6]" />
               <div className="h-[9px] w-[70%] rounded-[5px] bg-[#EEF2F6]" />
             </div>
-            <div className="mt-3.5 text-center text-[12.5px] text-faint">
-              How your featured card appears to homeowners
-            </div>
           </div>
+          <FeaturedInterestForm
+            initialCompanyName={initialCompanyName}
+            initialCity={initialCity}
+            initialCompanySlug={initialCompanySlug}
+          />
         </div>
       </section>
 

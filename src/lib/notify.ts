@@ -1,7 +1,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export type NotifyPayload = {
-  kind: "claim" | "lead";
+  kind: "claim" | "lead" | "featured";
   subject: string;
   text: string;
   html?: string;
@@ -177,6 +177,40 @@ export function formatLeadNotify(lead: {
   return {
     kind: "lead" as const,
     subject: `Lead: ${lead.service} near ${lead.zip}`,
+    text: lines.join("\n"),
+  };
+}
+
+export function formatFeaturedNotify(interest: {
+  id: number | string;
+  companyName: string;
+  city: string;
+  plan: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  companySlug?: string;
+  notes?: string;
+}) {
+  const lines = [
+    "New Featured placement interest",
+    "",
+    `ID: ${interest.id}`,
+    `Company: ${interest.companyName}`,
+    `City / market: ${interest.city}`,
+    `Plan: ${interest.plan}`,
+    `Contact: ${interest.contactName}`,
+    `Email: ${interest.email}`,
+    `Phone: ${interest.phone}`,
+    interest.companySlug ? `Listing slug: ${interest.companySlug}` : null,
+    interest.notes ? `Notes: ${interest.notes}` : null,
+    "",
+    "Review with: npm run db:featured",
+  ].filter(Boolean);
+
+  return {
+    kind: "featured" as const,
+    subject: `Featured interest: ${interest.companyName} (${interest.plan})`,
     text: lines.join("\n"),
   };
 }

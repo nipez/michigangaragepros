@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTopCompanies } from "@/data/companies";
-import { CITIES } from "@/data/cities";
+import { getCityBySlug } from "@/data/cities";
+import { PRIORITY_CITY_SLUGS } from "@/data/growth";
 import { SERVICES, type Service } from "@/data/services";
 import { COMMON_PROBLEMS } from "@/data/site";
 import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
@@ -10,14 +11,9 @@ import { CtaBand } from "./CtaBand";
 import { LineIcon, PinIcon } from "./Icons";
 import { ServiceHeroSearch } from "./ServiceHeroSearch";
 
-const CITY_LINKS = [
-  "Detroit",
-  "Grand Rapids",
-  "Lansing",
-  "Ann Arbor",
-  "Traverse City",
-  "Kalamazoo",
-];
+const PRIORITY_CITIES = PRIORITY_CITY_SLUGS.map((slug) => getCityBySlug(slug)).filter(
+  (c): c is NonNullable<typeof c> => Boolean(c),
+);
 
 export function ServicePage({ service }: { service: Service }) {
   const topCompanies = getTopCompanies(3);
@@ -138,33 +134,31 @@ export function ServicePage({ service }: { service: Service }) {
                 {service.name} by City
               </h3>
               <p className="mb-5 text-[14.5px] leading-[1.55] text-muted">
-                Jump to local company listings in major Michigan markets.
+                Priority Michigan markets for {service.name.toLowerCase()} —
+                jump to local company listings.
               </p>
               <div className="grid gap-2.5 sm:grid-cols-2">
-                {CITY_LINKS.map((name) => {
-                  const city = CITIES.find((c) => c.name === name);
-                  return (
-                    <Link
-                      key={name}
-                      href={`/cities/${city?.slug ?? ""}/`}
-                      className="group flex items-center gap-2.5 rounded-xl border border-border bg-bg px-3.5 py-3 transition-colors hover:border-bright-blue hover:bg-white hover:text-inherit"
+                {PRIORITY_CITIES.slice(0, 12).map((city) => (
+                  <Link
+                    key={city.slug}
+                    href={`/cities/${city.slug}/`}
+                    className="group flex items-center gap-2.5 rounded-xl border border-border bg-bg px-3.5 py-3 transition-colors hover:border-bright-blue hover:bg-white hover:text-inherit"
+                  >
+                    <PinIcon
+                      size={14}
+                      className="shrink-0 text-faint transition-colors group-hover:text-michigan-blue"
+                    />
+                    <span className="min-w-0 flex-1 text-[14.5px] font-bold text-navy group-hover:text-michigan-blue">
+                      {city.name}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="text-[15px] font-extrabold text-bright-blue transition-transform group-hover:translate-x-0.5"
                     >
-                      <PinIcon
-                        size={14}
-                        className="shrink-0 text-faint transition-colors group-hover:text-michigan-blue"
-                      />
-                      <span className="min-w-0 flex-1 text-[14.5px] font-bold text-navy group-hover:text-michigan-blue">
-                        {name}
-                      </span>
-                      <span
-                        aria-hidden
-                        className="text-[15px] font-extrabold text-bright-blue transition-transform group-hover:translate-x-0.5"
-                      >
-                        →
-                      </span>
-                    </Link>
-                  );
-                })}
+                      →
+                    </span>
+                  </Link>
+                ))}
               </div>
               <Link
                 href="/cities/"

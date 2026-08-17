@@ -108,11 +108,11 @@ export function BeFeaturedCard({
           : "Get top placement"}
       </div>
       <p className="mb-5 m-0 flex-1 text-[14px] leading-[1.55] text-muted text-pretty">
-        Put your company first in local results with a clearly labeled Featured
-        Pro card — free profiles stay free.
+        Featured Pro cards start at $149/mo and are labeled Sponsored — free
+        profiles stay free.
       </p>
       <span className="btn-primary mt-auto inline-flex w-full items-center justify-center !py-2.5 group-hover:bg-cta-hover">
-        Learn about Featured →
+        See Featured plans →
       </span>
     </Link>
   );

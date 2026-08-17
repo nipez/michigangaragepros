@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { trackGrowth } from "@/lib/analytics";
 import { EMPTY_CLAIM, type ClaimRequest } from "@/lib/claim";
 
 type ClaimFormProps = {
@@ -29,6 +31,7 @@ export function ClaimForm({
   };
 
   if (submittedEmail) {
+    const featuredHref = `/for-companies/?company=${encodeURIComponent(claim.companyName)}&city=${encodeURIComponent(claim.city)}&slug=${encodeURIComponent(claim.companySlug)}#featured`;
     return (
       <div className="mx-auto max-w-[560px] rounded-[14px] bg-white p-7 text-left text-navy">
         <div className="mb-2 text-lg font-extrabold">Request received</div>
@@ -40,6 +43,21 @@ export function ClaimForm({
           verify ownership before the page is marked claimed. Usually within one
           business day.
         </p>
+        <div className="mt-5 rounded-[12px] border border-border bg-bg p-4">
+          <div className="mb-1 text-[15px] font-extrabold text-navy">
+            Want to stand out while we verify?
+          </div>
+          <p className="mb-3.5 text-[13.5px] leading-[1.5] text-muted">
+            Featured placement puts a Sponsored badge at the top of your city
+            results — from $149/mo. No charge until we confirm.
+          </p>
+          <Link
+            href={featuredHref}
+            className="inline-flex rounded-[10px] bg-bright-blue px-4 py-2.5 text-[14px] font-extrabold text-white hover:bg-michigan-blue"
+          >
+            See Featured plans →
+          </Link>
+        </div>
       </div>
     );
   }
@@ -52,7 +70,7 @@ export function ClaimForm({
         setError(null);
         setSubmitting(true);
         try {
-          const res = await fetch("/api/claims", {
+          const res = await fetch("/api/claims/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(claim),
@@ -63,6 +81,10 @@ export function ClaimForm({
           if (!res.ok) {
             throw new Error(data.error || "Unable to submit claim request");
           }
+          trackGrowth("claim_submitted", {
+            city: claim.city,
+            companySlug: claim.companySlug || undefined,
+          });
           setSubmittedEmail(claim.email.trim());
         } catch (err) {
           setError(

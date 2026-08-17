@@ -10,6 +10,7 @@ import {
   TIMING_OPTIONS,
 } from "@/data/site";
 import { emptyLead, isStepValid, type Lead } from "@/lib/lead";
+import { trackGrowth } from "@/lib/analytics";
 
 type LeadFormProps = {
   initialLead?: Partial<Lead>;
@@ -41,7 +42,7 @@ export function LeadForm({
     setSubmitting(true);
     setSubmitError("");
     try {
-      const res = await fetch("/api/leads", {
+      const res = await fetch("/api/leads/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(lead),
@@ -52,6 +53,11 @@ export function LeadForm({
         } | null;
         throw new Error(data?.error || "Unable to submit request");
       }
+      trackGrowth("quote_submitted", {
+        service: lead.service,
+        zip: lead.zip,
+        timing: lead.timing,
+      });
       setDone(true);
     } catch (err) {
       setSubmitError(
@@ -64,6 +70,9 @@ export function LeadForm({
 
   const next = () => {
     if (!valid || submitting) return;
+    if (step === 1) {
+      trackGrowth("quote_started", { service: lead.service || "unknown" });
+    }
     if (step === 5) void submitLead();
     else setStep((s) => s + 1);
   };

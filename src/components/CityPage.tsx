@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { City } from "@/data/cities";
 import { citySlug, getCityBySlug } from "@/data/cities";
 import { getCompaniesForCity } from "@/data/companies";
+import { getCitySeo } from "@/data/growth";
+import { SITE_URL } from "@/data/site";
 import { SERVICES } from "@/data/services";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
@@ -10,9 +12,60 @@ import { ShuffledCompanyGrid } from "./ShuffledCompanyGrid";
 
 export function CityPage({ city }: { city: City }) {
   const companies = getCompaniesForCity(city.slug);
+  const seo = getCitySeo(city.slug);
+  const intro =
+    seo?.intro ??
+    `Compare garage-door companies serving ${city.name} and nearby communities — repair, springs, openers, installation, and emergency service.`;
+  const faqs = seo?.faqs ?? [
+    {
+      question: `How do I find garage door pros in ${city.name}?`,
+      answer: `Browse the companies listed on this page, or enter your ZIP on Find Pros to see listings that serve ${city.name} and nearby areas.`,
+    },
+    {
+      question: "Is this a contractor website?",
+      answer:
+        "Michigan Garage Pros is a statewide directory. We help homeowners compare local companies and help pros claim or feature their listings.",
+    },
+  ];
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        name: `Garage Door Pros in ${city.name}, ${city.state}`,
+        description: intro,
+        url: `${SITE_URL}/cities/${city.slug}/`,
+        isPartOf: { "@type": "WebSite", name: "Michigan Garage Pros", url: SITE_URL },
+      },
+      {
+        "@type": "ItemList",
+        name: `Garage door companies serving ${city.name}`,
+        numberOfItems: companies.length,
+        itemListElement: companies.slice(0, 25).map((c, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: c.name,
+          url: `${SITE_URL}/companies/${c.slug}/`,
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqs.map((f) => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: { "@type": "Answer", text: f.answer },
+        })),
+      },
+    ],
+  };
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header active="cities" />
 
       <section className="hero-gradient">
@@ -32,16 +85,14 @@ export function CityPage({ city }: { city: City }) {
             Garage Door Pros in {city.name}, {city.state}
           </h1>
           <p className="mb-[30px] max-w-[58ch] text-lg leading-[1.55] text-hero-muted text-pretty">
-            Compare garage-door companies serving {city.name} and nearby
-            communities — repair, springs, openers, installation, and emergency
-            service.
+            {intro}
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/get-a-quote/"
+              href={`/pros/?q=${encodeURIComponent(city.name)}`}
               className="on-dark-solid inline-block rounded-xl bg-bright-blue px-[26px] py-3.5 text-[15.5px] font-extrabold text-white hover:bg-cta-hover"
             >
-              Get a Free Quote →
+              Find Pros Near {city.name} →
             </Link>
             <Link
               href="#city-pros"
@@ -138,10 +189,35 @@ export function CityPage({ city }: { city: City }) {
         </div>
       </section>
 
+      <section className="container-site pt-[72px]">
+        <h2 className="mb-6 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
+          {city.name} Garage Door FAQ
+        </h2>
+        <div className="grid gap-3">
+          {faqs.map((f) => (
+            <details
+              key={f.question}
+              className="rounded-2xl border border-border bg-white px-5 py-4"
+            >
+              <summary className="cursor-pointer list-none text-[15.5px] font-extrabold text-navy">
+                {f.question}
+              </summary>
+              <p className="mt-2.5 mb-0 text-[14.5px] leading-[1.6] text-muted text-pretty">
+                {f.answer}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       <section className="container-site my-[72px] mb-[88px]">
         <CtaBand
           title={`Need Garage Door Help in ${city.name}?`}
           subtitle="Tell us what you need — we'll match you with local pros serving your neighborhood."
+          primaryHref={`/pros/?q=${encodeURIComponent(city.name)}`}
+          primaryLabel="Browse Local Pros"
+          secondaryHref="/get-a-quote/"
+          secondaryLabel="Get a Free Quote"
         />
       </section>
 

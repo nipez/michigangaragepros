@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { SERVICE_OPTIONS } from "@/data/site";
+import { trackGrowth } from "@/lib/analytics";
 
 type ProsSearchFormProps = {
   initialQuery?: string;
@@ -28,6 +29,10 @@ export function ProsSearchForm({
     const params = new URLSearchParams();
     params.set("q", query.trim());
     if (service) params.set("service", service);
+    trackGrowth("pros_search", {
+      q: query.trim(),
+      service: service || "any",
+    });
     router.push(`/pros/?${params.toString()}`);
   };
 
