@@ -6,6 +6,10 @@ type GrowthEvent =
   | "pros_search"
   | "city_browse";
 
+/** GA4 Measurement ID — env override, production fallback is G-ZCS84QFFJP. */
+export const GA_MEASUREMENT_ID =
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-ZCS84QFFJP";
+
 declare global {
   interface Window {
     dataLayer?: Record<string, unknown>[];
