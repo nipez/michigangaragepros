@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
+import { JsonLd } from "@/components/JsonLd";
 import { GA_MEASUREMENT_ID } from "@/lib/analytics";
+import {
+  buildPageMetadata,
+  organizationJsonLd,
+  websiteJsonLd,
+} from "@/lib/seo";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -12,12 +18,16 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  ...buildPageMetadata({
+    title: "Michigan Garage Pros | Find Trusted Garage Door Pros",
+    description:
+      "Compare local Michigan garage-door companies, see services and coverage, and request a free quote. Free for homeowners.",
+    path: "/",
+  }),
   title: {
     default: "Michigan Garage Pros | Find Trusted Garage Door Pros",
     template: "%s | Michigan Garage Pros",
   },
-  description:
-    "Compare local Michigan garage-door companies, see services and coverage, and request a free quote. Free for homeowners.",
   metadataBase: new URL("https://michigangaragepros.com"),
 };
 
@@ -29,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${plusJakarta.variable} h-full antialiased`}>
       <body className="min-h-full font-sans text-text">
+        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
         {children}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}

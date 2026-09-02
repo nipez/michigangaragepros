@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { getAllCompaniesSorted } from "@/data/companies";
+import { itemListJsonLd } from "@/lib/seo";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
+import { JsonLd } from "./JsonLd";
 import { ShuffledCompanyGrid } from "./ShuffledCompanyGrid";
 
 export function CompaniesIndexPage() {
@@ -10,6 +12,22 @@ export function CompaniesIndexPage() {
 
   return (
     <>
+      <JsonLd
+        data={[
+          {
+            "@type": "CollectionPage",
+            name: "Michigan Garage Door Companies",
+            description: `Browse ${companies.length} garage door service companies across Michigan.`,
+          },
+          itemListJsonLd({
+            name: "Michigan garage door companies",
+            items: companies.slice(0, 50).map((c) => ({
+              name: c.name,
+              path: `/companies/${c.slug}/`,
+            })),
+          }),
+        ]}
+      />
       <Header active="pros" />
 
       <section className="hero-gradient">

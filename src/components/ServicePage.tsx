@@ -3,11 +3,17 @@ import { getTopCompanies } from "@/data/companies";
 import { getCityBySlug } from "@/data/cities";
 import { PRIORITY_CITY_SLUGS } from "@/data/growth";
 import { SERVICES, type Service } from "@/data/services";
-import { COMMON_PROBLEM_GUIDES, COMMON_PROBLEMS } from "@/data/site";
+import { COMMON_PROBLEM_GUIDES, COMMON_PROBLEMS, SITE_URL } from "@/data/site";
+import {
+  breadcrumbJsonLd,
+  faqPageJsonLd,
+  itemListJsonLd,
+} from "@/lib/seo";
 import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
+import { JsonLd } from "./JsonLd";
 import { LineIcon, PinIcon } from "./Icons";
 import { ServiceHeroSearch } from "./ServiceHeroSearch";
 
@@ -19,8 +25,31 @@ export function ServicePage({ service }: { service: Service }) {
   const topCompanies = getTopCompanies(3);
   const related = SERVICES.filter((s) => s.slug !== service.slug);
 
+  const jsonLd = [
+    {
+      "@type": "CollectionPage",
+      name: service.heroTitle,
+      description: service.heroSub,
+      url: `${SITE_URL}/${service.slug}/`,
+      isPartOf: { "@type": "WebSite", name: "Michigan Garage Pros", url: SITE_URL },
+    },
+    itemListJsonLd({
+      name: `Companies offering ${service.name}`,
+      items: topCompanies.map((c) => ({
+        name: c.name,
+        path: `/companies/${c.slug}/`,
+      })),
+    }),
+    faqPageJsonLd(service.faqs),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: service.name, path: `/${service.slug}/` },
+    ]),
+  ];
+
   return (
     <>
+      <JsonLd data={jsonLd} />
       <Header active="services" />
 
       <section className="hero-gradient">
@@ -144,13 +173,13 @@ export function ServicePage({ service }: { service: Service }) {
               </h3>
               <p className="mb-5 text-[14.5px] leading-[1.55] text-muted">
                 Priority Michigan markets for {service.name.toLowerCase()} —
-                jump to local company listings.
+                jump to local {service.localTitle.toLowerCase()} listings.
               </p>
               <div className="grid gap-2.5 sm:grid-cols-2">
                 {PRIORITY_CITIES.slice(0, 12).map((city) => (
                   <Link
                     key={city.slug}
-                    href={`/cities/${city.slug}/`}
+                    href={`/cities/${city.slug}/${service.slug}/`}
                     className="group flex items-center gap-2.5 rounded-xl border border-border bg-bg px-3.5 py-3 transition-colors hover:border-bright-blue hover:bg-white hover:text-inherit"
                   >
                     <PinIcon
@@ -177,6 +206,27 @@ export function ServicePage({ service }: { service: Service }) {
               </Link>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="container-site pt-[72px]">
+        <h2 className="mb-6 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
+          {service.localTitle} FAQ
+        </h2>
+        <div className="grid gap-3">
+          {service.faqs.map((f) => (
+            <details
+              key={f.question}
+              className="rounded-2xl border border-border bg-white px-5 py-4"
+            >
+              <summary className="cursor-pointer list-none text-[15.5px] font-extrabold text-navy">
+                {f.question}
+              </summary>
+              <p className="mt-2.5 mb-0 text-[14.5px] leading-[1.6] text-muted text-pretty">
+                {f.answer}
+              </p>
+            </details>
+          ))}
         </div>
       </section>
 

@@ -2,10 +2,12 @@ import Link from "next/link";
 import { CITIES, getCitiesByRegion } from "@/data/cities";
 import { getCompanyCountForCity } from "@/data/companies";
 import { REGIONS, regionSlugFromName } from "@/data/regions";
+import { itemListJsonLd } from "@/lib/seo";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { PinIcon } from "./Icons";
 import { CtaBand } from "./CtaBand";
+import { JsonLd } from "./JsonLd";
 import { MichiganRegionMap } from "./MichiganRegionMap";
 
 export function CitiesIndexPage() {
@@ -14,6 +16,22 @@ export function CitiesIndexPage() {
 
   return (
     <>
+      <JsonLd
+        data={[
+          {
+            "@type": "CollectionPage",
+            name: "Garage Door Pros by Michigan City",
+            description: `Browse ${CITIES.length} Michigan markets and compare local garage door companies.`,
+          },
+          itemListJsonLd({
+            name: "Michigan cities with garage door companies",
+            items: CITIES.slice(0, 50).map((c) => ({
+              name: c.name,
+              path: `/cities/${c.slug}/`,
+            })),
+          }),
+        ]}
+      />
       <Header active="cities" />
 
       <section className="hero-gradient">

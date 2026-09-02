@@ -102,14 +102,21 @@ export function Footer() {
               <Link href="/cities/" className={FOOTER_LINK}>
                 Cities & Regions
               </Link>
-              <Link href="/get-a-quote/" className={FOOTER_LINK}>
+              <Link href="/about/" className={FOOTER_LINK}>
+                About
+              </Link>
+              <Link href="/contact/" className={FOOTER_LINK}>
                 Contact
               </Link>
               <Link href="/#how" className={FOOTER_LINK}>
                 How It Works
               </Link>
-              <span className="text-[#E8F1F8]">Privacy</span>
-              <span className="text-[#E8F1F8]">Terms</span>
+              <Link href="/privacy/" className={FOOTER_LINK}>
+                Privacy
+              </Link>
+              <Link href="/terms/" className={FOOTER_LINK}>
+                Terms
+              </Link>
             </div>
           </div>
         </div>
@@ -140,8 +147,17 @@ export function CompactFooter() {
             <Link href="/blog/" className={FOOTER_LINK}>
               Blog
             </Link>
-            <Link href="/for-companies/" className={FOOTER_LINK}>
-              For Companies
+            <Link href="/about/" className={FOOTER_LINK}>
+              About
+            </Link>
+            <Link href="/contact/" className={FOOTER_LINK}>
+              Contact
+            </Link>
+            <Link href="/privacy/" className={FOOTER_LINK}>
+              Privacy
+            </Link>
+            <Link href="/terms/" className={FOOTER_LINK}>
+              Terms
             </Link>
           </div>
         </div>

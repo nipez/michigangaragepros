@@ -7,10 +7,13 @@ import {
 import { REGIONS, type Region } from "@/data/regions";
 import { SERVICES } from "@/data/services";
 import { getCitiesByRegion } from "@/data/cities";
+import { SITE_URL } from "@/data/site";
+import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo";
 import { CompanyCard, BeFeaturedCard } from "./CompanyCard";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
+import { JsonLd } from "./JsonLd";
 import { MichiganRegionMap } from "./MichiganRegionMap";
 import { PinIcon } from "./Icons";
 
@@ -36,8 +39,30 @@ export function RegionPage({ region }: { region: Region }) {
     .slice(0, 4);
   const hasPaidFeatured = sampleCompanies.some((c) => c.featured);
 
+  const jsonLd = [
+    {
+      "@type": "CollectionPage",
+      name: region.seoTitle,
+      description: region.seoDescription,
+      url: `${SITE_URL}/regions/${region.slug}/`,
+    },
+    itemListJsonLd({
+      name: `Cities in ${region.title}`,
+      items: cities.slice(0, 40).map((c) => ({
+        name: c.name,
+        path: `/cities/${c.slug}/`,
+      })),
+    }),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Cities", path: "/cities/" },
+      { name: region.title, path: `/regions/${region.slug}/` },
+    ]),
+  ];
+
   return (
     <>
+      <JsonLd data={jsonLd} />
       <Header active="cities" />
 
       <section className="hero-gradient">
