@@ -5493,6 +5493,34 @@ export function getCompanyBySlug(slug: string): Company | undefined {
   return ensureCompaniesBySlug().get(slug);
 }
 
+const BOILERPLATE_ABOUT_RE =
+  /business-index result|Current 2026 business-index|Cross-checked against a current 2026/i;
+
+/** True when the stored about blurb is prospecting boilerplate. */
+export function isBoilerplateAbout(about: string | undefined): boolean {
+  return Boolean(about && BOILERPLATE_ABOUT_RE.test(about));
+}
+
+/**
+ * Homeowner-facing about text. Replaces thin prospecting boilerplate with a
+ * short factual line from name/city/services — never invents NAP fields.
+ */
+export function getCompanyAboutDisplay(company: Company): string {
+  if (company.about && !isBoilerplateAbout(company.about)) {
+    return company.about;
+  }
+  const cityLabel = company.city.replace(/, MI$/i, "");
+  const topServices = company.services.slice(0, 3).join(", ");
+  return topServices
+    ? `${company.name} provides garage door service in ${cityLabel}, including ${topServices}.`
+    : `${company.name} provides garage door service in ${cityLabel} and nearby areas.`;
+}
+
+/** Enough real NAP to emit LocalBusiness JSON-LD (phone + city required). */
+export function canEmitLocalBusiness(company: Company): boolean {
+  return Boolean(company.phone && company.city);
+}
+
 export function getFeaturedCompany(): Company | undefined {
   return COMPANIES.find((c) => c.featured);
 }

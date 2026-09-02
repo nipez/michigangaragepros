@@ -47,8 +47,19 @@ async function main() {
   for (const s of SERVICES) push(s.slug, "0.8");
   for (const r of REGIONS) push(`regions/${r.slug}`, "0.85");
   for (const c of CITIES) push(`cities/${c.slug}`, "0.8");
+  // Priority city × service landers only (not 122 × N).
+  const { PRIORITY_CITY_SLUGS } = await loadTs("src/data/growth.ts");
+  for (const citySlug of PRIORITY_CITY_SLUGS) {
+    for (const s of SERVICES) {
+      push(`cities/${citySlug}/${s.slug}`, "0.75");
+    }
+  }
   for (const c of COMPANIES) push(`companies/${c.slug}`, "0.6");
   for (const p of getAllBlogPosts()) push(`blog/${p.slug}`, "0.75", "monthly");
+  push("about", "0.5", "monthly");
+  push("contact", "0.5", "monthly");
+  push("privacy", "0.3", "yearly");
+  push("terms", "0.3", "yearly");
 
   const today = new Date().toISOString().slice(0, 10);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

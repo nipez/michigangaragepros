@@ -1,14 +1,71 @@
 import Link from "next/link";
 import type { Company } from "@/data/companies";
+import {
+  canEmitLocalBusiness,
+  getCompanyAboutDisplay,
+} from "@/data/companies";
+import { SITE_URL } from "@/data/site";
+import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
 import { CompanyClaimBadge } from "./CompanyClaimBadge";
 import { CompanyClaimCard } from "./CompanyClaimCard";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { BoltIcon, LogoMark } from "./Icons";
+import { JsonLd } from "./JsonLd";
+
+function localBusinessJsonLd(company: Company) {
+  const cityName = company.city.replace(/, MI$/i, "").trim();
+  const data: Record<string, unknown> = {
+    "@type": company.emergency
+      ? ["HomeAndConstructionBusiness", "EmergencyService"]
+      : "HomeAndConstructionBusiness",
+    "@id": `${SITE_URL}/companies/${company.slug}/#business`,
+    name: company.name,
+    url: absoluteUrl(`/companies/${company.slug}/`),
+    description: getCompanyAboutDisplay(company),
+    areaServed: company.serviceArea.map((a) => ({
+      "@type": "City",
+      name: a,
+    })),
+    knowsAbout: company.services,
+  };
+
+  if (company.phone) data.telephone = company.phone;
+  if (company.website) data.sameAs = [company.website];
+  if (company.address || company.city) {
+    data.address = {
+      "@type": "PostalAddress",
+      ...(company.address ? { streetAddress: company.address } : {}),
+      addressLocality: cityName,
+      addressRegion: "MI",
+      addressCountry: "US",
+    };
+  }
+  if (company.hours && company.hours.toLowerCase() !== "call for hours") {
+    data.openingHours = company.hours;
+  }
+
+  return data;
+}
 
 export function CompanyProfilePage({ company }: { company: Company }) {
+  const about = getCompanyAboutDisplay(company);
+  const cityLabel = company.city.replace(", MI", "");
+  const graph: Record<string, unknown>[] = [
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Companies", path: "/companies/" },
+      { name: cityLabel, path: `/cities/${company.citySlug}/` },
+      { name: company.name, path: `/companies/${company.slug}/` },
+    ]),
+  ];
+  if (canEmitLocalBusiness(company)) {
+    graph.unshift(localBusinessJsonLd(company));
+  }
+
   return (
     <>
+      <JsonLd data={graph} />
       <Header active="pros" />
 
       <section className="border-b border-border bg-white">
@@ -26,7 +83,7 @@ export function CompanyProfilePage({ company }: { company: Company }) {
               href={`/cities/${company.citySlug}/`}
               className="text-faint hover:text-michigan-blue"
             >
-              {company.city.replace(", MI", "")}
+              {cityLabel}
             </Link>
             <span className="mx-1.5">/</span>
             <span className="text-muted">{company.name}</span>
@@ -48,6 +105,17 @@ export function CompanyProfilePage({ company }: { company: Company }) {
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-[15px]">
                   <span className="text-muted">{company.city}</span>
+                  {company.phone && (
+                    <>
+                      <span className="text-[#C4CFDA]">|</span>
+                      <a
+                        href={`tel:${company.phone}`}
+                        className="font-semibold text-michigan-blue hover:underline"
+                      >
+                        {company.phone}
+                      </a>
+                    </>
+                  )}
                   {company.emergency && (
                     <>
                       <span className="text-[#C4CFDA]">|</span>
@@ -90,7 +158,7 @@ export function CompanyProfilePage({ company }: { company: Company }) {
           <div className="rounded-2xl border border-border bg-white p-7">
             <h2 className="mb-3 text-xl font-extrabold text-navy">About</h2>
             <p className="m-0 text-[15.5px] leading-[1.65] text-body-secondary text-pretty">
-              {company.about}
+              {about}
             </p>
           </div>
 
@@ -110,21 +178,6 @@ export function CompanyProfilePage({ company }: { company: Company }) {
               ))}
             </div>
           </div>
-
-          <div className="rounded-2xl border border-border bg-white p-7">
-            <h2 className="mb-4 text-xl font-extrabold text-navy">Photos</h2>
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3">
-              {[1, 2, 3].map((n) => (
-                <div
-                  key={n}
-                  className="flex h-[150px] items-center justify-center rounded-xl bg-bg text-sm font-semibold text-faint"
-                >
-                  Work photo
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
 
         <div className="sticky top-[92px] grid gap-5">
@@ -180,6 +233,14 @@ export function CompanyProfilePage({ company }: { company: Company }) {
               Business Info
             </h3>
             <div className="grid gap-2.5 text-sm text-body-secondary">
+              <div className="flex justify-between gap-3">
+                <span className="shrink-0 text-faint">Name</span>
+                <span className="text-right font-semibold">{company.name}</span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="shrink-0 text-faint">City</span>
+                <span className="text-right font-semibold">{company.city}</span>
+              </div>
               {company.address && (
                 <div className="flex justify-between gap-3">
                   <span className="shrink-0 text-faint">Address</span>

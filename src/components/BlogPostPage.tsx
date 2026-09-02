@@ -1,10 +1,13 @@
 import Link from "next/link";
 import type { BlogPost } from "@/data/blog";
-import { getAllBlogPosts, getBlogImage } from "@/data/blog";
+import { getAllBlogPosts, getBlogImage, hasBlogImageFile } from "@/data/blog";
+import { SITE_NAME, SITE_URL } from "@/data/site";
+import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
 import { BlogPostImage } from "./BlogPostImage";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
+import { JsonLd } from "./JsonLd";
 
 function formatDate(date: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -22,8 +25,33 @@ function isNumberedHeading(heading?: string) {
   return Boolean(heading && /^\d+\./.test(heading.trim()));
 }
 
+/** Renders markdown-style [label](/path/) links inside blog paragraphs. */
+function LinkedText({ text }: { text: string }) {
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
+  return (
+    <>
+      {parts.map((part, i) => {
+        const match = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
+        if (match) {
+          return (
+            <Link
+              key={`${match[2]}-${i}`}
+              href={match[2]}
+              className="font-semibold text-michigan-blue hover:underline"
+            >
+              {match[1]}
+            </Link>
+          );
+        }
+        return <span key={`t-${i}`}>{part}</span>;
+      })}
+    </>
+  );
+}
+
 export function BlogPostPage({ post }: { post: BlogPost }) {
   const image = getBlogImage(post);
+  const showImage = hasBlogImageFile(post);
   const related = getAllBlogPosts()
     .filter((p) => p.slug !== post.slug)
     .sort((a, b) => {
@@ -35,8 +63,37 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
 
   const [intro, ...rest] = post.sections;
 
+  const blogPosting: Record<string, unknown> = {
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: { "@type": "Organization", name: SITE_NAME },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    mainEntityOfPage: absoluteUrl(`/blog/${post.slug}/`),
+    url: absoluteUrl(`/blog/${post.slug}/`),
+  };
+  if (showImage) {
+    blogPosting.image = absoluteUrl(image.src);
+  }
+
   return (
     <>
+      <JsonLd
+        data={[
+          blogPosting,
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Blog", path: "/blog/" },
+            { name: post.title, path: `/blog/${post.slug}/` },
+          ]),
+        ]}
+      />
       <Header active="blog" />
 
       <article>
@@ -75,11 +132,13 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
             <div className="blog-article rounded-[20px] border border-border bg-white px-5 py-8 shadow-[0_10px_40px_rgba(16,42,67,0.06)] sm:px-8 sm:py-10 md:px-11 md:py-12">
               {intro ? (
                 <div className="blog-intro mb-10">
-                  <BlogPostImage
-                    image={image}
-                    float
-                    placeholderHint={`Drop image at public/blog/${post.slug}.webp`}
-                  />
+                  {showImage ? (
+                    <BlogPostImage
+                      image={image}
+                      float
+                      placeholderHint={`Drop image at public/blog/${post.slug}.webp`}
+                    />
+                  ) : null}
                   <div className="grid gap-4">
                     {intro.heading ? (
                       <h2 className="m-0 text-[clamp(22px,2.2vw,28px)] font-extrabold tracking-[-0.4px] text-navy">
@@ -91,7 +150,7 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
                         key={paragraph.slice(0, 48)}
                         className="m-0 text-[16.5px] leading-[1.75] text-body-secondary text-pretty"
                       >
-                        {paragraph}
+                        <LinkedText text={paragraph} />
                       </p>
                     ))}
                   </div>
@@ -127,7 +186,7 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
                             key={paragraph.slice(0, 48)}
                             className="m-0 text-[16.5px] leading-[1.75] text-body-secondary text-pretty"
                           >
-                            {paragraph}
+                            <LinkedText text={paragraph} />
                           </p>
                         ))}
                       </div>
@@ -145,7 +204,7 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
                 </div>
                 <p className="mb-5 text-[15px] leading-[1.6] text-muted">
                   Enter your ZIP to browse Michigan garage-door companies, or
-                  jump to a service or region page.
+                  jump to a service or city page.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <Link href="/pros/" className="btn-primary !px-5 !py-3">
@@ -166,11 +225,11 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
                 </div>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {[
-                    { href: "/regions/southeast/", label: "Southeast MI" },
-                    { href: "/regions/west/", label: "West MI" },
-                    { href: "/regions/central/", label: "Central MI" },
-                    { href: "/cities/", label: "All cities" },
-                    { href: "/garage-door-repair/", label: "Repair" },
+                    { href: "/cities/detroit/garage-door-repair/", label: "Detroit repair" },
+                    { href: "/cities/grand-rapids/broken-springs/", label: "Grand Rapids springs" },
+                    { href: "/cities/ann-arbor/garage-door-repair/", label: "Ann Arbor repair" },
+                    { href: "/cities/traverse-city/emergency-service/", label: "Traverse City emergency" },
+                    { href: "/garage-door-repair/", label: "Repair statewide" },
                     { href: "/garage-door-openers/", label: "Openers" },
                   ].map((link) => (
                     <Link
@@ -217,17 +276,17 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
 
 function RelatedCard({ post }: { post: BlogPost }) {
   const image = getBlogImage(post);
+  const showImage = hasBlogImageFile(post);
   return (
     <Link
       href={`/blog/${post.slug}/`}
       className="group overflow-hidden rounded-2xl border border-border bg-white transition-colors hover:border-bright-blue hover:text-inherit"
     >
-      <div className="blog-card-thumb">
-        <BlogPostImage
-          image={image}
-          placeholderHint={`${post.slug}.webp`}
-        />
-      </div>
+      {showImage ? (
+        <div className="blog-card-thumb">
+          <BlogPostImage image={image} placeholderHint={`${post.slug}.webp`} />
+        </div>
+      ) : null}
       <div className="p-5">
         <div className="mb-2 text-[12px] font-bold uppercase tracking-[0.8px] text-faint">
           {post.category}

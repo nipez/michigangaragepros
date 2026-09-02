@@ -31,6 +31,22 @@ export function getBlogImage(post: BlogPost): BlogImage {
   };
 }
 
+/**
+ * Only reference blog images that exist under public/blog to avoid live 404s.
+ * Add a .webp (or .jpg) named after the slug to enable images.
+ */
+const EXISTING_BLOG_IMAGES = new Set<string>([
+  // Populate as assets are added, e.g. "broken-garage-door-spring-signs",
+]);
+
+export function hasBlogImageFile(post: BlogPost): boolean {
+  if (post.image) {
+    const base = post.image.src.replace(/^\/blog\//, "").replace(/\.(webp|jpe?g|png)$/i, "");
+    return EXISTING_BLOG_IMAGES.has(base) || EXISTING_BLOG_IMAGES.has(post.slug);
+  }
+  return EXISTING_BLOG_IMAGES.has(post.slug);
+}
+
 export const BLOG_POSTS: BlogPost[] = [
   {
     slug: "broken-garage-door-spring-signs",
@@ -87,7 +103,7 @@ export const BLOG_POSTS: BlogPost[] = [
         heading: "7. Your door is older than the spring's expected life",
         paragraphs: [
           "Many residential springs are rated for a set number of cycles. Daily use in a Michigan household can reach end-of-life in several years. Proactive replacement is cheaper than an emergency call at night.",
-          "Browse local spring-repair companies by ZIP on Michigan Garage Pros, or open a city page to compare pros near you.",
+          "Browse [broken spring repair](/broken-springs/) companies by ZIP on Michigan Garage Pros, or compare [Detroit spring pros](/cities/detroit/broken-springs/), [Grand Rapids](/cities/grand-rapids/broken-springs/), [Ann Arbor](/cities/ann-arbor/broken-springs/), and [Traverse City](/cities/traverse-city/broken-springs/).",
         ],
       },
     ],
@@ -135,7 +151,7 @@ export const BLOG_POSTS: BlogPost[] = [
         heading: "What changes the price in Michigan",
         paragraphs: [
           "Urban markets like Metro Detroit or Grand Rapids may have more competition. Remote Northern Michigan or Upper Peninsula visits can include travel time. Winter emergencies and commercial doors also push pricing higher.",
-          "The best way to get a real number is to shortlist local pros and request quotes with photos or a clear description of the problem.",
+          "The best way to get a real number is to shortlist local pros on [garage door repair in Michigan](/garage-door-repair/) — including [Detroit](/cities/detroit/garage-door-repair/) and [Grand Rapids](/cities/grand-rapids/garage-door-repair/) — and request quotes with photos or a clear description of the problem.",
         ],
       },
     ],
@@ -176,7 +192,7 @@ export const BLOG_POSTS: BlogPost[] = [
         heading: "When to stop and call a pro",
         paragraphs: [
           "If you heard a bang, the door is crooked, cables look frayed, or the opener strains without lifting, stop. Those symptoms often mean a broken spring or cable — not something to force.",
-          "Michigan Garage Pros can help you find emergency-ready companies near your ZIP when the door has to move today.",
+          "Michigan Garage Pros can help you find [emergency garage door service](/emergency-service/) near your ZIP — try [Detroit emergency](/cities/detroit/emergency-service/), [Grand Rapids](/cities/grand-rapids/emergency-service/), or [Traverse City](/cities/traverse-city/emergency-service/) when the door has to move today.",
         ],
       },
     ],
@@ -198,7 +214,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         heading: "Confirm they actually serve your city",
         paragraphs: [
-          "Ask whether your ZIP is in their regular route. A company two hours away may take longer in winter weather and charge for travel. City and region pages on Michigan Garage Pros make coverage easier to scan.",
+          "Ask whether your ZIP is in their regular route. A company two hours away may take longer in winter weather and charge for travel. Start with [city pages](/cities/) like [Ann Arbor](/cities/ann-arbor/), [Detroit](/cities/detroit/), and [Grand Rapids](/cities/grand-rapids/) to scan coverage.",
         ],
       },
       {
@@ -217,7 +233,7 @@ export const BLOG_POSTS: BlogPost[] = [
         heading: "Red flags",
         paragraphs: [
           "Be cautious with high-pressure 'today only' pricing, requests for full payment before work, or technicians who won't explain why a part failed. Reputable pros can describe the issue in plain language.",
-          "Shortlist two or three local companies, compare profiles, and request quotes so you can decide with real options — not the first flyer on the door.",
+          "Shortlist two or three local companies on [Find Pros](/pros/), compare profiles, and [request quotes](/get-a-quote/) so you can decide with real options — not the first flyer on the door.",
         ],
       },
     ],
@@ -257,7 +273,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         heading: "Use the directory to move faster",
         paragraphs: [
-          "Start with your ZIP on the Find Pros page, open a few company profiles, and call or request a quote. If you want matching without browsing, the quote form can route your request while you wait.",
+          "Start with your ZIP on [Find Pros](/pros/), open [emergency service](/emergency-service/) listings for [Detroit](/cities/detroit/emergency-service/) or [Grand Rapids](/cities/grand-rapids/emergency-service/), and call or [request a quote](/get-a-quote/).",
           "The goal is simple: get a qualified local tech on the way, then decide on permanent repairs once the door is safe again.",
         ],
       },
@@ -305,13 +321,13 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         heading: "5. Michigan-specific gotchas",
         paragraphs: [
-          "In winter, weather seals freeze to the floor and sensors get buried in snow. In humid summers, warped tracks or sticky rollers show up after storms. For cold-weather specifics, see our guide to a garage door that will not open in a Michigan winter.",
+          "In winter, weather seals freeze to the floor and sensors get buried in snow. In humid summers, warped tracks or sticky rollers show up after storms. For cold-weather specifics, see our guide to a [garage door that will not open in a Michigan winter](/blog/garage-door-wont-open-winter-michigan/).",
         ],
       },
       {
         heading: "When to call for repair",
         paragraphs: [
-          "Call if the opener strains and the door does not move, the door is crooked, cables look damaged, or nothing changes after sensor and power checks. Browse companies near your ZIP on Find Pros, or request a quote with a short description of what happens when you press the button.",
+          "Call if the opener strains and the door does not move, the door is crooked, cables look damaged, or nothing changes after sensor and power checks. Browse [garage door repair](/garage-door-repair/) near your ZIP — including [Ann Arbor repair](/cities/ann-arbor/garage-door-repair/) — or [request a quote](/get-a-quote/) with a short description of what happens when you press the button.",
         ],
       },
     ],
@@ -357,7 +373,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         heading: "Getting help in Michigan",
         paragraphs: [
-          "Search your city or ZIP for repair companies that list track and spring work. Send photos of both tracks if you request a quote — that helps the tech bring the right parts the first visit.",
+          "Search [garage door repair](/garage-door-repair/) companies that list track and spring work — try [Detroit](/cities/detroit/garage-door-repair/) or [Grand Rapids](/cities/grand-rapids/garage-door-repair/). Send photos of both tracks if you [request a quote](/get-a-quote/).",
         ],
       },
     ],
@@ -403,7 +419,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         heading: "Next step",
         paragraphs: [
-          "If lubrication does not quiet the door within a day or two, browse local maintenance and repair companies and describe the sound and when it happens (opening, closing, or mid-travel). That detail speeds diagnosis.",
+          "If lubrication does not quiet the door within a day or two, browse [maintenance](/maintenance/) and [repair](/garage-door-repair/) companies — including [Ann Arbor](/cities/ann-arbor/maintenance/) — and describe the sound and when it happens (opening, closing, or mid-travel).",
         ],
       },
     ],
@@ -449,7 +465,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         heading: "Get comparable local options",
         paragraphs: [
-          "Shortlist install and repair companies that serve your city, share photos from straight on and at an angle, and ask for repair-vs-replace recommendations in writing. Browse installation pros or start a quote if you want several Michigan companies to respond.",
+          "Shortlist [installation](/garage-door-installation/) and [repair](/garage-door-repair/) companies that serve your city — such as [Detroit installation](/cities/detroit/garage-door-installation/) — share photos, and ask for repair-vs-replace recommendations in writing. Or [start a quote](/get-a-quote/).",
         ],
       },
     ],
@@ -495,7 +511,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         heading: "Get it fixed properly",
         paragraphs: [
-          "If the door still reverses after sensor cleaning and visual checks, browse opener-repair companies near you or request a quote. Mention whether the reverse happens every time or only at certain times of day — that helps isolate glare vs mechanical binding.",
+          "If the door still reverses after sensor cleaning and visual checks, browse [opener repair](/garage-door-openers/) near you — including [Grand Rapids openers](/cities/grand-rapids/garage-door-openers/) — or [request a quote](/get-a-quote/). Mention whether the reverse happens every time or only at certain times of day.",
         ],
       },
     ],
@@ -541,7 +557,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         heading: "Find maintenance help",
         paragraphs: [
-          "Search Michigan Garage Pros for companies offering maintenance or repair in your city. Ask for a safety inspection that includes rollers, cables, springs, and the reverse test — not just a quick spray of lubricant.",
+          "Search Michigan Garage Pros for [maintenance](/maintenance/) or [repair](/garage-door-repair/) in your city — try [Traverse City maintenance](/cities/traverse-city/maintenance/) or [Detroit repair](/cities/detroit/garage-door-repair/). Ask for a safety inspection that includes rollers, cables, springs, and the reverse test.",
         ],
       },
     ],

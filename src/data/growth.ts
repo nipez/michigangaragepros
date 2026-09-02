@@ -220,6 +220,156 @@ export const CITY_SEO: Record<string, CitySeoCopy> = {
       },
     ],
   },
+  holland: {
+    intro:
+      "Holland and Ottawa County homeowners can compare garage door repair, spring, opener, and installation companies serving Holland, Zeeland, and nearby lakeshore communities.",
+    faqs: [
+      {
+        question: "Who repairs garage doors in Holland, MI?",
+        answer:
+          "Browse the Holland listings below or open the garage door repair Holland page to see companies that list repair service for this area.",
+      },
+      {
+        question: "Do Holland pros also serve Zeeland and Hudsonville?",
+        answer:
+          "Many West Michigan companies include nearby towns in their service area. Check each profile, or search Find Pros with your ZIP.",
+      },
+    ],
+  },
+  saginaw: {
+    intro:
+      "Compare garage door companies serving Saginaw and the Great Lakes Bay Region — repair, springs, openers, and installation for Saginaw, Bay City, and nearby mid-Michigan towns.",
+    faqs: [
+      {
+        question: "Is same-day garage door service available in Saginaw?",
+        answer:
+          "Several listings note emergency or flexible scheduling. Mention ASAP on your quote request so pros can confirm travel time.",
+      },
+      {
+        question: "How do I find spring repair in Saginaw?",
+        answer:
+          "Use the broken springs Saginaw city service page, or filter Find Pros for spring help with a local ZIP.",
+      },
+    ],
+  },
+  livonia: {
+    intro:
+      "Livonia and western Wayne County residents can browse garage door repair and installation companies that serve Livonia, Westland, Farmington, and nearby Metro Detroit suburbs.",
+    faqs: [
+      {
+        question: "Which companies serve Livonia garage doors?",
+        answer:
+          "The listings on this page include companies that name Livonia as a home city or service area. Nearby city links cover Farmington Hills, Novi, and Dearborn.",
+      },
+      {
+        question: "Can I get a free quote for Livonia?",
+        answer:
+          "Yes. Start Get a Free Quote with your ZIP, or contact a company from its profile.",
+      },
+    ],
+  },
+  dearborn: {
+    intro:
+      "Find garage door pros serving Dearborn and Downriver / western Wayne communities. Compare local repair, opener, and installation companies, then request a quote.",
+    faqs: [
+      {
+        question: "Do Dearborn companies offer emergency service?",
+        answer:
+          "Check profiles marked for emergency or same-day help, or submit a quote with ASAP timing.",
+      },
+      {
+        question: "How do I compare Dearborn garage door companies?",
+        answer:
+          "Look at services, service area, phone, and whether the listing is claimed. Featured Pros are sponsored placements.",
+      },
+    ],
+  },
+  "rochester-hills": {
+    intro:
+      "Rochester Hills and northern Oakland County homeowners can compare garage door repair, springs, and new-door companies serving Rochester Hills, Troy, and nearby suburbs.",
+    faqs: [
+      {
+        question: "Who installs garage doors in Rochester Hills?",
+        answer:
+          "Open the installation city service page for Rochester Hills, or look for New Door Installation on company cards below.",
+      },
+      {
+        question: "Are there opener specialists near Rochester Hills?",
+        answer:
+          "Yes — use the opener repair city page or Find Pros with opener service selected and your ZIP.",
+      },
+    ],
+  },
+  "farmington-hills": {
+    intro:
+      "Browse garage door companies serving Farmington Hills and western Oakland County — repair, openers, springs, and installation for Farmington Hills, Novi, and Livonia-area homeowners.",
+    faqs: [
+      {
+        question: "How do I find garage door repair in Farmington Hills?",
+        answer:
+          "Use the Farmington Hills repair service page or enter your ZIP on Find Pros to see companies listing repair work.",
+      },
+    ],
+  },
+  novi: {
+    intro:
+      "Novi and western Metro Detroit residents can compare garage door pros for repair, spring replacement, openers, and new doors serving Novi, Northville, and nearby communities.",
+    faqs: [
+      {
+        question: "Do Novi companies cover surrounding suburbs?",
+        answer:
+          "Many listings also serve Farmington Hills, Livonia, and Wixom. Check each profile’s service area for your city.",
+      },
+      {
+        question: "Can I request multiple quotes in Novi?",
+        answer:
+          "Yes. Shortlist companies from this page or send one quote request and let local pros follow up.",
+      },
+    ],
+  },
+  wyoming: {
+    intro:
+      "Wyoming and greater Grand Rapids homeowners can compare garage door repair and installation companies serving Wyoming, Kentwood, Grandville, and nearby West Michigan neighborhoods.",
+    faqs: [
+      {
+        question: "Is Wyoming covered by Grand Rapids garage door companies?",
+        answer:
+          "Often yes — many West Michigan pros list both. This page focuses on companies that serve Wyoming directly.",
+      },
+      {
+        question: "Where do I go for broken spring help in Wyoming?",
+        answer:
+          "Open the broken springs Wyoming service page or browse companies tagged for repair/springs below.",
+      },
+    ],
+  },
+  southfield: {
+    intro:
+      "Southfield and central Oakland County residents can browse garage door repair, opener, and installation companies serving Southfield, Oak Park, and nearby Metro Detroit suburbs.",
+    faqs: [
+      {
+        question: "How do I get emergency garage door service in Southfield?",
+        answer:
+          "Filter for emergency-ready listings, confirm after-hours rates, and note urgency on your quote request.",
+      },
+    ],
+  },
+  midland: {
+    intro:
+      "Midland-area homeowners can compare garage door companies for repair, springs, openers, and installation serving Midland and nearby Great Lakes Bay communities.",
+    faqs: [
+      {
+        question: "Do Midland pros travel to nearby towns?",
+        answer:
+          "Check each profile’s service area or search Find Pros with your ZIP — travel windows can vary outside the city.",
+      },
+      {
+        question: "How do I choose a Midland garage door company?",
+        answer:
+          "Match services to your job, confirm they serve your ZIP, and compare a couple of quotes before you book.",
+      },
+    ],
+  },
 };
 
 export function getCitySeo(slug: string): CitySeoCopy | undefined {

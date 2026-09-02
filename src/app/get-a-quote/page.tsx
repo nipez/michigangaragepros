@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
 import { QuoteFlow } from "@/components/QuoteFlow";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Get a Free Quote",
   description:
     "Request a free garage door quote from local Michigan professionals. Free for homeowners, no obligation.",
-};
+  path: "/get-a-quote/",
+});
 
 export default async function GetAQuotePage({
   searchParams,

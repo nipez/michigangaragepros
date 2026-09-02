@@ -5,9 +5,12 @@ import { getCompaniesForCity } from "@/data/companies";
 import { getCitySeo } from "@/data/growth";
 import { SITE_URL } from "@/data/site";
 import { SERVICES } from "@/data/services";
+import { PRIORITY_CITY_SLUGS } from "@/data/growth";
+import { breadcrumbJsonLd } from "@/lib/seo";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
+import { JsonLd } from "./JsonLd";
 import { ShuffledCompanyGrid } from "./ShuffledCompanyGrid";
 
 export function CityPage({ city }: { city: City }) {
@@ -28,44 +31,47 @@ export function CityPage({ city }: { city: City }) {
     },
   ];
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "CollectionPage",
-        name: `Garage Door Pros in ${city.name}, ${city.state}`,
-        description: intro,
-        url: `${SITE_URL}/cities/${city.slug}/`,
-        isPartOf: { "@type": "WebSite", name: "Michigan Garage Pros", url: SITE_URL },
-      },
-      {
-        "@type": "ItemList",
-        name: `Garage door companies serving ${city.name}`,
-        numberOfItems: companies.length,
-        itemListElement: companies.slice(0, 25).map((c, i) => ({
-          "@type": "ListItem",
-          position: i + 1,
-          name: c.name,
-          url: `${SITE_URL}/companies/${c.slug}/`,
-        })),
-      },
-      {
-        "@type": "FAQPage",
-        mainEntity: faqs.map((f) => ({
-          "@type": "Question",
-          name: f.question,
-          acceptedAnswer: { "@type": "Answer", text: f.answer },
-        })),
-      },
-    ],
-  };
+  const isPriority = (PRIORITY_CITY_SLUGS as readonly string[]).includes(
+    city.slug,
+  );
+
+  const jsonLd = [
+    {
+      "@type": "CollectionPage",
+      name: `Garage Door Pros in ${city.name}, ${city.state}`,
+      description: intro,
+      url: `${SITE_URL}/cities/${city.slug}/`,
+      isPartOf: { "@type": "WebSite", name: "Michigan Garage Pros", url: SITE_URL },
+    },
+    {
+      "@type": "ItemList",
+      name: `Garage door companies serving ${city.name}`,
+      numberOfItems: companies.length,
+      itemListElement: companies.slice(0, 25).map((c, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: c.name,
+        url: `${SITE_URL}/companies/${c.slug}/`,
+      })),
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqs.map((f) => ({
+        "@type": "Question",
+        name: f.question,
+        acceptedAnswer: { "@type": "Answer", text: f.answer },
+      })),
+    },
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Cities", path: "/cities/" },
+      { name: city.name, path: `/cities/${city.slug}/` },
+    ]),
+  ];
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
       <Header active="cities" />
 
       <section className="hero-gradient">
@@ -145,14 +151,14 @@ export function CityPage({ city }: { city: City }) {
               {SERVICES.map((s) => (
                 <Link
                   key={s.slug}
-                  href={`/${s.slug}/`}
+                  href={
+                    isPriority
+                      ? `/cities/${city.slug}/${s.slug}/`
+                      : `/${s.slug}/`
+                  }
                   className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
                 >
-                  {s.name === "Broken Springs"
-                    ? "Broken Spring Repair"
-                    : s.name === "Garage Door Openers"
-                      ? "Opener Repair"
-                      : s.name}
+                  {s.localTitle}
                 </Link>
               ))}
             </div>

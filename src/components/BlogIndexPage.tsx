@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllBlogPosts, getBlogImage } from "@/data/blog";
+import { getAllBlogPosts, getBlogImage, hasBlogImageFile } from "@/data/blog";
 import { BlogPostImage } from "./BlogPostImage";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
@@ -43,18 +43,23 @@ export function BlogIndexPage() {
         <div className="grid gap-5">
           {posts.map((post) => {
             const image = getBlogImage(post);
+            const showImage = hasBlogImageFile(post);
             return (
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}/`}
-                className="group grid overflow-hidden rounded-2xl border border-border bg-white transition-colors hover:border-bright-blue hover:text-inherit md:grid-cols-[220px_1fr]"
+                className={`group grid overflow-hidden rounded-2xl border border-border bg-white transition-colors hover:border-bright-blue hover:text-inherit ${
+                  showImage ? "md:grid-cols-[220px_1fr]" : ""
+                }`}
               >
-                <div className="blog-index-thumb min-h-[160px] border-b border-border md:border-b-0 md:border-r">
-                  <BlogPostImage
-                    image={image}
-                    placeholderHint={`${post.slug}.webp`}
-                  />
-                </div>
+                {showImage ? (
+                  <div className="blog-index-thumb min-h-[160px] border-b border-border md:border-b-0 md:border-r">
+                    <BlogPostImage
+                      image={image}
+                      placeholderHint={`${post.slug}.webp`}
+                    />
+                  </div>
+                ) : null}
                 <div className="p-6 md:p-7">
                   <div className="mb-3 flex flex-wrap items-center gap-3 text-[12.5px] font-bold uppercase tracking-[0.8px] text-faint">
                     <span className="rounded-full bg-icon-tile px-2.5 py-1 text-michigan-blue">
