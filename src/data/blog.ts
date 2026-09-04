@@ -10,6 +10,11 @@ export type BlogImage = {
   caption?: string;
 };
 
+export type BlogFaq = {
+  question: string;
+  answer: string;
+};
+
 export type BlogPost = {
   slug: string;
   title: string;
@@ -20,6 +25,8 @@ export type BlogPost = {
   /** Optional override; defaults to /blog/{slug}.webp for drop-in images. */
   image?: BlogImage;
   sections: BlogSection[];
+  /** Optional Q&A for on-page FAQ + FAQPage JSON-LD. */
+  faqs?: BlogFaq[];
 };
 
 /** Default image path convention — drop files in public/blog/{slug}.webp */
@@ -559,6 +566,82 @@ export const BLOG_POSTS: BlogPost[] = [
         paragraphs: [
           "Search Michigan Garage Pros for [maintenance](/maintenance/) or [repair](/garage-door-repair/) in your city — try [Traverse City maintenance](/cities/traverse-city/maintenance/) or [Detroit repair](/cities/detroit/garage-door-repair/). Ask for a safety inspection that includes rollers, cables, springs, and the reverse test.",
         ],
+      },
+    ],
+  },
+  {
+    slug: "fall-garage-door-maintenance-checklist-michigan",
+    title: "Fall Garage Door Maintenance Checklist for Michigan",
+    description:
+      "A practical fall checklist for Michigan garage doors — weather seals, lubrication, balance, sensors, and opener battery backup — before freeze-thaw season hits.",
+    date: "2026-09-04",
+    readMinutes: 7,
+    category: "Maintenance",
+    sections: [
+      {
+        paragraphs: [
+          "Michigan winters punish neglected garage doors. Weather seals freeze to the slab, batteries weaken, and worn springs snap on the first hard cold snap. A short fall tune-up is cheaper than a January [emergency service](/emergency-service/) call — and it keeps the door quieter and safer through freeze-thaw season.",
+          "Use this checklist at home for the safe items, then book [garage door maintenance](/maintenance/) for springs, cables, and balance if anything feels heavy, crooked, or noisy.",
+        ],
+      },
+      {
+        heading: "1. Clean and check the weather seal",
+        paragraphs: [
+          "Inspect the bottom rubber seal for cracks, flattening, or gaps that let in drafts and road salt. Wipe dirt off so ice has less to grab. If the seal is torn or hard, plan a replacement before deep winter — a tight seal also helps attached-garage energy loss.",
+        ],
+      },
+      {
+        heading: "2. Clear the tracks and photo-eye sensors",
+        paragraphs: [
+          "Wipe both tracks with a dry cloth (do not grease the tracks themselves). Clean the photo-eye lenses near the floor and confirm both indicator lights stay steady. Misaligned sensors are a top reason doors reverse or refuse to close after the first snow.",
+        ],
+      },
+      {
+        heading: "3. Lubricate hinges, rollers, and springs — safely",
+        paragraphs: [
+          "Use a garage-door lubricant on steel roller stems, hinges, and bearings as the manufacturer allows. Wipe excess so dust does not cake on. Do not spray inside the opener housing or soak nylon rollers designed to stay dry. Skip DIY torsion-spring adjustments entirely.",
+        ],
+      },
+      {
+        heading: "4. Test balance and listen for new noise",
+        paragraphs: [
+          "With the opener disconnected, lift the door halfway by hand. A healthy door should hold roughly mid-travel. If it feels extremely heavy or drops hard, stop and schedule [broken spring repair](/broken-springs/) — do not force the opener. New grinding or squeaking after summer heat is a cue to check [rollers, cables, and hinges](/blog/garage-door-rollers-cables-hinges-wear/) before winter cycles them harder.",
+        ],
+      },
+      {
+        heading: "5. Confirm opener backup and remotes",
+        paragraphs: [
+          "If your opener has a battery backup, check the status light and replace aging batteries before storm season. Swap remote and keypad batteries too — cold kills them fast. For units that reverse randomly or strain mid-travel, browse [opener repair](/garage-door-openers/) rather than turning force settings up.",
+        ],
+      },
+      {
+        heading: "6. Walk the hardware once more",
+        paragraphs: [
+          "From a safe distance, look for frayed cables, loose hinge on the floor, bent hinges, or a door that sits crooked in the opening. Any of those symptoms mean [garage door repair](/garage-door-repair/) before the first polar vortex — not after the door is stuck open overnight.",
+        ],
+      },
+      {
+        heading: "When to call a Michigan pro this fall",
+        paragraphs: [
+          "DIY covers cleaning, lubrication, and visual checks. Leave springs, cables, off-track doors, and opener logic-board work to trained technicians. Compare local options on city pages like [Detroit maintenance](/cities/detroit/maintenance/), [Grand Rapids maintenance](/cities/grand-rapids/maintenance/), [Ann Arbor](/cities/ann-arbor/maintenance/), and [Traverse City](/cities/traverse-city/maintenance/), or [request a free quote](/get-a-quote/) with your ZIP and a short note about what you noticed.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "When should Michigan homeowners service a garage door before winter?",
+        answer:
+          "September through early November is ideal — after summer heat and before consistent freezes — so seals, batteries, and balance issues get fixed while parts and scheduling are still easy.",
+      },
+      {
+        question: "Can I lubricate garage door springs myself?",
+        answer:
+          "Light exterior lubrication on accessible spring surfaces is sometimes fine per manufacturer guidance, but never wind, unwind, or remove torsion springs yourself. Stored energy can cause serious injury.",
+      },
+      {
+        question: "What fall maintenance prevents a door that will not open in winter?",
+        answer:
+          "A healthy weather seal, clean sensors, fresh opener/remote batteries, and a balance check prevent many cold-weather no-open calls. See also our guide to a garage door that will not open in a Michigan winter.",
       },
     ],
   },
