@@ -174,7 +174,7 @@ export const BLOG_POSTS: BlogPost[] = [
     sections: [
       {
         paragraphs: [
-          "Cold snaps are hard on garage doors. Weather seals freeze to the floor, batteries weaken, and sensors get blocked by snow. Before you assume the opener is dead, run through a few safe checks.",
+          "Cold snaps are hard on garage doors. Weather seals freeze to the floor, batteries weaken, and sensors get blocked by snow. Before you assume the opener is dead, run through a few safe checks — and use our [fall garage door maintenance checklist](/blog/fall-garage-door-maintenance-checklist-michigan/) before the next season hits.",
         ],
       },
       {
