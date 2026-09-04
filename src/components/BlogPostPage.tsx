@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { BlogPost } from "@/data/blog";
 import { getAllBlogPosts, getBlogImage, hasBlogImageFile } from "@/data/blog";
 import { SITE_NAME, SITE_URL } from "@/data/site";
-import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
+import { absoluteUrl, breadcrumbJsonLd, faqPageJsonLd } from "@/lib/seo";
 import { BlogPostImage } from "./BlogPostImage";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
@@ -82,18 +82,21 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
     blogPosting.image = absoluteUrl(image.src);
   }
 
+  const jsonLd: Record<string, unknown>[] = [
+    blogPosting,
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Blog", path: "/blog/" },
+      { name: post.title, path: `/blog/${post.slug}/` },
+    ]),
+  ];
+  if (post.faqs?.length) {
+    jsonLd.push(faqPageJsonLd(post.faqs));
+  }
+
   return (
     <>
-      <JsonLd
-        data={[
-          blogPosting,
-          breadcrumbJsonLd([
-            { name: "Home", path: "/" },
-            { name: "Blog", path: "/blog/" },
-            { name: post.title, path: `/blog/${post.slug}/` },
-          ]),
-        ]}
-      />
+      <JsonLd data={jsonLd} />
       <Header active="blog" />
 
       <article>
@@ -194,6 +197,29 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
                   );
                 })}
               </div>
+
+              {post.faqs?.length ? (
+                <section className="mt-12">
+                  <h2 className="mb-5 text-[clamp(22px,2.2vw,28px)] font-extrabold tracking-[-0.4px] text-navy">
+                    FAQ
+                  </h2>
+                  <div className="grid gap-3">
+                    {post.faqs.map((f) => (
+                      <details
+                        key={f.question}
+                        className="rounded-2xl border border-border bg-bg/80 px-5 py-4"
+                      >
+                        <summary className="cursor-pointer list-none text-[15.5px] font-extrabold text-navy">
+                          {f.question}
+                        </summary>
+                        <p className="mt-2.5 mb-0 text-[14.5px] leading-[1.65] text-muted text-pretty">
+                          {f.answer}
+                        </p>
+                      </details>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
 
               <aside className="mt-12 overflow-hidden rounded-2xl border border-bright-blue/25 bg-[linear-gradient(135deg,#f3f8fd_0%,#ffffff_55%)] p-6 sm:p-7">
                 <div className="mb-1 text-[12.5px] font-extrabold uppercase tracking-[0.8px] text-michigan-blue">
