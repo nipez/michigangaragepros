@@ -124,17 +124,27 @@ export const CITY_SEO: Record<string, CitySeoCopy> = {
   },
   lansing: {
     intro:
-      "Compare garage door companies serving Lansing, East Lansing, and mid-Michigan. Find repair, opener, installation, and maintenance pros, then request a quote without calling around.",
+      "Lansing-area garage doors take a beating from mid-Michigan freeze-thaw cycles, lake-effect moisture, and the mix of older ranches, campus rentals near East Lansing, and newer subdivisions toward Delta Township and Okemos. Springs snap after hard winters, weather seals freeze to uneven slabs, and openers struggle when rollers gum up with road salt. Use Michigan Garage Pros to compare repair, spring, opener, and installation companies that serve Lansing, East Lansing, Holt, and nearby ZIP codes — then shortlist by service tags, claimed profiles, and whether they list your suburb before you request a quote.",
     faqs: [
       {
         question: "How much does garage door repair cost in Lansing?",
         answer:
-          "Costs vary by part and labor. Spring and opener jobs are common. Request quotes from multiple Lansing-area pros to compare upfront pricing.",
+          "Spring replacement and opener repairs are the most common mid-Michigan jobs; pricing depends on door weight, parts, and whether the visit is same-day. Request quotes from more than one Lansing-area pro with photos so you can compare labor and parts line items.",
       },
       {
         question: "Are there emergency garage door techs in Lansing?",
         answer:
-          "Check profiles marked for emergency service, or submit a quote with ASAP timing so pros know you need a fast response.",
+          "Several listings note emergency or flexible scheduling. Check profiles for after-hours notes, or submit a quote with ASAP timing so pros know you need a fast response across Lansing or East Lansing.",
+      },
+      {
+        question: "Which nearby cities do Lansing garage door companies cover?",
+        answer:
+          "Many mid-Michigan pros also serve East Lansing, Holt, Okemos, Haslett, and Delta Township. Confirm your ZIP on each profile or use Find Pros so you are not waiting on a tech outside their normal route.",
+      },
+      {
+        question: "How should I compare garage door pros in Lansing?",
+        answer:
+          "Match the service tag to your job (springs vs new door vs opener), confirm they serve your ZIP, and prefer clear written estimates. Featured Pros are sponsored placements; organic cards stay relevance-based.",
       },
     ],
   },
@@ -156,56 +166,106 @@ export const CITY_SEO: Record<string, CitySeoCopy> = {
   },
   warren: {
     intro:
-      "Warren and Macomb County residents can browse garage door repair, spring, and opener companies that serve Warren, Sterling Heights, Troy, and the surrounding Metro Detroit suburbs.",
+      "Warren’s postwar ranch homes, brick bungalows, and denser Macomb corridors put a lot of single- and double-car doors through daily cycles — and Metro Detroit winters punish seals, springs, and sensors with freeze-thaw and salt spray off Van Dyke and I-696. Off-track doors and broken torsion springs show up often after cold snaps. Compare garage door repair, spring, opener, and installation companies that serve Warren, Center Line, Sterling Heights, and nearby suburbs on Michigan Garage Pros, then weigh service area, emergency notes, and claimed listings before you send a quote request.",
     faqs: [
       {
         question: "Is same-day garage door service available in Warren?",
         answer:
-          "Several Warren-area listings advertise emergency or flexible scheduling. Mention timing on your quote request so pros can confirm availability.",
+          "Several Warren-area listings advertise emergency or flexible scheduling. Mention ASAP timing and your cross streets on the quote request so pros can confirm same-day windows.",
+      },
+      {
+        question: "What garage door problems are common in Warren?",
+        answer:
+          "Broken springs after hard freezes, weather seals stuck to the slab, and photo-eye sensors blocked by snow are frequent Macomb County calls. Older doors on ranch homes may also need roller or cable work before a full replacement.",
+      },
+      {
+        question: "How do I compare Warren garage door companies?",
+        answer:
+          "Filter by the service you need, confirm Warren or your ZIP is in their service area, and compare a couple of written estimates. Featured Pros are sponsored; check organic listings too.",
       },
     ],
   },
   "sterling-heights": {
     intro:
-      "Find garage door pros serving Sterling Heights and nearby Macomb communities. Compare local repair and installation companies, then request a quote from the shortlist that fits your ZIP.",
+      "Sterling Heights sits in the heart of Macomb County’s residential grid — large subdivision doors, attached two-car garages, and plenty of daily opener cycles from Lakeside-area and Hall Road corridors. Michigan winters here mean ice on weather seals, weak remote batteries, and spring failures when doors have not been balanced since the last tune-up. Browse garage door repair and installation companies that serve Sterling Heights, Utica, Shelby Township, and Warren on Michigan Garage Pros, then compare who lists your ZIP, which services they tag, and whether the profile is claimed before you request quotes.",
     faqs: [
       {
         question: "Which companies serve Sterling Heights garage doors?",
         answer:
-          "The listings below include companies that name Sterling Heights as a home city or service area. Nearby links cover Warren, Troy, and Utica.",
+          "The listings below include companies that name Sterling Heights as a home city or service area. Nearby city links cover Warren, Troy, Utica, and Shelby Township.",
+      },
+      {
+        question: "Do Sterling Heights pros offer spring and opener repair?",
+        answer:
+          "Most full-service Macomb listings cover torsion springs, extension springs, and opener diagnosis. Use the broken springs or openers city service pages if you already know the issue.",
+      },
+      {
+        question: "How should homeowners shortlist pros in Sterling Heights?",
+        answer:
+          "Match services to the job, confirm travel to your subdivision ZIP, ask about parts warranty in writing, and compare at least two quotes when the repair is not an emergency.",
       },
     ],
   },
   troy: {
     intro:
-      "Compare garage door companies in Troy and Oakland County — repair, openers, springs, and new doors — then browse profiles or send a free quote request.",
+      "Troy and northern Oakland County homes — from Big Beaver corridor townhomes to larger subdivision doors toward Rochester Road — see heavy daily use and sharp winter temperature swings that stress torsion springs and insulated panels. Ice buildup, salt corrosion on hardware, and aging openers without battery backup are common reasons homeowners shop for repair or a full door upgrade. Compare garage door companies serving Troy, Clawson, Birmingham-adjacent ZIPs, and Rochester Hills on Michigan Garage Pros by service tags, service area, and claimed status, then request a free quote when you have a shortlist.",
     faqs: [
       {
         question: "How do I get garage door opener repair in Troy?",
         answer:
-          "Use the Garage Door Openers service page or filter Find Pros for opener help with a Troy-area ZIP.",
+          "Use the Garage Door Openers city service page for Troy, or filter Find Pros for opener help with a Troy-area ZIP. Mention brand and age if you know them.",
+      },
+      {
+        question: "Is new garage door installation common in Troy?",
+        answer:
+          "Yes — many Oakland County homeowners replace thin single-layer doors with insulated models for energy and curb appeal. Look for New Door Installation on local cards and ask about panel warranties.",
+      },
+      {
+        question: "How do I compare Troy garage door companies?",
+        answer:
+          "Confirm they regularly serve your Troy ZIP, match skills to springs vs installation vs openers, and get written estimates. Featured Pros are sponsored placements on the directory.",
       },
     ],
   },
   kalamazoo: {
     intro:
-      "Southwest Michigan homeowners can compare garage door pros serving Kalamazoo, Portage, and nearby cities for repair, installation, and maintenance.",
+      "Kalamazoo and Portage garages deal with Southwest Michigan lake-effect snow, freeze-thaw heave on slabs, and a housing mix of older bungalows near downtown plus larger subdivision doors toward Portage and Texas Township. Springs and cables wear faster when doors bind on uneven floors; openers fail more often after storm-related outages. Use Michigan Garage Pros to compare repair, spring, opener, and installation companies serving Kalamazoo, Portage, Oshtemo, and nearby ZIPs — then shortlist by service coverage and request quotes instead of calling every truck on a search ad.",
     faqs: [
       {
         question: "Are there garage door installers in Kalamazoo?",
         answer:
-          "Yes. Look for New Door Installation on local listings, or start a quote specifying installation.",
+          "Yes. Look for New Door Installation on local listings, or start a quote specifying installation, door size, and whether you want insulation upgrades.",
+      },
+      {
+        question: "What winter issues hit Kalamazoo garage doors?",
+        answer:
+          "Seals freezing to the floor, weak remote batteries, and snapped springs after cold snaps are typical Southwest Michigan calls. Clear sensors of snow before assuming the opener failed.",
+      },
+      {
+        question: "How do I choose a garage door pro in Kalamazoo?",
+        answer:
+          "Confirm Portage or your township ZIP is in their route, match the service tag to your problem, and compare written estimates. Claimed profiles and clear service lists are useful signals on this directory.",
       },
     ],
   },
   flint: {
     intro:
-      "Browse garage door repair and service companies covering Flint and Genesee County. Compare local options for springs, openers, and emergency help.",
+      "Flint and Genesee County garage doors face harsh mid-Michigan winters, older housing stock with aging springs and tracks, and plenty of daily wear on attached-garage ranches across the city and suburbs like Flushing, Grand Blanc, and Burton. Broken torsion springs, frayed cables, and openers that strain on unbalanced doors are the jobs homeowners search for most after a cold snap. Compare repair, spring, opener, and emergency-capable companies on Michigan Garage Pros, verify they list Flint or your ZIP, and send a quote with photos so pros can bring the right parts.",
     faqs: [
       {
         question: "Who fixes broken garage door springs in Flint?",
         answer:
-          "Open Broken Springs under Services or browse Flint companies tagged for repair, then request a quote with your ZIP.",
+          "Open Broken Springs under Services or browse Flint companies tagged for repair, then request a quote with your ZIP. Never try to wind a torsion spring yourself.",
+      },
+      {
+        question: "Is emergency garage door service available in Flint?",
+        answer:
+          "Some Genesee County listings note emergency or same-day options. Mention if the door is stuck open for security reasons and ask about after-hours rates up front.",
+      },
+      {
+        question: "Which suburbs are covered with Flint garage door pros?",
+        answer:
+          "Many companies also serve Burton, Grand Blanc, Flushing, Swartz Creek, and nearby townships. Check each profile’s service area or search Find Pros with your ZIP.",
       },
     ],
   },
@@ -302,28 +362,43 @@ export const CITY_SEO: Record<string, CitySeoCopy> = {
   },
   "farmington-hills": {
     intro:
-      "Browse garage door companies serving Farmington Hills and western Oakland County — repair, openers, springs, and installation for Farmington Hills, Novi, and Livonia-area homeowners.",
+      "Farmington Hills and western Oakland County see a steady mix of insulated two-car doors on subdivision homes and older single-layer doors that struggle through freeze-thaw season. Ice on seals along Orchard Lake and Grand River corridors, salt-worn rollers, and openers without backup during storm outages drive a lot of repair and upgrade calls. Browse garage door companies serving Farmington Hills, Farmington, Novi, and Livonia-area ZIPs on Michigan Garage Pros — compare repair vs installation tags, confirm your neighborhood is in-route, then request a quote from the shortlist that fits.",
     faqs: [
       {
         question: "How do I find garage door repair in Farmington Hills?",
         answer:
-          "Use the Farmington Hills repair service page or enter your ZIP on Find Pros to see companies listing repair work.",
+          "Use the Farmington Hills repair service page or enter your ZIP on Find Pros to see companies listing repair work for western Oakland County.",
+      },
+      {
+        question: "Do Farmington Hills companies replace springs and openers?",
+        answer:
+          "Most full-service listings cover torsion springs, opener diagnosis, and hardware. Jump to the broken springs or openers city pages if you already know the failure.",
+      },
+      {
+        question: "How should I compare pros in Farmington Hills?",
+        answer:
+          "Check service area against your ZIP, match skills to the job, and ask for written estimates that separate parts and labor. Featured Pros are sponsored directory placements.",
       },
     ],
   },
   novi: {
     intro:
-      "Novi and western Metro Detroit residents can compare garage door pros for repair, spring replacement, openers, and new doors serving Novi, Northville, and nearby communities.",
+      "Novi’s newer subdivisions and larger insulated doors still face classic Michigan problems: springs that fail after heavy daily cycles, weather seals that freeze on heated-slab garages, and openers that quit during power outages when battery backup was never installed. Homeowners near Twelve Oaks, Northville-adjacent streets, and Wixom often want same-week repair or a clean install quote. Compare garage door pros serving Novi, Northville, Wixom, and Farmington Hills on Michigan Garage Pros by service tags and coverage map, then send one quote request instead of repeating the story to every cold call.",
     faqs: [
       {
         question: "Do Novi companies cover surrounding suburbs?",
         answer:
-          "Many listings also serve Farmington Hills, Livonia, and Wixom. Check each profile’s service area for your city.",
+          "Many listings also serve Farmington Hills, Livonia, Northville, and Wixom. Check each profile’s service area for your city before you wait on a tech outside their route.",
       },
       {
         question: "Can I request multiple quotes in Novi?",
         answer:
-          "Yes. Shortlist companies from this page or send one quote request and let local pros follow up.",
+          "Yes. Shortlist companies from this page or send one quote request and let local pros follow up with pricing for repair or installation.",
+      },
+      {
+        question: "When does Novi make sense for a full door replacement?",
+        answer:
+          "If panels are rusting, insulation is outdated, or sectional sections no longer match after damage, installation companies can price a new insulated door against repeated panel repairs.",
       },
     ],
   },
@@ -345,28 +420,43 @@ export const CITY_SEO: Record<string, CitySeoCopy> = {
   },
   southfield: {
     intro:
-      "Southfield and central Oakland County residents can browse garage door repair, opener, and installation companies serving Southfield, Oak Park, and nearby Metro Detroit suburbs.",
+      "Southfield sits at a busy Oakland–Wayne crossroads — condo and townhome doors, office-park adjacent homes, and older steel doors that see freeze-thaw stress every winter off the Lodge and I-696. Sensors clogged with snow, noisy rollers after salt season, and doors stuck open after a snapped spring are frequent reasons residents search for same-day help. Use Michigan Garage Pros to compare repair, opener, and installation companies serving Southfield, Oak Park, Lathrup Village, and nearby suburbs, then verify service area and emergency notes before you request a quote.",
     faqs: [
       {
         question: "How do I get emergency garage door service in Southfield?",
         answer:
-          "Filter for emergency-ready listings, confirm after-hours rates, and note urgency on your quote request.",
+          "Filter for emergency-ready listings, confirm after-hours rates, and note urgency on your quote request so pros know if the door is stuck open overnight.",
+      },
+      {
+        question: "What repairs are common for Southfield garage doors?",
+        answer:
+          "Broken springs, misaligned photo eyes after storms, and worn rollers on high-cycle doors are typical. Older single-layer doors may also need panel or full-door quotes after impact damage.",
+      },
+      {
+        question: "How do I compare Southfield garage door companies?",
+        answer:
+          "Match the service tag to your job, confirm they serve your ZIP (not only downtown Detroit), and compare written estimates. Featured Pros are sponsored placements on this directory.",
       },
     ],
   },
   midland: {
     intro:
-      "Midland-area homeowners can compare garage door companies for repair, springs, openers, and installation serving Midland and nearby Great Lakes Bay communities.",
+      "Midland-area doors deal with Great Lakes Bay cold snaps, wind-driven snow, and a mix of subdivision two-car garages and older attached doors that have never had a professional balance check. Springs fail when doors bind on frost-heaved slabs; openers without battery backup leave homeowners locked out during storm outages. Compare garage door companies for repair, springs, openers, and installation serving Midland, nearby Bay Region towns, and surrounding townships on Michigan Garage Pros — confirm travel windows for your ZIP, then request a quote with a clear description of the problem.",
     faqs: [
       {
         question: "Do Midland pros travel to nearby towns?",
         answer:
-          "Check each profile’s service area or search Find Pros with your ZIP — travel windows can vary outside the city.",
+          "Check each profile’s service area or search Find Pros with your ZIP — travel windows can vary outside the city, especially for evening emergency calls.",
       },
       {
         question: "How do I choose a Midland garage door company?",
         answer:
-          "Match services to your job, confirm they serve your ZIP, and compare a couple of quotes before you book.",
+          "Match services to your job, confirm they serve your ZIP, ask about parts warranty, and compare a couple of quotes before you book non-emergency work.",
+      },
+      {
+        question: "Are spring and opener repairs available in Midland?",
+        answer:
+          "Yes — most full-service Bay Region listings cover torsion springs and opener diagnosis. Use the city service pages for broken springs or openers if you already know the failure mode.",
       },
     ],
   },
