@@ -16,6 +16,10 @@ import { ShuffledCompanyGrid } from "./ShuffledCompanyGrid";
 export function CityPage({ city }: { city: City }) {
   const companies = getCompaniesForCity(city.slug);
   const seo = getCitySeo(city.slug);
+  const pageTitle =
+    seo?.title ?? `Garage Door Pros in ${city.name}, ${city.state}`;
+  const heading =
+    seo?.h1 ?? `Garage Door Pros in ${city.name}, ${city.state}`;
   const intro =
     seo?.intro ??
     `Compare garage-door companies serving ${city.name} and nearby communities — repair, springs, openers, installation, and emergency service.`;
@@ -38,8 +42,8 @@ export function CityPage({ city }: { city: City }) {
   const jsonLd = [
     {
       "@type": "CollectionPage",
-      name: `Garage Door Pros in ${city.name}, ${city.state}`,
-      description: intro,
+      name: pageTitle,
+      description: seo?.description ?? intro,
       url: `${SITE_URL}/cities/${city.slug}/`,
       isPartOf: { "@type": "WebSite", name: "Michigan Garage Pros", url: SITE_URL },
     },
@@ -88,7 +92,7 @@ export function CityPage({ city }: { city: City }) {
             <span className="text-footer-link">{city.name}</span>
           </div>
           <h1 className="mb-3.5 max-w-[24ch] text-[clamp(32px,3.8vw,48px)] font-extrabold leading-[1.1] tracking-[-1px] text-balance">
-            Garage Door Pros in {city.name}, {city.state}
+            {heading}
           </h1>
           <p className="mb-[30px] max-w-[58ch] text-lg leading-[1.55] text-hero-muted text-pretty">
             {intro}
