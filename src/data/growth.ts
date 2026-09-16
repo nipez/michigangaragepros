@@ -74,6 +74,12 @@ export const FEATURED_PLANS: FeaturedPlan[] = [
 ];
 
 export type CitySeoCopy = {
+  /** Full SERP <title> when set (skips the layout brand suffix). */
+  title?: string;
+  /** Meta / OG description when set; otherwise intro is reused. */
+  description?: string;
+  /** Visible H1 override for hub pages. */
+  h1?: string;
   intro: string;
   faqs: { question: string; answer: string }[];
 };
@@ -81,8 +87,12 @@ export type CitySeoCopy = {
 /** Unique copy for highest-volume city hubs (problem + place SEO). */
 export const CITY_SEO: Record<string, CitySeoCopy> = {
   detroit: {
+    title: "Detroit Garage Door Repair Pros Near You | Compare Quotes",
+    description:
+      "Compare Metro Detroit garage door pros for repair, broken springs, opener installs, and new doors. Browse local companies and request quotes in one place.",
+    h1: "Detroit Garage Door Repair Pros Near You",
     intro:
-      "Metro Detroit homeowners use Michigan Garage Pros to compare garage door repair, broken spring service, opener fixes, and new door installation across Detroit and nearby suburbs. Browse local companies by service area, then request a quote when you’re ready.",
+      "Compare Metro Detroit garage door companies for repair, broken springs, opener installation, and new doors — then request quotes from multiple local pros on this statewide directory.",
     faqs: [
       {
         question: "How do I find garage door repair near me in Detroit?",
@@ -102,8 +112,12 @@ export const CITY_SEO: Record<string, CitySeoCopy> = {
     ],
   },
   "grand-rapids": {
+    title: "Grand Rapids Garage Door Repair & Pros | Compare Quotes",
+    description:
+      "Find West Michigan garage door repair, broken springs, opener installs, and new doors in Grand Rapids & Kent County. Compare local pros and request quotes.",
+    h1: "Grand Rapids Garage Door Repair & Local Pros",
     intro:
-      "Looking for garage door pros in Grand Rapids and Kent County? Compare repair, spring replacement, openers, and installation companies that serve Grand Rapids, Wyoming, Kentwood, and nearby West Michigan communities.",
+      "Compare Grand Rapids and Kent County garage door companies for repair, broken springs, opener installation, and new doors — then request quotes from multiple local pros on this West Michigan directory.",
     faqs: [
       {
         question: "Who repairs garage door springs in Grand Rapids?",

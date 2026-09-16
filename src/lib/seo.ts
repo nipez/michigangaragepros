@@ -15,6 +15,11 @@ type PageMetaInput = {
   path: string;
   /** Open Graph type — default website; use article for blog posts. */
   ogType?: "website" | "article";
+  /**
+   * Skip the root layout title template (`%s | Michigan Garage Pros`).
+   * Use for complete SERP titles that already carry their own CTA/branding.
+   */
+  absoluteTitle?: boolean;
   noIndex?: boolean;
 };
 
@@ -26,14 +31,17 @@ export function buildPageMetadata({
   description,
   path,
   ogType = "website",
+  absoluteTitle = false,
   noIndex = false,
 }: PageMetaInput): Metadata {
   const url = absoluteUrl(path);
-  const fullTitle = title.includes(SITE_NAME) ? title : title;
+  const fullTitle = title;
+  const useAbsolute =
+    absoluteTitle || title.includes(SITE_NAME);
   const ogImages = [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: SITE_NAME }];
 
   return {
-    title: fullTitle,
+    title: useAbsolute ? { absolute: fullTitle } : fullTitle,
     description,
     alternates: { canonical: url },
     openGraph: {

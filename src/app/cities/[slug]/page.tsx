@@ -18,12 +18,16 @@ export async function generateMetadata({
   const city = getCityBySlug(slug);
   if (!city) return { title: "City Not Found" };
   const seo = getCitySeo(city.slug);
+  const title =
+    seo?.title ?? `Garage Door Pros in ${city.name}, ${city.state}`;
   return buildPageMetadata({
-    title: `Garage Door Pros in ${city.name}, ${city.state}`,
+    title,
     description:
+      seo?.description ??
       seo?.intro ??
       `Compare garage-door companies serving ${city.name}, Michigan — repair, springs, openers, installation, and emergency service.`,
     path: `/cities/${city.slug}/`,
+    absoluteTitle: Boolean(seo?.title),
   });
 }
 
