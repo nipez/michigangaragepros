@@ -12,6 +12,8 @@ interface CloudflareEnv {
   NOTIFY_WEBHOOK_URL?: string;
   /** Verified Resend from-address */
   NOTIFY_FROM_EMAIL?: string;
+  /** Token for /admin/leads/ inbox — set via `wrangler secret put ADMIN_TOKEN` */
+  ADMIN_TOKEN?: string;
 }
 
 declare namespace Cloudflare {

@@ -40,6 +40,25 @@ npm run db:migrate:remote
 
 Confirm **Bindings** shows `DB` → D1 `michigangaragepros`.
 
+### Secrets (operator alerts + admin inbox)
+
+Email alerts already use Resend. Set secrets on the Worker:
+
+```bash
+npx wrangler secret put RESEND_API_KEY
+# optional override (defaults in wrangler.jsonc vars):
+# npx wrangler secret put NOTIFY_EMAIL
+# npx wrangler secret put NOTIFY_FROM_EMAIL
+# npx wrangler secret put NOTIFY_WEBHOOK_URL
+
+# Required for /admin/leads/ login
+npx wrangler secret put ADMIN_TOKEN
+```
+
+Without `ADMIN_TOKEN`, the admin inbox returns unauthorized / 503 on login. Leads still save and email notify still works when Resend is configured.
+
+This PR does not add a new D1 migration — `leads.status` already exists from `0001_init.sql`. Run `npm run db:migrate:remote` only if you are applying other pending migrations.
+
 ### Public URL
 
 Worker → **Settings → Domains & Routes**: enable **workers.dev**, and optionally add `michigangaragepros.com`.
@@ -49,6 +68,8 @@ Worker → **Settings → Domains & Routes**: enable **workers.dev**, and option
 ```bash
 npm install
 npm run db:migrate:local
+# optional for local admin inbox:
+# export ADMIN_TOKEN=dev-token
 npm run dev
 ```
 
@@ -67,9 +88,12 @@ npm run preview
 | `/cities/[slug]/` | City listings |
 | `/companies/[slug]/` | Company profile |
 | `/for-companies/` | Contractor acquisition |
-| `/get-a-quote/` | 5-step lead flow |
+| `/get-a-quote/` | 5-step lead flow (`?company=slug` when started from a listing) |
+| `/admin/leads/` | Token-protected lead inbox (triage `new` / `contacted` / `closed`) |
 | `POST /api/leads` | Persist quote leads to D1 |
 | `POST /api/claims` | Persist profile claim requests to D1 |
+| `GET/PATCH /api/admin/leads` | List / update leads (admin cookie) |
+| `POST/DELETE /api/admin/session` | Admin token login / logout |
 
 ## Why builds fail (checklist)
 

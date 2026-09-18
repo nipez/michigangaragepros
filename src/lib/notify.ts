@@ -171,7 +171,7 @@ export function formatLeadNotify(lead: {
     `Timing: ${lead.timing}`,
     lead.companySlug ? `Company slug: ${lead.companySlug}` : null,
     "",
-    "Review with: npm run db:leads",
+    "Review in /admin/leads/ or: npm run db:leads",
   ].filter(Boolean);
 
   return {
