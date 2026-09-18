@@ -25,22 +25,24 @@ export async function POST(request: Request) {
   }
 
   const res = NextResponse.json({ ok: true });
+  const secure = new URL(request.url).protocol === "https:";
   res.cookies.set(ADMIN_COOKIE, env.ADMIN_TOKEN, {
     httpOnly: true,
     sameSite: "lax",
-    secure: true,
+    secure,
     path: "/",
     maxAge: 60 * 60 * 24 * 30,
   });
   return res;
 }
 
-export async function DELETE() {
+export async function DELETE(request: Request) {
   const res = NextResponse.json({ ok: true });
+  const secure = new URL(request.url).protocol === "https:";
   res.cookies.set(ADMIN_COOKIE, "", {
     httpOnly: true,
     sameSite: "lax",
-    secure: true,
+    secure,
     path: "/",
     maxAge: 0,
   });
