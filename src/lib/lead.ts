@@ -6,6 +6,8 @@ export type Lead = {
   phone: string;
   email: string;
   timing: string;
+  /** Optional company profile slug when quote started from a listing */
+  companySlug?: string;
 };
 
 export type LeadState = {

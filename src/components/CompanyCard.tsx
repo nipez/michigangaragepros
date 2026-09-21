@@ -12,9 +12,11 @@ type CompanyCardProps = {
 export function CompanyCard({
   company,
   onQuoteClick,
-  quoteHref = "/get-a-quote/",
+  quoteHref,
   compact = false,
 }: CompanyCardProps) {
+  const resolvedQuoteHref =
+    quoteHref ?? `/get-a-quote/?company=${encodeURIComponent(company.slug)}`;
   const quote = onQuoteClick ? (
     <button
       type="button"
@@ -29,7 +31,7 @@ export function CompanyCard({
     </button>
   ) : (
     <Link
-      href={quoteHref}
+      href={resolvedQuoteHref}
       className={
         company.featured
           ? "btn-primary flex-1 !py-2.5 text-center"
@@ -120,11 +122,13 @@ export function BeFeaturedCard({
 
 export function CompanyRow({
   company,
-  quoteHref = "/get-a-quote/",
+  quoteHref,
 }: {
   company: Company;
   quoteHref?: string;
 }) {
+  const resolvedQuoteHref =
+    quoteHref ?? `/get-a-quote/?company=${encodeURIComponent(company.slug)}`;
   return (
     <div
       className={`flex flex-wrap items-center justify-between gap-5 rounded-2xl bg-white p-6 ${
@@ -163,7 +167,7 @@ export function CompanyRow({
           View Profile
         </Link>
         <Link
-          href={quoteHref}
+          href={resolvedQuoteHref}
           className={
             company.featured
               ? "btn-primary !px-5 !py-[11px]"

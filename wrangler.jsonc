@@ -16,6 +16,7 @@
   },
   // Non-secret notify defaults. Set secrets with:
   //   npx wrangler secret put RESEND_API_KEY
+  //   npx wrangler secret put ADMIN_TOKEN
   // Optional: npx wrangler secret put NOTIFY_WEBHOOK_URL
   "vars": {
     "NOTIFY_EMAIL": "nickperez@gmail.com",
