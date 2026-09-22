@@ -8,6 +8,7 @@ import { SITE_URL } from "@/data/site";
 import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
 import { CompanyClaimBadge } from "./CompanyClaimBadge";
 import { CompanyClaimCard } from "./CompanyClaimCard";
+import { CompanyReviewsSection } from "./CompanyReviewsSection";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { BoltIcon, LogoMark } from "./Icons";
@@ -178,6 +179,11 @@ export function CompanyProfilePage({ company }: { company: Company }) {
               ))}
             </div>
           </div>
+
+          <CompanyReviewsSection
+            companySlug={company.slug}
+            companyName={company.name}
+          />
         </div>
 
         <div className="sticky top-[92px] grid gap-5">

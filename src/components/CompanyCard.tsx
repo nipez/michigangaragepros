@@ -1,19 +1,36 @@
 import Link from "next/link";
 import type { Company } from "@/data/companies";
-import { BoltIcon } from "./Icons";
+import type { ReviewSummary } from "@/lib/review";
+import { BoltIcon, Stars } from "./Icons";
 
 type CompanyCardProps = {
   company: Company;
   onQuoteClick?: () => void;
   quoteHref?: string;
   compact?: boolean;
+  /** Live D1 aggregate — never use companies.rating/reviews seed fields. */
+  reviewSummary?: ReviewSummary | null;
 };
+
+function CompactLiveRating({ summary }: { summary: ReviewSummary }) {
+  if (summary.count <= 0) return null;
+  return (
+    <div className="mb-2 flex items-center gap-1.5 text-[13px]">
+      <Stars rating={summary.average} className="text-[14px]" />
+      <span className="font-extrabold text-navy">
+        {summary.average.toFixed(1)}
+      </span>
+      <span className="font-semibold text-faint">({summary.count})</span>
+    </div>
+  );
+}
 
 export function CompanyCard({
   company,
   onQuoteClick,
   quoteHref,
   compact = false,
+  reviewSummary = null,
 }: CompanyCardProps) {
   const resolvedQuoteHref =
     quoteHref ?? `/get-a-quote/?company=${encodeURIComponent(company.slug)}`;
@@ -54,6 +71,9 @@ export function CompanyCard({
         {company.name}
       </div>
       <div className="mb-1 text-[13.5px] text-muted">{company.city}</div>
+      {reviewSummary && reviewSummary.count > 0 ? (
+        <CompactLiveRating summary={reviewSummary} />
+      ) : null}
       {company.phone ? (
         <div className="mb-3.5 text-[13px] font-semibold text-navy">
           {company.phone}

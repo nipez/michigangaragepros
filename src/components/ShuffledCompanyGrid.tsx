@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Company } from "@/data/companies";
 import { fairShuffleCompanies } from "@/lib/companyOrder";
+import { useCompanyReviewSummaries } from "@/hooks/useCompanyReviewSummaries";
 import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 
 type ShuffledCompanyGridProps = {
@@ -26,6 +27,7 @@ export function ShuffledCompanyGrid({
   className = "grid grid-cols-1 gap-4 md:grid-cols-2",
 }: ShuffledCompanyGridProps) {
   const [ordered, setOrdered] = useState(companies);
+  const summaries = useCompanyReviewSummaries(companies.map((c) => c.slug));
 
   useEffect(() => {
     // Intentional: randomize after hydration so SSR HTML matches the first paint.
@@ -42,6 +44,7 @@ export function ShuffledCompanyGrid({
         <CompanyCard
           key={c.slug}
           company={c}
+          reviewSummary={summaries[c.slug] ?? null}
           quoteHref={
             typeof quoteHref === "function" ? quoteHref(c) : quoteHref
           }
