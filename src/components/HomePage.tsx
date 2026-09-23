@@ -13,7 +13,7 @@ import {
   SERVICE_OPTIONS,
   TRUST_POINTS,
 } from "@/data/site";
-import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
+import { CompanyCardGrid } from "./CompanyCardGrid";
 import { CtaBand } from "./CtaBand";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
@@ -206,16 +206,12 @@ export function HomePage({ topCompanies, homepageCities }: HomePageProps) {
             Browse all companies →
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <BeFeaturedCard />
-          {topCompanies.map((c) => (
-            <CompanyCard
-              key={c.slug}
-              company={c}
-              onQuoteClick={() => openQuote()}
-            />
-          ))}
-        </div>
+        <CompanyCardGrid
+          companies={topCompanies}
+          showBeFeatured
+          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
+          onQuoteClick={() => openQuote()}
+        />
       </section>
 
       <section id="cities" className="container-site pt-[88px]">

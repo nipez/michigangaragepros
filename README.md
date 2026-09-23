@@ -57,7 +57,15 @@ npx wrangler secret put ADMIN_TOKEN
 
 Without `ADMIN_TOKEN`, the admin inbox returns unauthorized / 503 on login. Leads still save and email notify still works when Resend is configured.
 
-This PR does not add a new D1 migration — `leads.status` already exists from `0001_init.sql`. Run `npm run db:migrate:remote` only if you are applying other pending migrations.
+Company reviews use migration `0010_company_reviews.sql` (table `company_reviews`). After deploy, Nick must run:
+
+```bash
+npm run db:migrate:remote
+```
+
+Seed columns `companies.rating` / `companies.reviews` remain unused for display — averages and counts come only from `company_reviews`.
+
+**Moderation choice:** new reviews are `visible` by default after honeypot + per-IP rate limits (5/day global, 1/day per company). Status `hidden` is available for future moderation without a pending queue.
 
 ### Public URL
 
@@ -92,6 +100,7 @@ npm run preview
 | `/admin/leads/` | Token-protected lead inbox (triage `new` / `contacted` / `closed`) |
 | `POST /api/leads` | Persist quote leads to D1 |
 | `POST /api/claims` | Persist profile claim requests to D1 |
+| `GET/POST /api/reviews` | List/submit homeowner reviews (D1) |
 | `GET/PATCH /api/admin/leads` | List / update leads (admin cookie) |
 | `POST/DELETE /api/admin/session` | Admin token login / logout |
 

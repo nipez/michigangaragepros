@@ -9,7 +9,7 @@ import { SERVICES } from "@/data/services";
 import { getCitiesByRegion } from "@/data/cities";
 import { SITE_URL } from "@/data/site";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo";
-import { CompanyCard, BeFeaturedCard } from "./CompanyCard";
+import { CompanyCardGrid } from "./CompanyCardGrid";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
@@ -37,7 +37,6 @@ export function RegionPage({ region }: { region: Region }) {
   const sampleCompanies = [...companyBySlug.values()]
     .sort((a, b) => Number(!!b.featured) - Number(!!a.featured) || a.name.localeCompare(b.name))
     .slice(0, 4);
-  const hasPaidFeatured = sampleCompanies.some((c) => c.featured);
 
   const jsonLd = [
     {
@@ -219,12 +218,12 @@ export function RegionPage({ region }: { region: Region }) {
               Browse all companies →
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {!hasPaidFeatured && <BeFeaturedCard cityName={region.title} />}
-            {sampleCompanies.map((c) => (
-              <CompanyCard key={c.slug} company={c} />
-            ))}
-          </div>
+          <CompanyCardGrid
+            companies={sampleCompanies}
+            cityName={region.title}
+            showBeFeatured
+            className="grid grid-cols-1 gap-4 md:grid-cols-2"
+          />
         </section>
       ) : null}
 

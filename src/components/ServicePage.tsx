@@ -9,7 +9,7 @@ import {
   faqPageJsonLd,
   itemListJsonLd,
 } from "@/lib/seo";
-import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
+import { CompanyCardGrid } from "./CompanyCardGrid";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
@@ -121,12 +121,12 @@ export function ServicePage({ service }: { service: Service }) {
             Top-rated Michigan companies
           </span>
         </div>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <BeFeaturedCard />
-          {topCompanies.map((c) => (
-            <CompanyCard key={c.slug} company={c} compact />
-          ))}
-        </div>
+        <CompanyCardGrid
+          companies={topCompanies}
+          showBeFeatured
+          compact
+          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
+        />
       </section>
 
       <section className="mt-[72px] border-y border-border bg-bg">
