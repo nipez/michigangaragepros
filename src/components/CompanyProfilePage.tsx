@@ -6,6 +6,7 @@ import {
 } from "@/data/companies";
 import { SITE_URL } from "@/data/site";
 import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
+import { websiteSnapshotUrl } from "@/lib/website-snapshot";
 import { CompanyClaimBadge } from "./CompanyClaimBadge";
 import { CompanyClaimCard } from "./CompanyClaimCard";
 import { CompanyReviewsSection } from "./CompanyReviewsSection";
@@ -157,10 +158,61 @@ export function CompanyProfilePage({ company }: { company: Company }) {
       >
         <div className="grid gap-8">
           <div className="rounded-2xl border border-border bg-white p-7">
-            <h2 className="mb-3 text-xl font-extrabold text-navy">About</h2>
-            <p className="m-0 text-[15.5px] leading-[1.65] text-body-secondary text-pretty">
-              {about}
-            </p>
+            {company.website ? (
+              <div
+                data-about-row="1"
+                className="grid items-start gap-6"
+                style={{ gridTemplateColumns: "minmax(160px, 220px) 1fr" }}
+              >
+                <a
+                  href={company.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block no-underline hover:text-inherit"
+                >
+                  <div className="overflow-hidden rounded-[12px] border border-border bg-bg shadow-[0_8px_20px_rgba(16,42,67,0.08)] transition-shadow group-hover:shadow-[0_12px_28px_rgba(16,42,67,0.12)]">
+                    <div className="flex items-center gap-1.5 border-b border-border bg-[#F3F6F9] px-2.5 py-1.5">
+                      <span className="size-1.5 rounded-full bg-[#D8DEE6]" />
+                      <span className="size-1.5 rounded-full bg-[#D8DEE6]" />
+                      <span className="size-1.5 rounded-full bg-[#D8DEE6]" />
+                      <span className="ml-1 truncate text-[10px] font-semibold text-faint">
+                        {company.website
+                          .replace(/^https?:\/\//, "")
+                          .replace(/\/$/, "")}
+                      </span>
+                    </div>
+                    {/* eslint-disable-next-line @next/next/no-img-element -- third-party live screenshot URL */}
+                    <img
+                      src={websiteSnapshotUrl(company.website)}
+                      alt={`${company.name} website preview`}
+                      width={440}
+                      height={275}
+                      loading="lazy"
+                      decoding="async"
+                      className="aspect-[8/5] w-full object-cover object-top bg-[#E8EEF4]"
+                    />
+                  </div>
+                  <span className="mt-2.5 block text-center text-[13px] font-bold text-michigan-blue group-hover:underline">
+                    Visit website →
+                  </span>
+                </a>
+                <div>
+                  <h2 className="mb-3 text-xl font-extrabold text-navy">
+                    About
+                  </h2>
+                  <p className="m-0 text-[15.5px] leading-[1.65] text-body-secondary text-pretty">
+                    {about}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <>
+                <h2 className="mb-3 text-xl font-extrabold text-navy">About</h2>
+                <p className="m-0 text-[15.5px] leading-[1.65] text-body-secondary text-pretty">
+                  {about}
+                </p>
+              </>
+            )}
           </div>
 
           <div className="rounded-2xl border border-border bg-white p-7">
@@ -287,22 +339,6 @@ export function CompanyProfilePage({ company }: { company: Company }) {
                   </span>
                 </div>
               )}
-              {company.sourceType && (
-                <div className="flex justify-between gap-3">
-                  <span className="text-faint">Verified via</span>
-                  <span className="text-right font-semibold">{company.sourceType}</span>
-                </div>
-              )}
-              {company.confidence && (
-                <div className="flex justify-between gap-3">
-                  <span className="text-faint">Confidence</span>
-                  <span className="font-semibold">{company.confidence}</span>
-                </div>
-              )}
-              <div className="flex justify-between gap-3">
-                <span className="text-faint">On platform</span>
-                <span className="font-semibold">{company.onPlatform}</span>
-              </div>
               {company.website && (
                 <div className="flex justify-between gap-3">
                   <span className="text-faint">Website</span>

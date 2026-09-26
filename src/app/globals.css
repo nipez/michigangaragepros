@@ -398,6 +398,16 @@ a.map-region-chip.is-active {
   [data-profile-grid] {
     grid-template-columns: 1fr !important;
   }
+
+  [data-about-row] {
+    grid-template-columns: minmax(140px, 200px) 1fr !important;
+  }
+}
+
+@media (max-width: 560px) {
+  [data-about-row] {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 @media (max-width: 720px) {
