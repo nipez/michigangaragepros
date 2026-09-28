@@ -171,7 +171,13 @@ export function AdminLeadsClient({
             Newest first · {leads.length} shown
           </p>
         </div>
-        <div className="flex gap-2.5">
+        <div className="flex flex-wrap gap-2.5">
+          <Link
+            href="/admin/claims/"
+            className="btn-outline !py-2.5 !px-4 inline-flex items-center"
+          >
+            Claim requests
+          </Link>
           <button
             type="button"
             className="btn-outline !py-2.5 !px-4"
