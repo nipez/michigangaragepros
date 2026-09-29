@@ -2,58 +2,76 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { FEATURED_PLANS } from "@/data/growth";
 
-type ClaimRow = {
+type FeaturedRow = {
   id: number;
   company_name: string;
   city: string;
-  contact_name: string | null;
-  email: string | null;
-  phone: string | null;
-  website: string | null;
+  plan: string;
+  contact_name: string;
+  email: string;
+  phone: string;
   company_slug: string | null;
   notes: string | null;
   status: string;
   created_at: string;
-  reviewed_at: string | null;
-  review_notes: string | null;
+  company_featured: number | null;
+  company_exists: number | null;
 };
 
 type FilterTab = "open" | "done" | "all";
 
-const OPEN_STATUSES = new Set(["new", "pending"]);
-const DONE_STATUSES = new Set(["approved", "rejected"]);
+const OPEN_STATUSES = new Set(["new", "contacted"]);
+const DONE_STATUSES = new Set(["won", "closed"]);
 
-export function AdminClaimsClient({
+const PLAN_LABEL: Record<string, string> = Object.fromEntries(
+  FEATURED_PLANS.map((p) => [
+    p.id,
+    `${p.name} · $${p.priceMonthly}/mo`,
+  ]),
+);
+
+function planLabel(plan: string): string {
+  return PLAN_LABEL[plan] ?? plan;
+}
+
+function canActivate(row: FeaturedRow): boolean {
+  return Boolean(row.company_slug?.trim()) && row.company_exists === 1;
+}
+
+export function AdminFeaturedClient({
   initiallyAuthed,
 }: {
   initiallyAuthed: boolean;
 }) {
   const [authed, setAuthed] = useState(initiallyAuthed);
   const [token, setToken] = useState("");
-  const [claims, setClaims] = useState<ClaimRow[]>([]);
+  const [requests, setRequests] = useState<FeaturedRow[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(initiallyAuthed);
   const [loginBusy, setLoginBusy] = useState(false);
   const [filter, setFilter] = useState<FilterTab>("open");
   const [busyId, setBusyId] = useState<number | null>(null);
 
-  const loadClaims = async () => {
+  const loadRequests = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/claims");
+      const res = await fetch("/api/admin/featured");
       if (res.status === 401) {
         setAuthed(false);
-        setClaims([]);
+        setRequests([]);
         return;
       }
-      if (!res.ok) throw new Error("Unable to load claims");
-      const data = (await res.json()) as { claims: ClaimRow[] };
-      setClaims(data.claims ?? []);
+      if (!res.ok) throw new Error("Unable to load Featured requests");
+      const data = (await res.json()) as { requests: FeaturedRow[] };
+      setRequests(data.requests ?? []);
       setAuthed(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to load claims");
+      setError(
+        err instanceof Error ? err.message : "Unable to load Featured requests",
+      );
     } finally {
       setLoading(false);
     }
@@ -64,22 +82,24 @@ export function AdminClaimsClient({
     let cancelled = false;
     void (async () => {
       try {
-        const res = await fetch("/api/admin/claims");
+        const res = await fetch("/api/admin/featured");
         if (cancelled) return;
         if (res.status === 401) {
           setAuthed(false);
-          setClaims([]);
+          setRequests([]);
           return;
         }
-        if (!res.ok) throw new Error("Unable to load claims");
-        const data = (await res.json()) as { claims: ClaimRow[] };
+        if (!res.ok) throw new Error("Unable to load Featured requests");
+        const data = (await res.json()) as { requests: FeaturedRow[] };
         if (cancelled) return;
-        setClaims(data.claims ?? []);
+        setRequests(data.requests ?? []);
         setAuthed(true);
       } catch (err) {
         if (!cancelled) {
           setError(
-            err instanceof Error ? err.message : "Unable to load claims",
+            err instanceof Error
+              ? err.message
+              : "Unable to load Featured requests",
           );
         }
       } finally {
@@ -106,7 +126,7 @@ export function AdminClaimsClient({
       if (!res.ok) throw new Error(data?.error || "Login failed");
       setAuthed(true);
       setToken("");
-      await loadClaims();
+      await loadRequests();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
@@ -117,14 +137,14 @@ export function AdminClaimsClient({
   const logout = async () => {
     await fetch("/api/admin/session", { method: "DELETE" });
     setAuthed(false);
-    setClaims([]);
+    setRequests([]);
   };
 
   const setStatus = async (id: number, status: string) => {
     setError("");
     setBusyId(id);
     try {
-      const res = await fetch("/api/admin/claims", {
+      const res = await fetch("/api/admin/featured", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, status }),
@@ -133,19 +153,20 @@ export function AdminClaimsClient({
         const data = (await res.json().catch(() => null)) as {
           error?: string;
         } | null;
-        setError(data?.error || "Unable to update claim status");
+        setError(data?.error || "Unable to update Featured request");
         return;
       }
-      const reviewedAt =
-        status === "approved" || status === "rejected"
-          ? new Date().toISOString().slice(0, 19).replace("T", " ")
-          : null;
-      setClaims((prev) =>
-        prev.map((claim) =>
-          claim.id === id
-            ? { ...claim, status, reviewed_at: reviewedAt }
-            : claim,
-        ),
+      const data = (await res.json()) as {
+        featured_updated?: "activated" | "deactivated" | null;
+      };
+      setRequests((prev) =>
+        prev.map((row) => {
+          if (row.id !== id) return row;
+          let company_featured = row.company_featured;
+          if (data.featured_updated === "activated") company_featured = 1;
+          if (data.featured_updated === "deactivated") company_featured = 0;
+          return { ...row, status, company_featured };
+        }),
       );
     } finally {
       setBusyId(null);
@@ -153,22 +174,22 @@ export function AdminClaimsClient({
   };
 
   const filtered = useMemo(() => {
-    if (filter === "all") return claims;
+    if (filter === "all") return requests;
     if (filter === "open") {
-      return claims.filter((c) => OPEN_STATUSES.has(c.status));
+      return requests.filter((r) => OPEN_STATUSES.has(r.status));
     }
-    return claims.filter((c) => DONE_STATUSES.has(c.status));
-  }, [claims, filter]);
+    return requests.filter((r) => DONE_STATUSES.has(r.status));
+  }, [requests, filter]);
 
-  const openCount = claims.filter((c) => OPEN_STATUSES.has(c.status)).length;
-  const doneCount = claims.filter((c) => DONE_STATUSES.has(c.status)).length;
+  const openCount = requests.filter((r) => OPEN_STATUSES.has(r.status)).length;
+  const doneCount = requests.filter((r) => DONE_STATUSES.has(r.status)).length;
 
   if (!authed) {
     return (
       <div className="mx-auto max-w-[420px] px-6 py-16">
         <h1 className="mb-2 text-2xl font-extrabold text-navy">Admin login</h1>
         <p className="mb-6 text-sm text-muted">
-          Enter the admin token to view and manage company claim requests.
+          Enter the admin token to view and manage Featured interest requests.
         </p>
         <input
           className="field-input mb-3"
@@ -203,11 +224,12 @@ export function AdminClaimsClient({
             Admin
           </div>
           <h1 className="m-0 text-[clamp(26px,3vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
-            Claim requests
+            Featured interest
           </h1>
           <p className="mt-2 m-0 text-sm text-muted">
             Newest first · {filtered.length} shown
-            {filter !== "all" ? ` (${claims.length} total)` : ""}
+            {filter !== "all" ? ` (${requests.length} total)` : ""} · Mark won
+            after payment to set Sponsored placement
           </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
@@ -218,15 +240,15 @@ export function AdminClaimsClient({
             Quote leads
           </Link>
           <Link
-            href="/admin/featured/"
+            href="/admin/claims/"
             className="btn-outline !py-2.5 !px-4 inline-flex items-center"
           >
-            Featured interest
+            Claim requests
           </Link>
           <button
             type="button"
             className="btn-outline !py-2.5 !px-4"
-            onClick={() => void loadClaims()}
+            onClick={() => void loadRequests()}
           >
             Refresh
           </button>
@@ -245,7 +267,7 @@ export function AdminClaimsClient({
           [
             { id: "open", label: `Open (${openCount})` },
             { id: "done", label: `Done (${doneCount})` },
-            { id: "all", label: `All (${claims.length})` },
+            { id: "all", label: `All (${requests.length})` },
           ] as const
         ).map((tab) => (
           <button
@@ -267,57 +289,76 @@ export function AdminClaimsClient({
         <p className="mb-4 text-sm font-semibold text-[#B42318]">{error}</p>
       ) : null}
       {loading ? (
-        <p className="text-muted">Loading claims…</p>
+        <p className="text-muted">Loading Featured requests…</p>
       ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-border bg-white p-8 text-muted">
-          {claims.length === 0
-            ? "No claim requests yet."
+          {requests.length === 0
+            ? "No Featured interest yet. Contractors submit from /for-companies/ or a company profile nudge."
             : filter === "open"
-              ? "No open claims. Switch to Done or All to see reviewed requests."
-              : "No claims in this filter."}
+              ? "No open requests. Switch to Done or All to see won/closed."
+              : "No requests in this filter."}
         </div>
       ) : (
         <div className="grid gap-3">
-          {filtered.map((claim) => (
+          {filtered.map((row) => (
             <article
-              key={claim.id}
+              key={row.id}
               className="rounded-2xl border border-border bg-white p-5 md:p-6"
             >
               <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="text-lg font-extrabold text-navy">
-                    #{claim.id} · {claim.company_name}
+                    #{row.id} · {row.company_name}
                   </div>
                   <div className="mt-1 text-sm text-muted">
-                    {claim.created_at} · {claim.city}
-                    {claim.company_slug ? (
+                    {row.created_at} · {row.city}
+                    {row.company_slug ? (
                       <>
                         {" · "}
-                        <Link
-                          href={`/companies/${claim.company_slug}/`}
-                          className="font-semibold text-michigan-blue"
-                        >
-                          {claim.company_slug}
-                        </Link>
+                        {row.company_exists === 1 ? (
+                          <Link
+                            href={`/companies/${row.company_slug}/`}
+                            className="font-semibold text-michigan-blue"
+                          >
+                            {row.company_slug}
+                          </Link>
+                        ) : (
+                          <span className="font-semibold text-[#B42318]">
+                            {row.company_slug} (not found)
+                          </span>
+                        )}
                       </>
                     ) : null}
                   </div>
                 </div>
-                <StatusPill status={claim.status} />
+                <div className="flex flex-wrap items-center gap-2">
+                  {row.company_featured === 1 ? (
+                    <span className="rounded-full bg-success-bg px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.4px] text-success">
+                      Sponsored on
+                    </span>
+                  ) : null}
+                  <StatusPill status={row.status} />
+                </div>
               </div>
               <div className="mb-4 grid gap-1.5 text-sm text-body-secondary md:grid-cols-2">
                 <div>
+                  <span className="text-faint">Plan:</span>{" "}
+                  <span className="font-semibold text-navy">
+                    {planLabel(row.plan)}
+                  </span>
+                </div>
+                <div>
                   <span className="text-faint">Contact:</span>{" "}
-                  {claim.contact_name || "—"}
+                  {row.contact_name || "—"}
                 </div>
                 <div>
                   <span className="text-faint">Phone:</span>{" "}
-                  {claim.phone ? (
+                  {row.phone ? (
                     <a
                       className="font-semibold text-michigan-blue"
-                      href={`tel:${claim.phone}`}
+                      href={`tel:${row.phone}`}
                     >
-                      {claim.phone}
+                      {row.phone}
                     </a>
                   ) : (
                     "—"
@@ -325,62 +366,66 @@ export function AdminClaimsClient({
                 </div>
                 <div>
                   <span className="text-faint">Email:</span>{" "}
-                  {claim.email ? (
+                  {row.email ? (
                     <a
                       className="font-semibold text-michigan-blue"
-                      href={`mailto:${claim.email}`}
+                      href={`mailto:${row.email}`}
                     >
-                      {claim.email}
+                      {row.email}
                     </a>
                   ) : (
                     "—"
                   )}
                 </div>
-                <div>
-                  <span className="text-faint">Website:</span>{" "}
-                  {claim.website ? (
-                    <a
-                      className="font-semibold text-michigan-blue"
-                      href={claim.website}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {claim.website}
-                    </a>
-                  ) : (
-                    "—"
-                  )}
-                </div>
-                {claim.notes ? (
+                {row.notes ? (
                   <div className="md:col-span-2">
-                    <span className="text-faint">Notes:</span> {claim.notes}
+                    <span className="text-faint">Notes:</span> {row.notes}
                   </div>
                 ) : null}
-                {claim.reviewed_at ? (
-                  <div className="md:col-span-2">
-                    <span className="text-faint">Reviewed:</span>{" "}
-                    {claim.reviewed_at}
+                {!canActivate(row) ? (
+                  <div className="md:col-span-2 text-[#B42318]">
+                    <span className="font-semibold">
+                      Featured cannot be activated:
+                    </span>{" "}
+                    {!row.company_slug?.trim()
+                      ? "no company slug on this request."
+                      : `slug "${row.company_slug}" does not match a listing.`}
                   </div>
                 ) : null}
               </div>
               <div className="flex flex-wrap gap-2">
-                {OPEN_STATUSES.has(claim.status) ? (
+                {OPEN_STATUSES.has(row.status) ? (
                   <>
+                    {row.status !== "contacted" ? (
+                      <button
+                        type="button"
+                        disabled={busyId === row.id}
+                        onClick={() => void setStatus(row.id, "contacted")}
+                        className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-navy disabled:opacity-40"
+                      >
+                        Mark contacted
+                      </button>
+                    ) : null}
                     <button
                       type="button"
-                      disabled={busyId === claim.id}
-                      onClick={() => void setStatus(claim.id, "approved")}
+                      disabled={busyId === row.id || !canActivate(row)}
+                      title={
+                        canActivate(row)
+                          ? "Mark won and set companies.featured = 1"
+                          : "Needs a resolvable company slug"
+                      }
+                      onClick={() => void setStatus(row.id, "won")}
                       className="rounded-[10px] border border-border bg-success-bg px-3 py-2 text-xs font-bold text-success disabled:opacity-40"
                     >
-                      Approve
+                      Mark won · Activate Featured
                     </button>
                     <button
                       type="button"
-                      disabled={busyId === claim.id}
-                      onClick={() => void setStatus(claim.id, "rejected")}
+                      disabled={busyId === row.id}
+                      onClick={() => void setStatus(row.id, "closed")}
                       className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-navy disabled:opacity-40"
                     >
-                      Reject
+                      Close
                     </button>
                   </>
                 ) : (
@@ -388,27 +433,27 @@ export function AdminClaimsClient({
                     <button
                       type="button"
                       disabled={
-                        claim.status === "approved" || busyId === claim.id
+                        row.status === "won" ||
+                        busyId === row.id ||
+                        !canActivate(row)
                       }
-                      onClick={() => void setStatus(claim.id, "approved")}
+                      onClick={() => void setStatus(row.id, "won")}
                       className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold capitalize text-navy disabled:opacity-40"
                     >
-                      Mark approved
+                      Mark won · Activate
                     </button>
                     <button
                       type="button"
-                      disabled={
-                        claim.status === "rejected" || busyId === claim.id
-                      }
-                      onClick={() => void setStatus(claim.id, "rejected")}
+                      disabled={row.status === "closed" || busyId === row.id}
+                      onClick={() => void setStatus(row.id, "closed")}
                       className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold capitalize text-navy disabled:opacity-40"
                     >
-                      Mark rejected
+                      Mark closed
                     </button>
                     <button
                       type="button"
-                      disabled={busyId === claim.id}
-                      onClick={() => void setStatus(claim.id, "pending")}
+                      disabled={busyId === row.id}
+                      onClick={() => void setStatus(row.id, "contacted")}
                       className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold capitalize text-navy disabled:opacity-40"
                     >
                       Reopen
@@ -426,11 +471,13 @@ export function AdminClaimsClient({
 
 function StatusPill({ status }: { status: string }) {
   const color =
-    status === "new" || status === "pending"
+    status === "new"
       ? "bg-[#EEF5FF] text-michigan-blue"
-      : status === "approved"
-        ? "bg-success-bg text-success"
-        : "bg-tag-bg text-muted";
+      : status === "contacted"
+        ? "bg-[#FFF4E5] text-[#B54708]"
+        : status === "won"
+          ? "bg-success-bg text-success"
+          : "bg-tag-bg text-muted";
   return (
     <span
       className={`rounded-full px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.4px] ${color}`}

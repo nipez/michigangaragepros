@@ -178,6 +178,12 @@ export function AdminLeadsClient({
           >
             Claim requests
           </Link>
+          <Link
+            href="/admin/featured/"
+            className="btn-outline !py-2.5 !px-4 inline-flex items-center"
+          >
+            Featured interest
+          </Link>
           <button
             type="button"
             className="btn-outline !py-2.5 !px-4"

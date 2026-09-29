@@ -51,11 +51,11 @@ npx wrangler secret put RESEND_API_KEY
 # npx wrangler secret put NOTIFY_FROM_EMAIL
 # npx wrangler secret put NOTIFY_WEBHOOK_URL
 
-# Required for /admin/leads/ and /admin/claims/ login
+# Required for /admin/leads/, /admin/claims/, and /admin/featured/ login
 npx wrangler secret put ADMIN_TOKEN
 ```
 
-Without `ADMIN_TOKEN`, the admin inboxes return unauthorized / 503 on login. Leads and claims still save and email notify still works when Resend is configured.
+Without `ADMIN_TOKEN`, the admin inboxes return unauthorized / 503 on login. Leads, claims, and Featured interest still save and email notify still works when Resend is configured.
 
 Company reviews use migration `0010_company_reviews.sql` (table `company_reviews`). After deploy, Nick must run:
 
@@ -99,11 +99,14 @@ npm run preview
 | `/get-a-quote/` | 5-step lead flow (`?company=slug` when started from a listing) |
 | `/admin/leads/` | Token-protected lead inbox (triage `new` / `contacted` / `closed`) |
 | `/admin/claims/` | Token-protected claim inbox (triage `pending` → `approved` / `rejected`; approve sets `companies.claimed`) |
+| `/admin/featured/` | Token-protected Featured interest inbox (triage `new` / `contacted` / `won` / `closed`; won sets `companies.featured`) |
 | `POST /api/leads` | Persist quote leads to D1 |
 | `POST /api/claims` | Persist profile claim requests to D1 |
+| `POST /api/featured` | Persist Featured interest to D1 |
 | `GET/POST /api/reviews` | List/submit homeowner reviews (D1) |
 | `GET/PATCH /api/admin/leads` | List / update leads (admin cookie) |
 | `GET/PATCH /api/admin/claims` | List / update claim requests (admin cookie); approve flips `companies.claimed` |
+| `GET/PATCH /api/admin/featured` | List / update Featured requests (admin cookie); won flips `companies.featured` |
 | `POST/DELETE /api/admin/session` | Admin token login / logout |
 
 ## Why builds fail (checklist)
