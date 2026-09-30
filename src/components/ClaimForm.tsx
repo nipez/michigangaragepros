@@ -48,14 +48,14 @@ export function ClaimForm({
             Want to stand out while we verify?
           </div>
           <p className="mb-3.5 text-[13.5px] leading-[1.5] text-muted">
-            Featured placement puts a Sponsored badge at the top of your city
-            results — from $149/mo. No charge until we confirm.
+            Buy Featured online — City from $149/mo with Stripe Checkout — and get
+            a Sponsored badge at the top of your city results.
           </p>
           <Link
             href={featuredHref}
             className="inline-flex rounded-[10px] bg-bright-blue px-4 py-2.5 text-[14px] font-extrabold text-white hover:bg-michigan-blue"
           >
-            See Featured plans →
+            Buy Featured →
           </Link>
         </div>
       </div>

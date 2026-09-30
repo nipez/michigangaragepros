@@ -3,6 +3,7 @@ type GrowthEvent =
   | "quote_submitted"
   | "claim_submitted"
   | "featured_interest"
+  | "featured_checkout_started"
   | "pros_search"
   | "city_browse";
 
