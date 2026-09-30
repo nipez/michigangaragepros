@@ -98,12 +98,16 @@ export async function POST(request: Request) {
       companyName: interest.companyName,
       city: interest.city,
     });
+    const integrationSuffix = crypto
+      .randomUUID()
+      .replace(/-/g, "")
+      .slice(0, 8);
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer_email: interest.email,
       client_reference_id: String(requestId),
-      integration_identifier: `mgp-featured-${interest.plan}-checkout`,
+      integration_identifier: `mgp-featured-${interest.plan}-${integrationSuffix}`,
       line_items: [
         {
           quantity: 1,
