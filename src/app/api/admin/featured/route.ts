@@ -4,8 +4,15 @@ import { getDb, getEnv } from "@/lib/db";
 
 export const runtime = "nodejs";
 
-/** Pipeline statuses for Featured interest (payment is off-platform). */
-const ALLOWED_STATUSES = new Set(["new", "contacted", "won", "closed"]);
+/** Pipeline statuses for Featured interest + Stripe Checkout. */
+const ALLOWED_STATUSES = new Set([
+  "new",
+  "contacted",
+  "checkout_pending",
+  "paid",
+  "won",
+  "closed",
+]);
 
 type FeaturedRow = {
   id: number;
@@ -19,6 +26,8 @@ type FeaturedRow = {
   notes: string | null;
   status: string;
   created_at: string;
+  stripe_session_id: string | null;
+  paid_at: string | null;
   company_featured: number | null;
   company_exists: number | null;
 };
@@ -34,6 +43,7 @@ export async function GET() {
     .prepare(
       `SELECT fr.id, fr.company_name, fr.city, fr.plan, fr.contact_name, fr.email,
               fr.phone, fr.company_slug, fr.notes, fr.status, fr.created_at,
+              fr.stripe_session_id, fr.paid_at,
               c.featured AS company_featured,
               CASE WHEN c.slug IS NULL THEN 0 ELSE 1 END AS company_exists
        FROM featured_requests fr
@@ -71,7 +81,7 @@ export async function PATCH(request: Request) {
   if (!id || !status || !ALLOWED_STATUSES.has(status)) {
     return NextResponse.json(
       {
-        error: "id and status (new|contacted|won|closed) are required",
+        error: "id and status (new|contacted|checkout_pending|paid|won|closed) are required",
       },
       { status: 400 },
     );

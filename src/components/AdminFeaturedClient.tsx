@@ -16,13 +16,15 @@ type FeaturedRow = {
   notes: string | null;
   status: string;
   created_at: string;
+  stripe_session_id?: string | null;
+  paid_at?: string | null;
   company_featured: number | null;
   company_exists: number | null;
 };
 
 type FilterTab = "open" | "done" | "all";
 
-const OPEN_STATUSES = new Set(["new", "contacted"]);
+const OPEN_STATUSES = new Set(["new", "contacted", "checkout_pending", "paid"]);
 const DONE_STATUSES = new Set(["won", "closed"]);
 
 const PLAN_LABEL: Record<string, string> = Object.fromEntries(
@@ -228,8 +230,8 @@ export function AdminFeaturedClient({
           </h1>
           <p className="mt-2 m-0 text-sm text-muted">
             Newest first · {filtered.length} shown
-            {filter !== "all" ? ` (${requests.length} total)` : ""} · Mark won
-            after payment to set Sponsored placement
+            {filter !== "all" ? ` (${requests.length} total)` : ""} · Stripe
+            Checkout sets paid/won automatically; mark won offline when needed
           </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
@@ -382,6 +384,19 @@ export function AdminFeaturedClient({
                     <span className="text-faint">Notes:</span> {row.notes}
                   </div>
                 ) : null}
+                {row.paid_at ? (
+                  <div className="md:col-span-2">
+                    <span className="text-faint">Paid at:</span> {row.paid_at}
+                    {row.stripe_session_id ? (
+                      <>
+                        {" · "}
+                        <span className="font-mono text-[12px] text-navy">
+                          {row.stripe_session_id}
+                        </span>
+                      </>
+                    ) : null}
+                  </div>
+                ) : null}
                 {!canActivate(row) ? (
                   <div className="md:col-span-2 text-[#B42318]">
                     <span className="font-semibold">
@@ -475,14 +490,18 @@ function StatusPill({ status }: { status: string }) {
       ? "bg-[#EEF5FF] text-michigan-blue"
       : status === "contacted"
         ? "bg-[#FFF4E5] text-[#B54708]"
-        : status === "won"
-          ? "bg-success-bg text-success"
-          : "bg-tag-bg text-muted";
+        : status === "checkout_pending"
+          ? "bg-[#F3EEFF] text-[#6941C6]"
+          : status === "paid"
+            ? "bg-[#E6F4EA] text-[#137333]"
+            : status === "won"
+              ? "bg-success-bg text-success"
+              : "bg-tag-bg text-muted";
   return (
     <span
       className={`rounded-full px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.4px] ${color}`}
     >
-      {status}
+      {status.replaceAll("_", " ")}
     </span>
   );
 }

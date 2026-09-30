@@ -40,7 +40,7 @@ npm run db:migrate:remote
 
 Confirm **Bindings** shows `DB` → D1 `michigangaragepros`.
 
-### Secrets (operator alerts + admin inbox)
+### Secrets (operator alerts + admin inbox + Stripe)
 
 Email alerts already use Resend. Set secrets on the Worker:
 
@@ -53,9 +53,29 @@ npx wrangler secret put RESEND_API_KEY
 
 # Required for /admin/leads/, /admin/claims/, and /admin/featured/ login
 npx wrangler secret put ADMIN_TOKEN
+
+# Stripe Featured Checkout (test mode first: sk_test_… / whsec_…)
+npx wrangler secret put STRIPE_SECRET_KEY
+npx wrangler secret put STRIPE_WEBHOOK_SECRET
+# Optional — Checkout Sessions redirect does not need a publishable key today:
+# npx wrangler secret put NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ```
 
 Without `ADMIN_TOKEN`, the admin inboxes return unauthorized / 503 on login. Leads, claims, and Featured interest still save and email notify still works when Resend is configured.
+
+Without `STRIPE_SECRET_KEY`, `/api/featured/checkout` returns 503 and the form’s “talk to us” interest path still works.
+
+**Stripe webhook endpoint** (Dashboard → Developers → Webhooks, or Stripe CLI):
+
+- URL: `https://michigangaragepros.com/api/stripe/webhook/`
+- Events: at least `checkout.session.completed`
+- Signing secret → `STRIPE_WEBHOOK_SECRET`
+
+Featured Stripe columns use migration `0011_featured_stripe.sql`. After deploy, Nick must run:
+
+```bash
+npm run db:migrate:remote
+```
 
 Company reviews use migration `0010_company_reviews.sql` (table `company_reviews`). After deploy, Nick must run:
 
@@ -96,13 +116,18 @@ npm run preview
 | `/cities/[slug]/` | City listings |
 | `/companies/[slug]/` | Company profile |
 | `/for-companies/` | Contractor acquisition |
+| `/for-companies/featured/success/` | Stripe Checkout success (verifies session) |
+| `/for-companies/featured/cancel/` | Stripe Checkout cancel return |
 | `/get-a-quote/` | 5-step lead flow (`?company=slug` when started from a listing) |
 | `/admin/leads/` | Token-protected lead inbox (triage `new` / `contacted` / `closed`) |
 | `/admin/claims/` | Token-protected claim inbox (triage `pending` → `approved` / `rejected`; approve sets `companies.claimed`) |
-| `/admin/featured/` | Token-protected Featured interest inbox (triage `new` / `contacted` / `won` / `closed`; won sets `companies.featured`) |
+| `/admin/featured/` | Token-protected Featured interest inbox (triage `new` / `contacted` / `checkout_pending` / `paid` / `won` / `closed`; won sets `companies.featured`) |
 | `POST /api/leads` | Persist quote leads to D1 |
 | `POST /api/claims` | Persist profile claim requests to D1 |
-| `POST /api/featured` | Persist Featured interest to D1 |
+| `POST /api/featured` | Persist Featured interest to D1 (offline / talk-to-us fallback) |
+| `POST /api/featured/checkout` | Create Stripe Checkout Session (subscription) for Featured |
+| `GET /api/featured/checkout/verify` | Verify Checkout Session + activate Featured (success page) |
+| `POST /api/stripe/webhook` | Stripe webhooks (`checkout.session.completed`) |
 | `GET/POST /api/reviews` | List/submit homeowner reviews (D1) |
 | `GET/PATCH /api/admin/leads` | List / update leads (admin cookie) |
 | `GET/PATCH /api/admin/claims` | List / update claim requests (admin cookie); approve flips `companies.claimed` |

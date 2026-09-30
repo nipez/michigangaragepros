@@ -144,11 +144,12 @@ function ForCompaniesPageInner() {
         >
           <div>
             <h3 className="mb-2 text-[22px] font-extrabold text-navy">
-              Request Featured inventory
+              Buy Featured online
             </h3>
             <p className="mb-5 text-[15px] leading-[1.55] text-muted">
-              Tell us your market and plan. We confirm availability and send
-              payment details — Stripe checkout comes next.
+              Pick City, Metro, or Statewide and pay with Stripe Checkout —
+              monthly subscription at the prices above. Prefer offline? Use
+              “talk to us” on the form and we&apos;ll follow up.
             </p>
             <div className="rounded-[14px] border-[1.5px] border-bright-blue bg-white p-5 shadow-[0_10px_30px_rgba(47,128,237,0.12)]">
               <div className="mb-3 flex items-center gap-2">

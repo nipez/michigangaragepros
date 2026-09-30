@@ -17,7 +17,10 @@
   // Non-secret notify defaults. Set secrets with:
   //   npx wrangler secret put RESEND_API_KEY
   //   npx wrangler secret put ADMIN_TOKEN
+  //   npx wrangler secret put STRIPE_SECRET_KEY
+  //   npx wrangler secret put STRIPE_WEBHOOK_SECRET
   // Optional: npx wrangler secret put NOTIFY_WEBHOOK_URL
+  // Optional (Checkout redirect does not need it): NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
   "vars": {
     "NOTIFY_EMAIL": "nickperez@gmail.com",
     "NOTIFY_FROM_EMAIL": "Michigan Garage Pros <onboarding@resend.dev>"

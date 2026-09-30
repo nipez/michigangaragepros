@@ -13,6 +13,8 @@ type FeaturedInterestFormProps = {
   compact?: boolean;
 };
 
+type Mode = "checkout" | "interest";
+
 export function FeaturedInterestForm({
   initialCompanyName = "",
   initialCity = "",
@@ -29,7 +31,8 @@ export function FeaturedInterestForm({
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
+  const [doneInterest, setDoneInterest] = useState(false);
+  const [mode, setMode] = useState<Mode>("checkout");
 
   const selectedPlan = useMemo(
     () => FEATURED_PLANS.find((p) => p.id === data.plan) ?? FEATURED_PLANS[0],
@@ -43,7 +46,7 @@ export function FeaturedInterestForm({
     setData((prev) => ({ ...prev, [key]: value }));
   };
 
-  if (done) {
+  if (doneInterest) {
     return (
       <div className="rounded-[14px] bg-white p-6 text-left text-navy">
         <div className="mb-2 text-lg font-extrabold">Interest received</div>
@@ -58,6 +61,47 @@ export function FeaturedInterestForm({
     );
   }
 
+  const submitInterest = async () => {
+    const res = await fetch("/api/featured/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    const payload = (await res.json().catch(() => ({}))) as {
+      error?: string;
+    };
+    if (!res.ok) {
+      throw new Error(payload.error || "Unable to submit interest");
+    }
+    trackGrowth("featured_interest", {
+      plan: data.plan,
+      city: data.city,
+      companySlug: data.companySlug || undefined,
+    });
+    setDoneInterest(true);
+  };
+
+  const startCheckout = async () => {
+    const res = await fetch("/api/featured/checkout/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    const payload = (await res.json().catch(() => ({}))) as {
+      error?: string;
+      url?: string;
+    };
+    if (!res.ok || !payload.url) {
+      throw new Error(payload.error || "Unable to start checkout");
+    }
+    trackGrowth("featured_checkout_started", {
+      plan: data.plan,
+      city: data.city,
+      companySlug: data.companySlug || undefined,
+    });
+    window.location.assign(payload.url);
+  };
+
   return (
     <form
       className={`rounded-[14px] bg-white text-left ${compact ? "p-4" : "p-5 sm:p-6"}`}
@@ -66,26 +110,18 @@ export function FeaturedInterestForm({
         setError(null);
         setSubmitting(true);
         try {
-          const res = await fetch("/api/featured/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          });
-          const payload = (await res.json().catch(() => ({}))) as {
-            error?: string;
-          };
-          if (!res.ok) {
-            throw new Error(payload.error || "Unable to submit interest");
+          if (mode === "checkout") {
+            await startCheckout();
+          } else {
+            await submitInterest();
           }
-          trackGrowth("featured_interest", {
-            plan: data.plan,
-            city: data.city,
-            companySlug: data.companySlug || undefined,
-          });
-          setDone(true);
         } catch (err) {
           setError(
-            err instanceof Error ? err.message : "Unable to submit interest",
+            err instanceof Error
+              ? err.message
+              : mode === "checkout"
+                ? "Unable to start checkout"
+                : "Unable to submit interest",
           );
         } finally {
           setSubmitting(false);
@@ -208,19 +244,60 @@ export function FeaturedInterestForm({
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="mt-4 h-12 w-full rounded-[10px] border-none bg-bright-blue text-[15px] font-extrabold text-white transition-colors hover:bg-michigan-blue disabled:cursor-default disabled:bg-[#B9CDDE]"
-      >
-        {submitting
-          ? "Submitting…"
-          : `Request ${selectedPlan.name} →`}
-      </button>
-      <p className="mt-3 mb-0 text-center text-[12.5px] leading-[1.5] text-faint">
-        No charge yet — we confirm inventory and send a simple invoice / Stripe
-        link.
-      </p>
+      {mode === "checkout" ? (
+        <>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-4 h-12 w-full rounded-[10px] border-none bg-bright-blue text-[15px] font-extrabold text-white transition-colors hover:bg-michigan-blue disabled:cursor-default disabled:bg-[#B9CDDE]"
+          >
+            {submitting
+              ? "Redirecting to Stripe…"
+              : `Subscribe · $${selectedPlan.priceMonthly}/mo →`}
+          </button>
+          <p className="mt-3 mb-0 text-center text-[12.5px] leading-[1.5] text-faint">
+            Secure monthly billing via Stripe Checkout. Cancel anytime from your
+            receipt email.
+          </p>
+          <button
+            type="button"
+            disabled={submitting}
+            onClick={() => {
+              setError(null);
+              setMode("interest");
+            }}
+            className="mt-3 w-full border-none bg-transparent text-[13px] font-bold text-michigan-blue underline-offset-2 hover:underline disabled:opacity-60"
+          >
+            Prefer to talk first? Request a call instead
+          </button>
+        </>
+      ) : (
+        <>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-4 h-12 w-full rounded-[10px] border-none bg-bright-blue text-[15px] font-extrabold text-white transition-colors hover:bg-michigan-blue disabled:cursor-default disabled:bg-[#B9CDDE]"
+          >
+            {submitting
+              ? "Submitting…"
+              : `Request ${selectedPlan.name} →`}
+          </button>
+          <p className="mt-3 mb-0 text-center text-[12.5px] leading-[1.5] text-faint">
+            No charge yet — we confirm inventory and follow up offline.
+          </p>
+          <button
+            type="button"
+            disabled={submitting}
+            onClick={() => {
+              setError(null);
+              setMode("checkout");
+            }}
+            className="mt-3 w-full border-none bg-transparent text-[13px] font-bold text-michigan-blue underline-offset-2 hover:underline disabled:opacity-60"
+          >
+            ← Back to pay online with Stripe
+          </button>
+        </>
+      )}
     </form>
   );
 }
