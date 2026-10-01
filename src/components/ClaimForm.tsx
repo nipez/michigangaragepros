@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { trackGrowth } from "@/lib/analytics";
 import { EMPTY_CLAIM, type ClaimRequest } from "@/lib/claim";
+import { FeaturedInterestForm } from "./FeaturedInterestForm";
 
 type ClaimFormProps = {
   initialCompanyName?: string;
@@ -30,6 +31,14 @@ export function ClaimForm({
     setClaim((prev) => ({ ...prev, [key]: value }));
   };
 
+  useEffect(() => {
+    if (!submittedEmail) return;
+    trackGrowth("featured_post_claim_shown", {
+      city: claim.city,
+      companySlug: claim.companySlug || undefined,
+    });
+  }, [submittedEmail, claim.city, claim.companySlug]);
+
   if (submittedEmail) {
     const featuredHref = `/for-companies/?company=${encodeURIComponent(claim.companyName)}&city=${encodeURIComponent(claim.city)}&slug=${encodeURIComponent(claim.companySlug)}#featured`;
     return (
@@ -49,14 +58,26 @@ export function ClaimForm({
           </div>
           <p className="mb-3.5 text-[13.5px] leading-[1.5] text-muted">
             Buy Featured online — City from $149/mo with Stripe Checkout — and get
-            a Sponsored badge at the top of your city results.
+            a Sponsored badge at the top of your city results. Contact details are
+            filled in from your claim.
           </p>
-          <Link
-            href={featuredHref}
-            className="inline-flex rounded-[10px] bg-bright-blue px-4 py-2.5 text-[14px] font-extrabold text-white hover:bg-michigan-blue"
-          >
-            Buy Featured →
-          </Link>
+          <FeaturedInterestForm
+            compact
+            initialCompanyName={claim.companyName}
+            initialCity={claim.city}
+            initialCompanySlug={claim.companySlug}
+            initialContactName={claim.contactName}
+            initialEmail={claim.email}
+            initialPhone={claim.phone}
+          />
+          <p className="mt-3 mb-0 text-center text-[12.5px] leading-[1.5] text-faint">
+            <Link
+              href={featuredHref}
+              className="font-bold text-michigan-blue underline-offset-2 hover:underline"
+            >
+              See full pricing details →
+            </Link>
+          </p>
         </div>
       </div>
     );
