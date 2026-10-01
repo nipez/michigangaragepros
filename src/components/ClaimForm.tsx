@@ -70,10 +70,10 @@ export function ClaimForm({
             initialEmail={claim.email}
             initialPhone={claim.phone}
           />
-          <p className="mt-3 mb-0 text-center text-[12.5px] leading-[1.5] text-faint">
+          <p className="mt-3 mb-0 text-center text-[12.5px] leading-[1.5]">
             <Link
               href={featuredHref}
-              className="font-bold text-michigan-blue underline-offset-2 hover:underline"
+              className="on-light-link font-bold underline-offset-2 hover:underline"
             >
               See full pricing details →
             </Link>
