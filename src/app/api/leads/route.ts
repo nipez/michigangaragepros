@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { isStepValid, type Lead } from "@/lib/lead";
-import { formatLeadNotify, notifyOperator } from "@/lib/notify";
+import {
+  persistLeadRouting,
+  resolveLeadRecipients,
+} from "@/lib/lead-routing";
+import {
+  formatCompanyLeadNotify,
+  formatLeadNotify,
+  notifyCompany,
+  notifyOperator,
+} from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -29,6 +38,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error }, { status: 400 });
   }
 
+  const service = body.service.trim();
+  const issue = body.issue.trim();
+  const zip = body.zip.trim();
+  const name = body.name.trim();
+  const phone = body.phone.trim() || null;
+  const email = body.email.trim() || null;
+  const timing = body.timing.trim();
+  const companySlug = body.companySlug?.trim() || null;
+
   try {
     const db = await getDb();
     const result = await db
@@ -36,32 +54,57 @@ export async function POST(request: Request) {
         `INSERT INTO leads (service, issue, zip, name, phone, email, timing, company_slug)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       )
-      .bind(
-        body.service.trim(),
-        body.issue.trim(),
-        body.zip.trim(),
-        body.name.trim(),
-        body.phone.trim() || null,
-        body.email.trim() || null,
-        body.timing.trim(),
-        body.companySlug?.trim() || null,
-      )
+      .bind(service, issue, zip, name, phone, email, timing, companySlug)
       .run();
 
     const id = result.meta.last_row_id;
+
+    // Operator notify stays on every lead (additive company notify below).
     await notifyOperator(
       formatLeadNotify({
         id: id ?? "unknown",
-        service: body.service.trim(),
-        issue: body.issue.trim(),
-        zip: body.zip.trim(),
-        name: body.name.trim(),
-        phone: body.phone.trim() || null,
-        email: body.email.trim() || null,
-        timing: body.timing.trim(),
-        companySlug: body.companySlug?.trim() || null,
+        service,
+        issue,
+        zip,
+        name,
+        phone,
+        email,
+        timing,
+        companySlug,
       }),
     );
+
+    // Best-effort company routing — never fail the lead save.
+    if (id != null) {
+      try {
+        const recipients = await resolveLeadRecipients(db, {
+          zip,
+          companySlug,
+        });
+        const routed = [];
+        for (const recipient of recipients) {
+          const emailed = await notifyCompany(
+            recipient.email,
+            formatCompanyLeadNotify({
+              id,
+              companyName: recipient.companyName,
+              service,
+              issue,
+              zip,
+              name,
+              phone,
+              email,
+              timing,
+              reason: recipient.reason,
+            }),
+          );
+          routed.push({ ...recipient, emailed });
+        }
+        await persistLeadRouting(db, Number(id), routed);
+      } catch (routeErr) {
+        console.error("lead routing failed", routeErr);
+      }
+    }
 
     return NextResponse.json({
       ok: true,

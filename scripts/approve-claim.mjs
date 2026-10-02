@@ -74,13 +74,50 @@ run(
 );
 
 if (slug) {
-  run(
-    `UPDATE companies
-     SET claimed = 1
-     WHERE slug = '${escapeSql(slug)}'`,
-  );
+  // Prefer claim contact email as durable companies.notify_email for lead routing.
+  let notifyEmail = "";
+  if (id) {
+    const raw = run(
+      `SELECT email FROM claim_requests WHERE id = ${Number(id)} LIMIT 1`,
+    );
+    try {
+      const parsed = JSON.parse(raw);
+      const rows = parsed?.[0]?.results ?? parsed?.results ?? [];
+      notifyEmail = String(rows[0]?.email ?? "").trim();
+    } catch {
+      // fall through — still mark claimed
+    }
+  } else {
+    const raw = run(
+      `SELECT email FROM claim_requests
+       WHERE company_slug = '${escapeSql(slug)}' AND status = 'approved'
+       ORDER BY datetime(COALESCE(reviewed_at, created_at)) DESC
+       LIMIT 1`,
+    );
+    try {
+      const parsed = JSON.parse(raw);
+      const rows = parsed?.[0]?.results ?? parsed?.results ?? [];
+      notifyEmail = String(rows[0]?.email ?? "").trim();
+    } catch {
+      // fall through
+    }
+  }
+
+  if (notifyEmail) {
+    run(
+      `UPDATE companies
+       SET claimed = 1, notify_email = '${escapeSql(notifyEmail)}'
+       WHERE slug = '${escapeSql(slug)}'`,
+    );
+  } else {
+    run(
+      `UPDATE companies
+       SET claimed = 1
+       WHERE slug = '${escapeSql(slug)}'`,
+    );
+  }
   console.log(
-    `\nApproved claim${id ? ` id ${id}` : ""} for slug "${slug}" and marked companies.claimed = 1 (if row exists).`,
+    `\nApproved claim${id ? ` id ${id}` : ""} for slug "${slug}" and marked companies.claimed = 1 (if row exists)${notifyEmail ? ` with notify_email=${notifyEmail}` : ""}.`,
   );
 } else {
   console.log(

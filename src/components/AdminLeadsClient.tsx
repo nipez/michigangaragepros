@@ -3,6 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+type LeadRouting = {
+  id: number;
+  lead_id: number;
+  company_slug: string;
+  email: string;
+  reason: string;
+  emailed: number;
+  created_at: string;
+};
+
 type LeadRow = {
   id: number;
   service: string;
@@ -15,6 +25,9 @@ type LeadRow = {
   company_slug: string | null;
   status: string;
   created_at: string;
+  routed_at: string | null;
+  routed_to: string | null;
+  routings?: LeadRouting[];
 };
 
 export function AdminLeadsClient({
@@ -276,6 +289,10 @@ export function AdminLeadsClient({
                     </Link>
                   </div>
                 ) : null}
+                <div className="md:col-span-2">
+                  <span className="text-faint">Company notify:</span>{" "}
+                  <RoutingSummary lead={lead} />
+                </div>
               </div>
               <div className="flex flex-wrap gap-2">
                 {(["new", "contacted", "closed"] as const).map((status) => (
@@ -296,6 +313,56 @@ export function AdminLeadsClient({
       )}
     </div>
   );
+}
+
+function RoutingSummary({ lead }: { lead: LeadRow }) {
+  const routings = lead.routings ?? [];
+  if (routings.length > 0) {
+    return (
+      <span className="text-body-secondary">
+        {routings.map((r, i) => (
+          <span key={r.id}>
+            {i > 0 ? ", " : null}
+            <Link
+              href={`/companies/${r.company_slug}/`}
+              className="font-semibold text-michigan-blue"
+            >
+              {r.company_slug}
+            </Link>
+            <span className="text-faint">
+              {" "}
+              ({r.reason}
+              {r.emailed ? "" : ", send failed"})
+            </span>
+          </span>
+        ))}
+        {lead.routed_at ? (
+          <span className="text-faint"> · {lead.routed_at}</span>
+        ) : null}
+      </span>
+    );
+  }
+
+  if (lead.routed_to) {
+    return (
+      <span className="text-body-secondary">
+        {lead.routed_to}
+        {lead.routed_at ? (
+          <span className="text-faint"> · {lead.routed_at}</span>
+        ) : null}
+      </span>
+    );
+  }
+
+  if (lead.routed_at) {
+    return (
+      <span className="text-muted">
+        None matched · {lead.routed_at}
+      </span>
+    );
+  }
+
+  return <span className="text-muted">Not routed</span>;
 }
 
 function StatusPill({ status }: { status: string }) {

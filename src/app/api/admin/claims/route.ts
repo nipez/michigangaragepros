@@ -81,10 +81,15 @@ export async function PATCH(request: Request) {
   const db = await getDb();
   const existing = await db
     .prepare(
-      `SELECT id, company_slug, status FROM claim_requests WHERE id = ? LIMIT 1`,
+      `SELECT id, company_slug, email, status FROM claim_requests WHERE id = ? LIMIT 1`,
     )
     .bind(id)
-    .first<{ id: number; company_slug: string | null; status: string }>();
+    .first<{
+      id: number;
+      company_slug: string | null;
+      email: string | null;
+      status: string;
+    }>();
 
   if (!existing) {
     return NextResponse.json({ error: "Claim not found" }, { status: 404 });
@@ -93,6 +98,7 @@ export async function PATCH(request: Request) {
   const setReviewed =
     status === "approved" || status === "rejected";
   const slug = (existing.company_slug ?? "").trim();
+  const claimEmail = (existing.email ?? "").trim();
 
   const statements = [];
 
@@ -126,14 +132,27 @@ export async function PATCH(request: Request) {
     );
   }
 
-  // Same side effect as scripts/approve-claim.mjs: mark the company claimed.
+  // Same side effect as scripts/approve-claim.mjs: mark the company claimed
+  // and stash the claim contact as companies.notify_email for lead routing.
   // Reject (and other statuses) must not flip companies.claimed.
   if (status === "approved" && slug) {
-    statements.push(
-      db
-        .prepare(`UPDATE companies SET claimed = 1 WHERE slug = ?`)
-        .bind(slug),
-    );
+    if (claimEmail) {
+      statements.push(
+        db
+          .prepare(
+            `UPDATE companies
+             SET claimed = 1, notify_email = ?
+             WHERE slug = ?`,
+          )
+          .bind(claimEmail, slug),
+      );
+    } else {
+      statements.push(
+        db
+          .prepare(`UPDATE companies SET claimed = 1 WHERE slug = ?`)
+          .bind(slug),
+      );
+    }
   }
 
   await db.batch(statements);
