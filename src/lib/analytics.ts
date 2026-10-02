@@ -2,6 +2,7 @@ type GrowthEvent =
   | "quote_started"
   | "quote_submitted"
   | "claim_submitted"
+  | "featured_post_claim_shown"
   | "featured_interest"
   | "featured_checkout_started"
   | "pros_search"

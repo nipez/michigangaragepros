@@ -9,6 +9,9 @@ type FeaturedInterestFormProps = {
   initialCompanyName?: string;
   initialCity?: string;
   initialCompanySlug?: string;
+  initialContactName?: string;
+  initialEmail?: string;
+  initialPhone?: string;
   initialPlan?: FeaturedPlanId;
   compact?: boolean;
 };
@@ -19,6 +22,9 @@ export function FeaturedInterestForm({
   initialCompanyName = "",
   initialCity = "",
   initialCompanySlug = "",
+  initialContactName = "",
+  initialEmail = "",
+  initialPhone = "",
   initialPlan = "city",
   compact = false,
 }: FeaturedInterestFormProps) {
@@ -27,6 +33,9 @@ export function FeaturedInterestForm({
     companyName: initialCompanyName,
     city: initialCity,
     companySlug: initialCompanySlug,
+    contactName: initialContactName,
+    email: initialEmail,
+    phone: initialPhone,
     plan: initialPlan,
   });
   const [submitting, setSubmitting] = useState(false);

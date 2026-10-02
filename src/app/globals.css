@@ -330,6 +330,19 @@ a.on-dark-link:hover {
   color: #fff !important;
 }
 
+/* Light cards nested inside dark CTA bands (e.g. claim success upsell). */
+.hero-gradient a.on-light-link,
+.cta-gradient a.on-light-link,
+a.on-light-link {
+  color: var(--michigan-blue) !important;
+}
+
+.hero-gradient a.on-light-link:hover,
+.cta-gradient a.on-light-link:hover,
+a.on-light-link:hover {
+  color: var(--bright-blue) !important;
+}
+
 .hero-gradient a.btn-primary,
 .hero-gradient a.btn-navy,
 .hero-gradient a[class*="bg-bright-blue"],
