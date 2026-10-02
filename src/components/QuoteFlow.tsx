@@ -31,6 +31,7 @@ export function QuoteFlow({
           <LeadForm
             variant="page"
             initialStep={step}
+            companyName={initialCompanyName}
             initialLead={{
               service: initialService,
               zip: initialZip,
