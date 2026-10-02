@@ -49,9 +49,11 @@ export default function PrivacyPage() {
           </p>
           <h2 className="m-0 text-xl font-extrabold text-navy">How we use it</h2>
           <p className="m-0">
-            Quote details are shared with relevant local companies so they can
-            respond. Claim and Featured requests are used to verify ownership and
-            follow up about listings. We do not sell personal information.
+            Quote requests and contact info are shared with up to 3 claimed local
+            garage door pros who serve your area (or with a company you selected
+            from their listing) so they can contact you with a quote. Claim and
+            Featured requests are used to verify ownership and follow up about
+            listings. We do not sell personal information.
           </p>
           <h2 className="m-0 text-xl font-extrabold text-navy">Contact</h2>
           <p className="m-0">

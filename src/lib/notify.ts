@@ -169,6 +169,11 @@ function escapeHtml(value: string) {
     .replaceAll(">", "&gt;");
 }
 
+/** Keep intentional blank lines; only drop null optional fields. */
+function keepLines(lines: Array<string | null>): string[] {
+  return lines.filter((l): l is string => l !== null);
+}
+
 export function formatClaimNotify(claim: {
   id: number | string;
   companyName: string;
@@ -180,7 +185,7 @@ export function formatClaimNotify(claim: {
   companySlug?: string;
   notes?: string;
 }) {
-  const lines = [
+  const lines = keepLines([
     "New company page claim request",
     "",
     `ID: ${claim.id}`,
@@ -197,7 +202,7 @@ export function formatClaimNotify(claim: {
     claim.companySlug
       ? `Approve with: npm run db:approve-claim -- --slug=${claim.companySlug}`
       : null,
-  ].filter(Boolean);
+  ]);
 
   return {
     kind: "claim" as const,
@@ -217,7 +222,7 @@ export function formatLeadNotify(lead: {
   timing: string;
   companySlug?: string | null;
 }) {
-  const lines = [
+  const lines = keepLines([
     "New homeowner lead",
     "",
     `ID: ${lead.id}`,
@@ -231,7 +236,7 @@ export function formatLeadNotify(lead: {
     lead.companySlug ? `Company slug: ${lead.companySlug}` : null,
     "",
     "Review in /admin/leads/ or: npm run db:leads",
-  ].filter(Boolean);
+  ]);
 
   return {
     kind: "lead" as const,
@@ -257,7 +262,7 @@ export function formatCompanyLeadNotify(lead: {
       ? "A homeowner requested a quote from your listing on Michigan Garage Pros."
       : "A homeowner near your service area requested a quote on Michigan Garage Pros.";
 
-  const lines = [
+  const lines = keepLines([
     `Hi ${lead.companyName},`,
     "",
     why,
@@ -276,12 +281,31 @@ export function formatCompanyLeadNotify(lead: {
     "",
     "— Michigan Garage Pros",
     "https://michigangaragepros.com",
-  ].filter(Boolean);
+  ]);
+
+  const contactRows = keepLines([
+    `<strong>Name:</strong> ${escapeHtml(lead.name)}`,
+    lead.phone ? `<strong>Phone:</strong> ${escapeHtml(lead.phone)}` : null,
+    lead.email ? `<strong>Email:</strong> ${escapeHtml(lead.email)}` : null,
+  ]);
+
+  const html = [
+    `<p>Hi ${escapeHtml(lead.companyName)},</p>`,
+    `<p>${escapeHtml(why)}</p>`,
+    `<p><strong>Service:</strong> ${escapeHtml(lead.service)}<br/>`,
+    `<strong>Issue:</strong> ${escapeHtml(lead.issue)}<br/>`,
+    `<strong>ZIP:</strong> ${escapeHtml(lead.zip)}<br/>`,
+    `<strong>Timing:</strong> ${escapeHtml(lead.timing)}</p>`,
+    `<p><strong>Homeowner contact:</strong><br/>${contactRows.join("<br/>")}</p>`,
+    `<p>Please reach out promptly — homeowners often request multiple quotes.</p>`,
+    `<p>— Michigan Garage Pros<br/><a href="https://michigangaragepros.com">https://michigangaragepros.com</a></p>`,
+  ].join("\n");
 
   return {
     kind: "company-lead" as const,
     subject: `New quote lead: ${lead.service} near ${lead.zip}`,
     text: lines.join("\n"),
+    html,
   };
 }
 
@@ -296,7 +320,7 @@ export function formatFeaturedNotify(interest: {
   companySlug?: string;
   notes?: string;
 }) {
-  const lines = [
+  const lines = keepLines([
     "New Featured placement interest",
     "",
     `ID: ${interest.id}`,
@@ -310,7 +334,7 @@ export function formatFeaturedNotify(interest: {
     interest.notes ? `Notes: ${interest.notes}` : null,
     "",
     "Review with: npm run db:featured",
-  ].filter(Boolean);
+  ]);
 
   return {
     kind: "featured" as const,
