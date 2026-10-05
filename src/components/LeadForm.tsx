@@ -18,6 +18,8 @@ type LeadFormProps = {
   variant?: "page" | "modal";
   onDoneClose?: () => void;
   onExitHref?: string;
+  /** When set, consent copy names this company as the primary recipient. */
+  companyName?: string;
 };
 
 export function LeadForm({
@@ -26,6 +28,7 @@ export function LeadForm({
   variant = "page",
   onDoneClose,
   onExitHref = "/",
+  companyName = "",
 }: LeadFormProps) {
   const [step, setStep] = useState(initialStep);
   const [done, setDone] = useState(false);
@@ -235,9 +238,20 @@ export function LeadForm({
         </div>
       )}
 
+      {step === 5 ? (
+        <p
+          className="mt-5 mb-0 text-[12.5px] leading-[1.5] text-muted"
+          style={{ marginTop: variant === "page" ? 22 : 18 }}
+        >
+          {companyName.trim()
+            ? `By submitting, you agree we may share your request and contact info with ${companyName.trim()} so they can contact you with a quote. If they can't take it, other local pros who serve your area may also be contacted.`
+            : "By submitting, you agree we may share your request and contact info with up to 3 local garage door pros who serve your area so they can contact you with a quote."}
+        </p>
+      ) : null}
+
       <div
         className="flex items-center justify-between"
-        style={{ marginTop: variant === "page" ? 30 : 28 }}
+        style={{ marginTop: step === 5 ? 14 : variant === "page" ? 30 : 28 }}
       >
         <button
           type="button"

@@ -77,6 +77,12 @@ Featured Stripe columns use migration `0011_featured_stripe.sql`. After deploy, 
 npm run db:migrate:remote
 ```
 
+Lead routing (claimed-company notify) uses migration `0012_lead_routing.sql` (`companies.notify_email`, `leads.routed_at` / `routed_to`, `lead_routings`). After deploy, Nick must run:
+
+```bash
+npm run db:migrate:remote
+```
+
 Company reviews use migration `0010_company_reviews.sql` (table `company_reviews`). After deploy, Nick must run:
 
 ```bash
@@ -120,9 +126,9 @@ npm run preview
 | `/for-companies/featured/cancel/` | Stripe Checkout cancel return |
 | `/get-a-quote/` | 5-step lead flow (`?company=slug` when started from a listing) |
 | `/admin/leads/` | Token-protected lead inbox (triage `new` / `contacted` / `closed`) |
-| `/admin/claims/` | Token-protected claim inbox (triage `pending` → `approved` / `rejected`; approve sets `companies.claimed`) |
+| `/admin/claims/` | Token-protected claim inbox (triage `pending` → `approved` / `rejected`; approve sets `companies.claimed` + `notify_email`) |
 | `/admin/featured/` | Token-protected Featured interest inbox (triage `new` / `contacted` / `checkout_pending` / `paid` / `won` / `closed`; won sets `companies.featured`) |
-| `POST /api/leads` | Persist quote leads to D1 |
+| `POST /api/leads` | Persist quote leads to D1; notify operator + route to claimed companies |
 | `POST /api/claims` | Persist profile claim requests to D1 |
 | `POST /api/featured` | Persist Featured interest to D1 (offline / talk-to-us fallback) |
 | `POST /api/featured/checkout` | Create Stripe Checkout Session (subscription) for Featured |
