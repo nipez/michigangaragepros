@@ -12,7 +12,7 @@ interface CloudflareEnv {
   NOTIFY_WEBHOOK_URL?: string;
   /** Verified Resend from-address */
   NOTIFY_FROM_EMAIL?: string;
-  /** Token for /admin/leads/, /admin/claims/, /admin/featured/ — set via `wrangler secret put ADMIN_TOKEN` */
+  /** Token for /admin/leads/, /admin/claims/, /admin/featured/, /admin/reviews/ — set via `wrangler secret put ADMIN_TOKEN` */
   ADMIN_TOKEN?: string;
   /** Stripe secret key (sk_test_… / sk_live_… or rk_…) — `wrangler secret put STRIPE_SECRET_KEY` */
   STRIPE_SECRET_KEY?: string;

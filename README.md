@@ -51,7 +51,7 @@ npx wrangler secret put RESEND_API_KEY
 # npx wrangler secret put NOTIFY_FROM_EMAIL
 # npx wrangler secret put NOTIFY_WEBHOOK_URL
 
-# Required for /admin/leads/, /admin/claims/, and /admin/featured/ login
+# Required for /admin/leads/, /admin/claims/, /admin/featured/, and /admin/reviews/ login
 npx wrangler secret put ADMIN_TOKEN
 
 # Stripe Featured Checkout (test mode first: sk_test_… / whsec_…)
@@ -83,7 +83,7 @@ Lead routing (claimed-company notify) uses migration `0012_lead_routing.sql` (`c
 npm run db:migrate:remote
 ```
 
-Company reviews use migration `0010_company_reviews.sql` (table `company_reviews`). After deploy, Nick must run:
+Company reviews use migration `0010_company_reviews.sql` (table `company_reviews`). Review moderation adds `moderated_at` via `0013_review_moderation.sql`. After deploy, Nick must run:
 
 ```bash
 npm run db:migrate:remote
@@ -91,7 +91,7 @@ npm run db:migrate:remote
 
 Seed columns `companies.rating` / `companies.reviews` remain unused for display — averages and counts come only from `company_reviews`.
 
-**Moderation choice:** new reviews are `visible` by default after honeypot + per-IP rate limits (5/day global, 1/day per company). Status `hidden` is available for future moderation without a pending queue.
+**Moderation choice:** new reviews are inserted as `pending` and only become public when an operator Approves them to `status = 'visible'` in `/admin/reviews/`. Hide → `hidden`, Spam → `spam`. Public profiles and rating aggregates still query `status = 'visible'` only (unchanged from PR 30). Existing already-visible reviews are not backfilled, so they stay public after the migration.
 
 ### Public URL
 
@@ -128,16 +128,18 @@ npm run preview
 | `/admin/leads/` | Token-protected lead inbox (triage `new` / `contacted` / `closed`) |
 | `/admin/claims/` | Token-protected claim inbox (triage `pending` → `approved` / `rejected`; approve sets `companies.claimed` + `notify_email`) |
 | `/admin/featured/` | Token-protected Featured interest inbox (triage `new` / `contacted` / `checkout_pending` / `paid` / `won` / `closed`; won sets `companies.featured`) |
+| `/admin/reviews/` | Token-protected review moderation inbox (triage `pending` → `visible` / `hidden` / `spam`) |
 | `POST /api/leads` | Persist quote leads to D1; notify operator + route to claimed companies |
 | `POST /api/claims` | Persist profile claim requests to D1 |
 | `POST /api/featured` | Persist Featured interest to D1 (offline / talk-to-us fallback) |
 | `POST /api/featured/checkout` | Create Stripe Checkout Session (subscription) for Featured |
 | `GET /api/featured/checkout/verify` | Verify Checkout Session + activate Featured (success page) |
 | `POST /api/stripe/webhook` | Stripe webhooks (`checkout.session.completed`) |
-| `GET/POST /api/reviews` | List/submit homeowner reviews (D1) |
+| `GET/POST /api/reviews` | List/submit homeowner reviews (D1); new submissions start as `pending` |
 | `GET/PATCH /api/admin/leads` | List / update leads (admin cookie) |
 | `GET/PATCH /api/admin/claims` | List / update claim requests (admin cookie); approve flips `companies.claimed` |
 | `GET/PATCH /api/admin/featured` | List / update Featured requests (admin cookie); won flips `companies.featured` |
+| `GET/PATCH /api/admin/reviews` | List / moderate reviews (admin cookie); approve → `visible` |
 | `POST/DELETE /api/admin/session` | Admin token login / logout |
 
 ## Why builds fail (checklist)

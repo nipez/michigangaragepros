@@ -19,6 +19,7 @@
     "db:claims": "wrangler d1 execute michigangaragepros --remote --command \"SELECT id, company_name, city, contact_name, email, phone, company_slug, status, created_at FROM claim_requests ORDER BY created_at DESC LIMIT 50\"",
     "db:leads": "wrangler d1 execute michigangaragepros --remote --command \"SELECT id, service, zip, name, phone, email, status, created_at FROM leads ORDER BY created_at DESC LIMIT 50\"",
     "db:featured": "wrangler d1 execute michigangaragepros --remote --command \"SELECT id, company_name, city, plan, contact_name, email, phone, company_slug, status, stripe_session_id, paid_at, created_at FROM featured_requests ORDER BY created_at DESC LIMIT 50\"",
+    "db:reviews": "wrangler d1 execute michigangaragepros --remote --command \"SELECT id, company_slug, author_name, rating, status, created_at, moderated_at FROM company_reviews ORDER BY created_at DESC LIMIT 50\"",
     "db:approve-claim": "node scripts/approve-claim.mjs"
   },
   "dependencies": {
