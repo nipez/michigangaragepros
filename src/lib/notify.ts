@@ -1,7 +1,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export type NotifyPayload = {
-  kind: "claim" | "lead" | "featured" | "company-lead";
+  kind: "claim" | "lead" | "featured" | "company-lead" | "review";
   subject: string;
   text: string;
   html?: string;
@@ -339,6 +339,39 @@ export function formatFeaturedNotify(interest: {
   return {
     kind: "featured" as const,
     subject: `Featured interest: ${interest.companyName} (${interest.plan})`,
+    text: lines.join("\n"),
+  };
+}
+
+export function formatReviewNotify(review: {
+  id: number | string;
+  companyName: string;
+  companySlug: string;
+  authorName: string;
+  rating: number;
+  body: string;
+}) {
+  const preview =
+    review.body.length > 200
+      ? `${review.body.slice(0, 197)}…`
+      : review.body;
+
+  const lines = keepLines([
+    "New company review awaiting moderation",
+    "",
+    `ID: ${review.id}`,
+    `Company: ${review.companyName}`,
+    `Listing slug: ${review.companySlug}`,
+    `Reviewer: ${review.authorName}`,
+    `Rating: ${review.rating}/5`,
+    `Review: ${preview}`,
+    "",
+    "Moderate in /admin/reviews/ or: npm run db:reviews",
+  ]);
+
+  return {
+    kind: "review" as const,
+    subject: `Review pending: ${review.companyName} (${review.rating}/5)`,
     text: lines.join("\n"),
   };
 }

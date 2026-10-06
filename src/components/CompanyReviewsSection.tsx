@@ -187,7 +187,8 @@ function ReviewForm({
           Thanks for your review
         </div>
         <p className="m-0 mt-1 text-[13.5px] leading-[1.5] text-muted">
-          It&apos;s live on {companyName}&apos;s profile.
+          Thanks — we&apos;ll publish it on {companyName}&apos;s profile after
+          a quick review.
         </p>
       </div>
     );

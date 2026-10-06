@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCompanyBySlug } from "@/data/companies";
 import { getDb } from "@/lib/db";
+import { formatReviewNotify, notifyOperator } from "@/lib/notify";
 import {
   validateReview,
   type PublicReview,
@@ -247,11 +248,13 @@ export async function POST(request: Request) {
       );
     }
 
+    // New reviews start as pending until an operator approves them in
+    // /admin/reviews/. Public GET still only returns status = 'visible'.
     const result = await db
       .prepare(
         `INSERT INTO company_reviews (
            company_slug, author_name, contact, rating, body, status, ip_hash
-         ) VALUES (?, ?, ?, ?, ?, 'visible', ?)`,
+         ) VALUES (?, ?, ?, ?, ?, 'pending', ?)`,
       )
       .bind(
         review.companySlug,
@@ -263,10 +266,23 @@ export async function POST(request: Request) {
       )
       .run();
 
+    const id = result.meta.last_row_id;
+    const company = getCompanyBySlug(review.companySlug);
+    void notifyOperator(
+      formatReviewNotify({
+        id: id ?? "?",
+        companyName: company?.name ?? review.companySlug,
+        companySlug: review.companySlug,
+        authorName: review.authorName,
+        rating: review.rating,
+        body: review.body,
+      }),
+    );
+
     return NextResponse.json({
       ok: true,
-      id: result.meta.last_row_id,
-      status: "visible",
+      id,
+      status: "pending",
     });
   } catch (err) {
     console.error("review insert failed", err);

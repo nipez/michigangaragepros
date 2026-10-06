@@ -247,6 +247,12 @@ export function AdminFeaturedClient({
           >
             Claim requests
           </Link>
+          <Link
+            href="/admin/reviews/"
+            className="btn-outline !py-2.5 !px-4 inline-flex items-center"
+          >
+            Reviews
+          </Link>
           <button
             type="button"
             className="btn-outline !py-2.5 !px-4"
