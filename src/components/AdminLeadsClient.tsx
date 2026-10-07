@@ -198,6 +198,12 @@ export function AdminLeadsClient({
             Featured interest
           </Link>
           <Link
+            href="/admin/listing-edits/"
+            className="btn-outline !py-2.5 !px-4 inline-flex items-center"
+          >
+            Listing edits
+          </Link>
+          <Link
             href="/admin/reviews/"
             className="btn-outline !py-2.5 !px-4 inline-flex items-center"
           >

@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
 import { getDb, getEnv } from "@/lib/db";
+import { ensureManageToken, manageUrl } from "@/lib/listing-manage";
+import {
+  formatClaimApprovedNotify,
+  notifyCompany,
+} from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -20,6 +25,7 @@ type ClaimRow = {
   created_at: string;
   reviewed_at: string | null;
   review_notes: string | null;
+  manage_token: string | null;
 };
 
 export async function GET() {
@@ -31,15 +37,22 @@ export async function GET() {
   const db = await getDb();
   const { results } = await db
     .prepare(
-      `SELECT id, company_name, city, contact_name, email, phone, website,
-              company_slug, notes, status, created_at, reviewed_at, review_notes
-       FROM claim_requests
-       ORDER BY datetime(created_at) DESC
+      `SELECT cr.id, cr.company_name, cr.city, cr.contact_name, cr.email, cr.phone,
+              cr.website, cr.company_slug, cr.notes, cr.status, cr.created_at,
+              cr.reviewed_at, cr.review_notes, c.manage_token AS manage_token
+       FROM claim_requests cr
+       LEFT JOIN companies c ON c.slug = cr.company_slug
+       ORDER BY datetime(cr.created_at) DESC
        LIMIT 200`,
     )
     .all<ClaimRow>();
 
-  return NextResponse.json({ claims: results ?? [] });
+  const claims = (results ?? []).map((row) => ({
+    ...row,
+    manage_url: row.manage_token ? manageUrl(row.manage_token) : null,
+  }));
+
+  return NextResponse.json({ claims });
 }
 
 export async function PATCH(request: Request) {
@@ -81,7 +94,7 @@ export async function PATCH(request: Request) {
   const db = await getDb();
   const existing = await db
     .prepare(
-      `SELECT id, company_slug, email, status FROM claim_requests WHERE id = ? LIMIT 1`,
+      `SELECT id, company_slug, email, status, company_name FROM claim_requests WHERE id = ? LIMIT 1`,
     )
     .bind(id)
     .first<{
@@ -89,6 +102,7 @@ export async function PATCH(request: Request) {
       company_slug: string | null;
       email: string | null;
       status: string;
+      company_name: string;
     }>();
 
   if (!existing) {
@@ -157,11 +171,33 @@ export async function PATCH(request: Request) {
 
   await db.batch(statements);
 
+  // Issue (or reuse) an unguessable manage link for the claimed company.
+  let manageToken: string | null = null;
+  if (status === "approved" && slug) {
+    manageToken = await ensureManageToken(db, slug);
+  }
+
+  // Best-effort: email claim contact the manage link. Delivery is optional —
+  // feature works when Resend/from-address is not configured yet.
+  let emailedManageLink = false;
+  if (status === "approved" && claimEmail && manageToken) {
+    emailedManageLink = await notifyCompany(
+      claimEmail,
+      formatClaimApprovedNotify({
+        companyName: existing.company_name,
+        manageUrl: manageUrl(manageToken),
+      }),
+    );
+  }
+
   return NextResponse.json({
     ok: true,
     id,
     status,
     company_slug: slug || null,
     claimed_updated: status === "approved" && Boolean(slug),
+    manage_token: manageToken,
+    manage_url: manageToken ? manageUrl(manageToken) : null,
+    emailed_manage_link: emailedManageLink,
   });
 }

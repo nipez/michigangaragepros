@@ -228,6 +228,12 @@ export function AdminReviewsClient({
           >
             Featured interest
           </Link>
+          <Link
+            href="/admin/listing-edits/"
+            className="btn-outline !py-2.5 !px-4 inline-flex items-center"
+          >
+            Listing edits
+          </Link>
           <button
             type="button"
             className="btn-outline !py-2.5 !px-4"

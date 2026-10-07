@@ -17,6 +17,8 @@ type ClaimRow = {
   created_at: string;
   reviewed_at: string | null;
   review_notes: string | null;
+  manage_token: string | null;
+  manage_url: string | null;
 };
 
 type FilterTab = "open" | "done" | "all";
@@ -37,6 +39,8 @@ export function AdminClaimsClient({
   const [loginBusy, setLoginBusy] = useState(false);
   const [filter, setFilter] = useState<FilterTab>("open");
   const [busyId, setBusyId] = useState<number | null>(null);
+  const [tokenBusySlug, setTokenBusySlug] = useState<string | null>(null);
+  const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
 
   const loadClaims = async () => {
     setLoading(true);
@@ -129,10 +133,12 @@ export function AdminClaimsClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, status }),
       });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        manage_token?: string | null;
+        manage_url?: string | null;
+      } | null;
       if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as {
-          error?: string;
-        } | null;
         setError(data?.error || "Unable to update claim status");
         return;
       }
@@ -141,14 +147,69 @@ export function AdminClaimsClient({
           ? new Date().toISOString().slice(0, 19).replace("T", " ")
           : null;
       setClaims((prev) =>
+        prev.map((claim) => {
+          if (claim.id !== id) return claim;
+          const next: ClaimRow = {
+            ...claim,
+            status,
+            reviewed_at: reviewedAt,
+          };
+          if (status === "approved" && data?.manage_url) {
+            next.manage_token = data.manage_token ?? null;
+            next.manage_url = data.manage_url;
+          }
+          return next;
+        }),
+      );
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const copyManageLink = async (slug: string, url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedSlug(slug);
+      setTimeout(() => setCopiedSlug(null), 2000);
+    } catch {
+      setError("Unable to copy link — select and copy manually");
+    }
+  };
+
+  const manageTokenAction = async (
+    slug: string,
+    action: "regenerate" | "revoke",
+  ) => {
+    setError("");
+    setTokenBusySlug(slug);
+    try {
+      const res = await fetch("/api/admin/manage-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, action }),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        manage_token?: string | null;
+        manage_url?: string | null;
+      } | null;
+      if (!res.ok) {
+        setError(data?.error || `Unable to ${action} manage link`);
+        return;
+      }
+      setClaims((prev) =>
         prev.map((claim) =>
-          claim.id === id
-            ? { ...claim, status, reviewed_at: reviewedAt }
+          claim.company_slug === slug
+            ? {
+                ...claim,
+                manage_token: data?.manage_token ?? null,
+                manage_url: data?.manage_url ?? null,
+              }
             : claim,
         ),
       );
     } finally {
-      setBusyId(null);
+      setTokenBusySlug(null);
     }
   };
 
@@ -211,6 +272,12 @@ export function AdminClaimsClient({
           </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
+          <Link
+            href="/admin/listing-edits/"
+            className="btn-outline !py-2.5 !px-4 inline-flex items-center"
+          >
+            Listing edits
+          </Link>
           <Link
             href="/admin/leads/"
             className="btn-outline !py-2.5 !px-4 inline-flex items-center"
@@ -366,6 +433,68 @@ export function AdminClaimsClient({
                   <div className="md:col-span-2">
                     <span className="text-faint">Reviewed:</span>{" "}
                     {claim.reviewed_at}
+                  </div>
+                ) : null}
+                {claim.status === "approved" && claim.company_slug ? (
+                  <div className="md:col-span-2">
+                    <div className="mb-1.5">
+                      <span className="text-faint">Manage link:</span>{" "}
+                      {claim.manage_url ? (
+                        <span className="break-all font-semibold text-navy">
+                          {claim.manage_url}
+                        </span>
+                      ) : (
+                        <span className="text-muted">
+                          None — regenerate to issue a link
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {claim.manage_url ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            void copyManageLink(
+                              claim.company_slug!,
+                              claim.manage_url!,
+                            )
+                          }
+                          className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-navy"
+                        >
+                          {copiedSlug === claim.company_slug
+                            ? "Copied"
+                            : "Copy link"}
+                        </button>
+                      ) : null}
+                      <button
+                        type="button"
+                        disabled={tokenBusySlug === claim.company_slug}
+                        onClick={() =>
+                          void manageTokenAction(
+                            claim.company_slug!,
+                            "regenerate",
+                          )
+                        }
+                        className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-navy disabled:opacity-40"
+                      >
+                        {claim.manage_url ? "Regenerate" : "Issue link"}
+                      </button>
+                      {claim.manage_url ? (
+                        <button
+                          type="button"
+                          disabled={tokenBusySlug === claim.company_slug}
+                          onClick={() =>
+                            void manageTokenAction(
+                              claim.company_slug!,
+                              "revoke",
+                            )
+                          }
+                          className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-[#B42318] disabled:opacity-40"
+                        >
+                          Revoke
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                 ) : null}
               </div>

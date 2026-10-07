@@ -116,9 +116,42 @@ if (slug) {
        WHERE slug = '${escapeSql(slug)}'`,
     );
   }
+
+  // Issue a manage_token if the claimed company does not already have one.
+  let manageToken = "";
+  const tokenLookup = run(
+    `SELECT manage_token FROM companies WHERE slug = '${escapeSql(slug)}' LIMIT 1`,
+  );
+  try {
+    const parsed = JSON.parse(tokenLookup);
+    const rows = parsed?.[0]?.results ?? parsed?.results ?? [];
+    manageToken = String(rows[0]?.manage_token ?? "").trim();
+  } catch {
+    // fall through
+  }
+
+  if (!manageToken) {
+    manageToken = Array.from({ length: 32 }, () =>
+      Math.floor(Math.random() * 256)
+        .toString(16)
+        .padStart(2, "0"),
+    ).join("");
+    run(
+      `UPDATE companies
+       SET manage_token = '${escapeSql(manageToken)}',
+           manage_token_created_at = datetime('now')
+       WHERE slug = '${escapeSql(slug)}'`,
+    );
+  }
+
   console.log(
     `\nApproved claim${id ? ` id ${id}` : ""} for slug "${slug}" and marked companies.claimed = 1 (if row exists)${notifyEmail ? ` with notify_email=${notifyEmail}` : ""}.`,
   );
+  if (manageToken) {
+    console.log(
+      `Manage link: https://michigangaragepros.com/manage/${manageToken}/`,
+    );
+  }
 } else {
   console.log(
     `\nApproved claim id ${id}, but no company_slug was on the request — companies.claimed was not updated.`,
