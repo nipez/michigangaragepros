@@ -15,10 +15,11 @@ initOpenNextCloudflareForDev();
  * Query strings are preserved by Next.js redirects.
  */
 async function legacyRedirects() {
+  // statusCode 301 (not permanent:true/308) — GSC cleanup expects classic 301s.
   const redirects: {
     source: string;
     destination: string;
-    permanent: boolean;
+    statusCode: 301;
   }[] = [];
 
   // /city/{slug}/ → /cities/{slug}/ when known; unknown → /cities/
@@ -26,13 +27,13 @@ async function legacyRedirects() {
     redirects.push({
       source: `/city/${city.slug}`,
       destination: `/cities/${city.slug}/`,
-      permanent: true,
+      statusCode: 301,
     });
   }
   redirects.push({
     source: "/city/:slug",
     destination: "/cities/",
-    permanent: true,
+    statusCode: 301,
   });
 
   // /company/{slug}/ → /companies/{slug}/ when known
@@ -40,7 +41,7 @@ async function legacyRedirects() {
     redirects.push({
       source: `/company/${company.slug}`,
       destination: `/companies/${company.slug}/`,
-      permanent: true,
+      statusCode: 301,
     });
   }
 
@@ -49,7 +50,7 @@ async function legacyRedirects() {
     redirects.push({
       source: `/region/${region.slug}`,
       destination: `/regions/${region.slug}/`,
-      permanent: true,
+      statusCode: 301,
     });
   }
 
@@ -59,7 +60,7 @@ async function legacyRedirects() {
     redirects.push({
       source: `/${city.slug}`,
       destination: `/cities/${city.slug}/`,
-      permanent: true,
+      statusCode: 301,
     });
   }
 
@@ -67,7 +68,7 @@ async function legacyRedirects() {
   redirects.push({
     source: "/search",
     destination: "/pros/",
-    permanent: true,
+    statusCode: 301,
   });
 
   // Removed seed companies (0002 → 0003) → their city pages
@@ -75,12 +76,12 @@ async function legacyRedirects() {
     redirects.push({
       source: `/companies/${slug}`,
       destination: `/cities/${citySlug}/`,
-      permanent: true,
+      statusCode: 301,
     });
     redirects.push({
       source: `/company/${slug}`,
       destination: `/cities/${citySlug}/`,
-      permanent: true,
+      statusCode: 301,
     });
   }
 
