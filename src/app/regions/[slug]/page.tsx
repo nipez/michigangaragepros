@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { RegionPage } from "@/components/RegionPage";
 import { REGIONS, getRegionBySlug } from "@/data/regions";
+import { notFoundMetadata } from "@/lib/notFoundMetadata";
 import { buildPageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -15,7 +16,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const region = getRegionBySlug(slug);
-  if (!region) return { title: "Region Not Found" };
+  if (!region) return notFoundMetadata;
   return buildPageMetadata({
     title: region.seoTitle,
     description: region.seoDescription,

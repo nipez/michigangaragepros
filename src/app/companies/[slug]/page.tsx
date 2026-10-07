@@ -6,6 +6,7 @@ import {
   getCompanyAboutDisplay,
   getCompanyBySlug,
 } from "@/data/companies";
+import { notFoundMetadata } from "@/lib/notFoundMetadata";
 import { buildPageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -19,7 +20,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const company = getCompanyBySlug(slug);
-  if (!company) return { title: "Company Not Found" };
+  if (!company) return notFoundMetadata;
   const about = getCompanyAboutDisplay(company);
   return buildPageMetadata({
     title: company.name,

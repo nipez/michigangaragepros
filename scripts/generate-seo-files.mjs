@@ -29,11 +29,12 @@ async function main() {
   const { getAllBlogPosts } = await loadTs("src/data/blog.ts");
 
   const urls = [];
-  const push = (path, priority = "0.7", changefreq = "weekly") => {
+  const push = (path, priority = "0.7", changefreq = "weekly", lastmod = null) => {
     urls.push({
       loc: path ? `${SITE_URL}/${path}/` : `${SITE_URL}/`,
       priority,
       changefreq,
+      lastmod,
     });
   };
 
@@ -55,24 +56,28 @@ async function main() {
     }
   }
   for (const c of COMPANIES) push(`companies/${c.slug}`, "0.6");
-  for (const p of getAllBlogPosts()) push(`blog/${p.slug}`, "0.75", "monthly");
+  // Blog posts use stable content dates for lastmod (not build time).
+  for (const p of getAllBlogPosts()) {
+    push(`blog/${p.slug}`, "0.75", "monthly", p.date);
+  }
   push("about", "0.5", "monthly");
   push("contact", "0.5", "monthly");
   push("privacy", "0.3", "yearly");
   push("terms", "0.3", "yearly");
 
-  const today = new Date().toISOString().slice(0, 10);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls
-  .map(
-    (u) => `  <url>
-    <loc>${u.loc}</loc>
-    <lastmod>${today}</lastmod>
+  .map((u) => {
+    const lastmodLine = u.lastmod
+      ? `\n    <lastmod>${u.lastmod}</lastmod>`
+      : "";
+    return `  <url>
+    <loc>${u.loc}</loc>${lastmodLine}
     <changefreq>${u.changefreq}</changefreq>
     <priority>${u.priority}</priority>
-  </url>`,
-  )
+  </url>`;
+  })
   .join("\n")}
 </urlset>
 `;

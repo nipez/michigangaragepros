@@ -6,7 +6,8 @@ const APEX_HOST = "michigangaragepros.com";
 /**
  * Canonical host + HTTPS redirects for the production custom domain.
  * Skips workers.dev / preview hosts so OpenNext custom domains and
- * Cloudflare preview URLs keep working.
+ * Cloudflare preview URLs keep working — but stamps X-Robots-Tag on
+ * *.workers.dev so only the apex gets indexed.
  *
  * Uses x-forwarded-proto (set by Cloudflare) so we do not loop when
  * the Worker already sees an https:// URL for HTTP origin traffic.
@@ -15,7 +16,7 @@ export function middleware(request: NextRequest) {
   const hostHeader = request.headers.get("host") ?? "";
   const host = hostHeader.split(":")[0]?.toLowerCase() ?? "";
 
-  // Leave non-production / platform hosts alone.
+  // Platform / local hosts: no apex redirect, but noindex workers.dev.
   if (
     !host ||
     host === "localhost" ||
@@ -24,7 +25,11 @@ export function middleware(request: NextRequest) {
     host.endsWith(".cloudflare.com") ||
     host.includes("127.0.0.1")
   ) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    if (host.endsWith(".workers.dev")) {
+      response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    }
+    return response;
   }
 
   const isOurDomain =

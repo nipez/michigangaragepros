@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { CityPage } from "@/components/CityPage";
 import { CITIES, getCityBySlug } from "@/data/cities";
 import { getCitySeo } from "@/data/growth";
+import { notFoundMetadata } from "@/lib/notFoundMetadata";
 import { buildPageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -16,7 +17,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const city = getCityBySlug(slug);
-  if (!city) return { title: "City Not Found" };
+  if (!city) return notFoundMetadata;
   const seo = getCitySeo(city.slug);
   const title =
     seo?.title ?? `Garage Door Pros in ${city.name}, ${city.state}`;
