@@ -80,6 +80,8 @@ ${urls
   const robots = `User-Agent: *
 Allow: /
 Disallow: /api/
+Disallow: /manage/
+Disallow: /admin/
 
 Host: ${SITE_URL}
 Sitemap: ${SITE_URL}/sitemap.xml

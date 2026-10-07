@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import type { Company } from "@/data/companies";
 import {
@@ -5,6 +7,7 @@ import {
   getCompanyAboutDisplay,
 } from "@/data/companies";
 import { SITE_URL } from "@/data/site";
+import { useCompanyLiveListing } from "@/hooks/useCompanyLiveListing";
 import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
 import { websiteSnapshotUrl } from "@/lib/website-snapshot";
 import { CompanyClaimBadge } from "./CompanyClaimBadge";
@@ -50,7 +53,9 @@ function localBusinessJsonLd(company: Company) {
   return data;
 }
 
-export function CompanyProfilePage({ company }: { company: Company }) {
+export function CompanyProfilePage({ company: seed }: { company: Company }) {
+  // Hydrate admin-approved D1 overrides without forcing the route dynamic.
+  const company = useCompanyLiveListing(seed);
   const about = getCompanyAboutDisplay(company);
   const cityLabel = company.city.replace(", MI", "");
   const graph: Record<string, unknown>[] = [

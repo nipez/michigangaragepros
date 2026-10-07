@@ -1,6 +1,8 @@
 User-Agent: *
 Allow: /
 Disallow: /api/
+Disallow: /manage/
+Disallow: /admin/
 
 Host: https://michigangaragepros.com
 Sitemap: https://michigangaragepros.com/sitemap.xml

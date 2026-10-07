@@ -1,7 +1,14 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export type NotifyPayload = {
-  kind: "claim" | "lead" | "featured" | "company-lead" | "review";
+  kind:
+    | "claim"
+    | "claim-approved"
+    | "lead"
+    | "featured"
+    | "company-lead"
+    | "review"
+    | "listing-edit";
   subject: string;
   text: string;
   html?: string;
@@ -373,5 +380,67 @@ export function formatReviewNotify(review: {
     kind: "review" as const,
     subject: `Review pending: ${review.companyName} (${review.rating}/5)`,
     text: lines.join("\n"),
+  };
+}
+
+export function formatListingEditNotify(edit: {
+  id: number | string;
+  companyName: string;
+  companySlug: string;
+}) {
+  const lines = keepLines([
+    "New listing update awaiting review",
+    "",
+    `ID: ${edit.id}`,
+    `Company: ${edit.companyName}`,
+    `Listing slug: ${edit.companySlug}`,
+    "",
+    "Review in /admin/listing-edits/",
+  ]);
+
+  return {
+    kind: "listing-edit" as const,
+    subject: `Listing edit pending: ${edit.companyName}`,
+    text: lines.join("\n"),
+  };
+}
+
+/** Optional best-effort email to the claim contact after approval (manage link). */
+export function formatClaimApprovedNotify(input: {
+  companyName: string;
+  manageUrl: string;
+}) {
+  const lines = keepLines([
+    `Hi ${input.companyName},`,
+    "",
+    "Your company page claim on Michigan Garage Pros has been approved.",
+    "",
+    "Use this private link to update your listing (About, phone, website,",
+    "services, service areas, and hours). Proposed changes are reviewed",
+    "before they go live:",
+    "",
+    input.manageUrl,
+    "",
+    "Keep this link private — anyone with it can propose updates.",
+    "If you need a new link, reply to this email or contact us.",
+    "",
+    "— Michigan Garage Pros",
+    "https://michigangaragepros.com",
+  ]);
+
+  const html = [
+    `<p>Hi ${escapeHtml(input.companyName)},</p>`,
+    `<p>Your company page claim on Michigan Garage Pros has been approved.</p>`,
+    `<p>Use this private link to update your listing (About, phone, website, services, service areas, and hours). Proposed changes are reviewed before they go live:</p>`,
+    `<p><a href="${escapeHtml(input.manageUrl)}">${escapeHtml(input.manageUrl)}</a></p>`,
+    `<p>Keep this link private — anyone with it can propose updates. If you need a new link, reply to this email or contact us.</p>`,
+    `<p>— Michigan Garage Pros<br/><a href="https://michigangaragepros.com">https://michigangaragepros.com</a></p>`,
+  ].join("\n");
+
+  return {
+    kind: "claim-approved" as const,
+    subject: `Your listing is claimed — manage ${input.companyName}`,
+    text: lines.join("\n"),
+    html,
   };
 }
