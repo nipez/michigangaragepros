@@ -4,6 +4,7 @@ import { CityServicePage } from "@/components/CityServicePage";
 import { getCityBySlug } from "@/data/cities";
 import { PRIORITY_CITY_SLUGS } from "@/data/growth";
 import { SERVICES, getServiceBySlug } from "@/data/services";
+import { notFoundMetadata } from "@/lib/notFoundMetadata";
 import { buildPageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -24,7 +25,13 @@ export async function generateMetadata({
   const { slug, service: serviceSlug } = await params;
   const city = getCityBySlug(slug);
   const service = getServiceBySlug(serviceSlug);
-  if (!city || !service) return { title: "Not Found" };
+  if (
+    !city ||
+    !service ||
+    !(PRIORITY_CITY_SLUGS as readonly string[]).includes(slug)
+  ) {
+    return notFoundMetadata;
+  }
   return buildPageMetadata({
     title: `${service.localTitle} in ${city.name}, ${city.state}`,
     description: `Compare ${service.localTitle.toLowerCase()} companies serving ${city.name}, Michigan. Browse local pros and request a free quote.`,

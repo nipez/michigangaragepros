@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogPostPage } from "@/components/BlogPostPage";
 import { BLOG_POSTS, getBlogPost } from "@/data/blog";
+import { notFoundMetadata } from "@/lib/notFoundMetadata";
 import { buildPageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -15,7 +16,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = getBlogPost(slug);
-  if (!post) return { title: "Article Not Found" };
+  if (!post) return notFoundMetadata;
   return buildPageMetadata({
     title: post.title,
     description: post.description,
