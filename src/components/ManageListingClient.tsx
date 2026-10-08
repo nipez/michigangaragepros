@@ -14,6 +14,7 @@ type Props = {
   companySlug: string;
   initialFields: ListingFields;
   pendingEdit: { id: number; createdAt: string } | null;
+  initialReviewUrl: string | null;
 };
 
 export function ManageListingClient({
@@ -22,6 +23,7 @@ export function ManageListingClient({
   companySlug,
   initialFields,
   pendingEdit,
+  initialReviewUrl,
 }: Props) {
   const [fields, setFields] = useState<ListingFields>(initialFields);
   const [customService, setCustomService] = useState("");
@@ -32,6 +34,10 @@ export function ManageListingClient({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [pending, setPending] = useState(pendingEdit);
+  const [reviewUrl, setReviewUrl] = useState(initialReviewUrl);
+  const [reviewBusy, setReviewBusy] = useState(false);
+  const [reviewCopied, setReviewCopied] = useState(false);
+  const [reviewNote, setReviewNote] = useState("");
 
   const setField = <K extends keyof ListingFields>(
     key: K,
@@ -67,6 +73,43 @@ export function ManageListingClient({
     (s) =>
       !(MANAGE_SERVICE_OPTIONS as readonly string[]).includes(s),
   );
+
+  const copyReviewLink = async () => {
+    if (!reviewUrl) return;
+    try {
+      await navigator.clipboard.writeText(reviewUrl);
+      setReviewCopied(true);
+      setTimeout(() => setReviewCopied(false), 2000);
+    } catch {
+      setReviewNote("Unable to copy — select the link and copy manually.");
+    }
+  };
+
+  const regenerateReviewLink = async () => {
+    setReviewBusy(true);
+    setReviewNote("");
+    try {
+      const res = await fetch(`/api/manage/${token}/review-token/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "regenerate" }),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        review_url?: string | null;
+      } | null;
+      if (!res.ok) {
+        setReviewNote(data?.error || "Unable to regenerate review link");
+        return;
+      }
+      setReviewUrl(data?.review_url ?? null);
+      setReviewNote(
+        "New review link issued. The previous link no longer works.",
+      );
+    } finally {
+      setReviewBusy(false);
+    }
+  };
 
   const submit = async () => {
     setError("");
@@ -136,6 +179,51 @@ export function ManageListingClient({
               Submitting again replaces the previous pending request.
             </div>
           ) : null}
+
+          <div className="mt-5 rounded-[12px] border border-border bg-bg px-4 py-4">
+            <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
+              Review request link
+            </div>
+            <p className="mt-1.5 mb-3 text-[13.5px] leading-[1.5] text-muted">
+              Share this link with customers so they can leave a review on your
+              public profile. Reviews are moderated before they appear.
+            </p>
+            {reviewUrl ? (
+              <p className="mb-3 break-all text-[13px] font-semibold text-navy">
+                {reviewUrl}
+              </p>
+            ) : (
+              <p className="mb-3 text-[13px] text-muted">
+                No link yet — regenerate to issue one.
+              </p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              {reviewUrl ? (
+                <button
+                  type="button"
+                  className="btn-outline !px-3 !py-2 !text-[13px]"
+                  onClick={() => void copyReviewLink()}
+                >
+                  {reviewCopied ? "Copied" : "Copy link"}
+                </button>
+              ) : null}
+              <button
+                type="button"
+                className="btn-outline !px-3 !py-2 !text-[13px]"
+                disabled={reviewBusy}
+                onClick={() => void regenerateReviewLink()}
+              >
+                {reviewBusy
+                  ? "Working…"
+                  : reviewUrl
+                    ? "Regenerate"
+                    : "Issue link"}
+              </button>
+            </div>
+            {reviewNote ? (
+              <p className="mt-2.5 mb-0 text-[12.5px] text-muted">{reviewNote}</p>
+            ) : null}
+          </div>
 
           {success ? (
             <div className="mt-5 rounded-[12px] border border-border bg-success-bg px-4 py-3 text-sm font-semibold text-success">

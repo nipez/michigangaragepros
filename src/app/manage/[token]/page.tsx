@@ -11,6 +11,10 @@ import {
   listingFieldsFromCompany,
   type ListingFields,
 } from "@/lib/listing-manage";
+import {
+  ensureReviewToken,
+  reviewRequestUrl,
+} from "@/lib/review-request";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +39,7 @@ type LoadedManage = {
   companySlug: string;
   fields: ListingFields;
   pendingEdit: { id: number; createdAt: string } | null;
+  reviewUrl: string | null;
 };
 
 async function loadManagePage(token: string): Promise<LoadedManage | null> {
@@ -72,6 +77,8 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     .bind(company.slug)
     .first<{ id: number; created_at: string }>();
 
+  const reviewToken = await ensureReviewToken(db, company.slug);
+
   return {
     token,
     companyName: company.name,
@@ -80,6 +87,7 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     pendingEdit: pending
       ? { id: pending.id, createdAt: pending.created_at }
       : null,
+    reviewUrl: reviewToken ? reviewRequestUrl(reviewToken) : null,
   };
 }
 
@@ -104,6 +112,7 @@ export default async function ManageListingPage({ params }: PageProps) {
       companySlug={loaded.companySlug}
       initialFields={loaded.fields}
       pendingEdit={loaded.pendingEdit}
+      initialReviewUrl={loaded.reviewUrl}
     />
   );
 }
