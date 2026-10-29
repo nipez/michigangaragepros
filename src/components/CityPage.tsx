@@ -1,12 +1,27 @@
 import Link from "next/link";
 import type { City } from "@/data/cities";
-import { citySlug, getCityBySlug } from "@/data/cities";
-import { getCompaniesForCity } from "@/data/companies";
 import { getCitySeo } from "@/data/growth";
+import {
+  formatCostRange,
+} from "@/data/serviceCosts";
 import { SITE_URL } from "@/data/site";
-import { SERVICES } from "@/data/services";
-import { PRIORITY_CITY_SLUGS } from "@/data/growth";
-import { breadcrumbJsonLd } from "@/lib/seo";
+import {
+  getIndexableServicesForCity,
+  getNearbyIndexableCities,
+  getProsForCity,
+  INDEX_PRO_THRESHOLD,
+  isCityIndexable,
+} from "@/lib/indexability";
+import {
+  buildCityCostBlurb,
+  buildCityFaqs,
+  buildCityIntro,
+} from "@/lib/localPageContent";
+import {
+  breadcrumbJsonLd,
+  faqPageJsonLd,
+  localBusinessItemListJsonLd,
+} from "@/lib/seo";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
@@ -14,30 +29,18 @@ import { JsonLd } from "./JsonLd";
 import { ShuffledCompanyGrid } from "./ShuffledCompanyGrid";
 
 export function CityPage({ city }: { city: City }) {
-  const companies = getCompaniesForCity(city.slug);
+  const companies = getProsForCity(city.slug);
+  const indexable = isCityIndexable(city.slug);
   const seo = getCitySeo(city.slug);
   const pageTitle =
     seo?.title ?? `Garage Door Pros in ${city.name}, ${city.state}`;
   const heading =
     seo?.h1 ?? `Garage Door Pros in ${city.name}, ${city.state}`;
-  const intro =
-    seo?.intro ??
-    `Compare garage-door companies serving ${city.name} and nearby communities — repair, springs, openers, installation, and emergency service.`;
-  const faqs = seo?.faqs ?? [
-    {
-      question: `How do I find garage door pros in ${city.name}?`,
-      answer: `Browse the companies listed on this page, or enter your ZIP on Find Pros to see listings that serve ${city.name} and nearby areas.`,
-    },
-    {
-      question: "Is this a contractor website?",
-      answer:
-        "Michigan Garage Pros is a statewide directory. We help homeowners compare local companies and help pros claim or feature their listings.",
-    },
-  ];
-
-  const isPriority = (PRIORITY_CITY_SLUGS as readonly string[]).includes(
-    city.slug,
-  );
+  const intro = buildCityIntro(city, companies.length);
+  const faqs = buildCityFaqs(city, companies.length);
+  const costTable = buildCityCostBlurb(city);
+  const indexableServices = getIndexableServicesForCity(city.slug);
+  const nearbyIndexable = getNearbyIndexableCities(city, 6);
 
   const jsonLd = [
     {
@@ -47,25 +50,18 @@ export function CityPage({ city }: { city: City }) {
       url: `${SITE_URL}/cities/${city.slug}/`,
       isPartOf: { "@type": "WebSite", name: "Michigan Garage Pros", url: SITE_URL },
     },
-    {
-      "@type": "ItemList",
+    localBusinessItemListJsonLd({
       name: `Garage door companies serving ${city.name}`,
-      numberOfItems: companies.length,
-      itemListElement: companies.slice(0, 25).map((c, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
+      items: companies.slice(0, 25).map((c) => ({
         name: c.name,
-        url: `${SITE_URL}/companies/${c.slug}/`,
+        path: `/companies/${c.slug}/`,
+        phone: c.phone,
+        address: c.address,
+        cityLabel: c.city,
+        website: c.website,
       })),
-    },
-    {
-      "@type": "FAQPage",
-      mainEntity: faqs.map((f) => ({
-        "@type": "Question",
-        name: f.question,
-        acceptedAnswer: { "@type": "Answer", text: f.answer },
-      })),
-    },
+    }),
+    faqPageJsonLd(faqs),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Cities", path: "/cities/" },
@@ -94,7 +90,7 @@ export function CityPage({ city }: { city: City }) {
           <h1 className="mb-3.5 max-w-[24ch] text-[clamp(32px,3.8vw,48px)] font-extrabold leading-[1.1] tracking-[-1px] text-balance">
             {heading}
           </h1>
-          <p className="mb-[30px] max-w-[58ch] text-lg leading-[1.55] text-hero-muted text-pretty">
+          <p className="mb-[30px] max-w-[62ch] text-lg leading-[1.55] text-hero-muted text-pretty">
             {intro}
           </p>
           <div className="flex flex-wrap gap-3">
@@ -113,6 +109,16 @@ export function CityPage({ city }: { city: City }) {
           </div>
         </div>
       </section>
+
+      {!indexable && (
+        <section className="container-site pt-8">
+          <p className="m-0 rounded-xl border border-border bg-white px-4 py-3 text-[14px] leading-[1.55] text-muted">
+            This {city.name} hub has fewer than {INDEX_PRO_THRESHOLD} directory
+            pros so far — the page stays available for homeowners, but we are
+            still building local coverage.
+          </p>
+        </section>
+      )}
 
       <section id="city-pros" className="container-site pt-[72px]">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
@@ -141,6 +147,56 @@ export function CityPage({ city }: { city: City }) {
         )}
       </section>
 
+      {costTable && indexable && (
+        <section className="container-site pt-[72px]">
+          <h2 className="mb-3 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
+            Typical Garage Door Repair Costs in {city.name}
+          </h2>
+          <p className="mb-6 max-w-[68ch] text-[15px] leading-[1.6] text-muted text-pretty">
+            {costTable.disclaimer}
+          </p>
+          <div className="overflow-x-auto rounded-2xl border border-border bg-white">
+            <table className="w-full min-w-[320px] border-collapse text-left text-[14.5px]">
+              <thead>
+                <tr className="border-b border-border bg-bg">
+                  <th className="px-5 py-3.5 font-extrabold text-navy">Job</th>
+                  <th className="px-5 py-3.5 font-extrabold text-navy">
+                    Typical range
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {costTable.lines.map((line) => (
+                  <tr key={line.label} className="border-b border-border last:border-0">
+                    <td className="px-5 py-3.5 text-text">
+                      <div className="font-semibold">{line.label}</div>
+                      {line.note ? (
+                        <div className="mt-0.5 text-[13px] text-faint">
+                          {line.note}
+                        </div>
+                      ) : null}
+                    </td>
+                    <td className="px-5 py-3.5 font-bold text-navy whitespace-nowrap">
+                      {formatCostRange(line.low, line.high)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-[13px] text-faint">
+            See also{" "}
+            <Link
+              href="/cost/garage-door-repair/"
+              className="font-bold text-michigan-blue"
+            >
+              statewide repair cost guide
+            </Link>
+            .
+          </p>
+        </section>
+      )}
+
       <section className="container-site pt-[72px]">
         <div
           data-two-col="1"
@@ -151,50 +207,60 @@ export function CityPage({ city }: { city: City }) {
             <h3 className="mb-[18px] text-xl font-extrabold text-navy">
               Services in {city.name}
             </h3>
-            <div className="flex flex-wrap gap-2.5">
-              {SERVICES.map((s) => (
+            {indexableServices.length > 0 ? (
+              <div className="flex flex-wrap gap-2.5">
+                {indexableServices.map((s) => (
+                  <Link
+                    key={s.slug}
+                    href={`/cities/${city.slug}/${s.slug}/`}
+                    className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
+                  >
+                    {s.localTitle}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2.5">
                 <Link
-                  key={s.slug}
-                  href={
-                    isPriority
-                      ? `/cities/${city.slug}/${s.slug}/`
-                      : `/${s.slug}/`
-                  }
+                  href="/garage-door-repair/"
                   className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
                 >
-                  {s.localTitle}
+                  Statewide repair
                 </Link>
-              ))}
-            </div>
+                <Link
+                  href="/broken-springs/"
+                  className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
+                >
+                  Statewide springs
+                </Link>
+              </div>
+            )}
           </div>
           <div>
             <h3 className="mb-[18px] text-xl font-extrabold text-navy">
               Nearby Communities
             </h3>
-            <div className="flex flex-wrap gap-2.5">
-              {city.nearby.map((n) => {
-                const nearby = getCityBySlug(citySlug(n));
-                if (nearby) {
-                  return (
-                    <Link
-                      key={n}
-                      href={`/cities/${nearby.slug}/`}
-                      className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
-                    >
-                      {n}
-                    </Link>
-                  );
-                }
-                return (
-                  <span
-                    key={n}
-                    className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text"
+            {nearbyIndexable.length > 0 ? (
+              <div className="flex flex-wrap gap-2.5">
+                {nearbyIndexable.map((n) => (
+                  <Link
+                    key={n.slug}
+                    href={`/cities/${n.slug}/`}
+                    className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
                   >
-                    {n}
-                  </span>
-                );
-              })}
-            </div>
+                    {n.name}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="m-0 text-[14.5px] leading-[1.55] text-muted">
+                Browse the{" "}
+                <Link href="/cities/" className="font-bold text-michigan-blue">
+                  Michigan cities index
+                </Link>{" "}
+                for markets with fuller directory coverage.
+              </p>
+            )}
           </div>
         </div>
       </section>

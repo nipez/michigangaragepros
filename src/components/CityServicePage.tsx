@@ -1,17 +1,28 @@
 import Link from "next/link";
 import type { City } from "@/data/cities";
-import { getCompaniesForCity } from "@/data/companies";
-import { getCitySeo } from "@/data/growth";
+import { costGuidePathForService } from "@/data/costGuides";
 import {
-  companyOffersService,
-  SERVICES,
-  type Service,
-} from "@/data/services";
+  formatCostRange,
+  getLocalizedCostTable,
+} from "@/data/serviceCosts";
+import type { Service } from "@/data/services";
 import { SITE_URL } from "@/data/site";
+import {
+  getIndexableServicesForCity,
+  getNearbyIndexableCitiesForService,
+  getProsForCityService,
+  INDEX_PRO_THRESHOLD,
+  isCityIndexable,
+  isCityServiceIndexable,
+} from "@/lib/indexability";
+import {
+  buildCityServiceFaqs,
+  buildCityServiceIntro,
+} from "@/lib/localPageContent";
 import {
   breadcrumbJsonLd,
   faqPageJsonLd,
-  itemListJsonLd,
+  localBusinessItemListJsonLd,
 } from "@/lib/seo";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
@@ -26,27 +37,19 @@ export function CityServicePage({
   city: City;
   service: Service;
 }) {
-  const allForCity = getCompaniesForCity(city.slug);
-  const companies = allForCity.filter((c) => companyOffersService(c, service));
-  const citySeo = getCitySeo(city.slug);
+  const companies = getProsForCityService(city.slug, service);
+  const indexable = isCityServiceIndexable(city.slug, service);
   const path = `/cities/${city.slug}/${service.slug}/`;
   const h1 = `${service.localTitle} in ${city.name}, ${city.state}`;
-  const intro =
-    `Compare ${service.localTitle.toLowerCase()} companies serving ${city.name} and nearby communities. ` +
-    `Browse local listings, check services and coverage, then request a free quote — Michigan Garage Pros is a directory, not a single contractor.` +
-    (citySeo?.intro ? ` ${citySeo.intro}` : "");
-
-  const faqs = [
-    {
-      question: `Who does ${service.localTitle.toLowerCase()} in ${city.name}?`,
-      answer: `The companies listed on this page serve ${city.name} and list ${service.name.toLowerCase()} (or a closely related service) on their profile. You can also browse all ${city.name} pros or search by ZIP.`,
-    },
-    {
-      question: `How do I get a quote for ${service.localTitle.toLowerCase()} in ${city.name}?`,
-      answer: `Open a company profile to call them, or use Get a Free Quote with your ZIP and the service you need. Local pros follow up directly.`,
-    },
-    ...(service.faqs.slice(0, 2) ?? []),
-  ];
+  const intro = buildCityServiceIntro(city, service, companies.length);
+  const faqs = buildCityServiceFaqs(city, service, companies.length);
+  const costTable = getLocalizedCostTable(service, city);
+  const nearbyForService = getNearbyIndexableCitiesForService(city, service, 6);
+  const otherIndexableServices = getIndexableServicesForCity(city.slug).filter(
+    (s) => s.slug !== service.slug,
+  );
+  const costPath = costGuidePathForService(service.slug);
+  const cityHubIndexable = isCityIndexable(city.slug);
 
   const jsonLd = [
     {
@@ -56,11 +59,15 @@ export function CityServicePage({
       url: `${SITE_URL}${path}`,
       isPartOf: { "@type": "WebSite", name: "Michigan Garage Pros", url: SITE_URL },
     },
-    itemListJsonLd({
+    localBusinessItemListJsonLd({
       name: `${service.localTitle} companies in ${city.name}`,
       items: companies.slice(0, 25).map((c) => ({
         name: c.name,
         path: `/companies/${c.slug}/`,
+        phone: c.phone,
+        address: c.address,
+        cityLabel: c.city,
+        website: c.website,
       })),
     }),
     faqPageJsonLd(faqs),
@@ -88,9 +95,13 @@ export function CityServicePage({
               Cities
             </Link>
             <span className="mx-1.5 text-[#8AA3B8]">/</span>
-            <Link href={`/cities/${city.slug}/`} className="on-dark-link">
-              {city.name}
-            </Link>
+            {cityHubIndexable ? (
+              <Link href={`/cities/${city.slug}/`} className="on-dark-link">
+                {city.name}
+              </Link>
+            ) : (
+              <span className="text-[#8AA3B8]">{city.name}</span>
+            )}
             <span className="mx-1.5">/</span>
             <span className="text-footer-link">{service.shortName}</span>
           </div>
@@ -117,6 +128,20 @@ export function CityServicePage({
         </div>
       </section>
 
+      {!indexable && (
+        <section className="container-site pt-8">
+          <p className="m-0 rounded-xl border border-border bg-white px-4 py-3 text-[14px] leading-[1.55] text-muted">
+            Fewer than {INDEX_PRO_THRESHOLD} directory pros currently tag{" "}
+            {service.localTitle.toLowerCase()} for {city.name}. This page stays
+            available, and you can still browse statewide{" "}
+            <Link href={`/${service.slug}/`} className="font-bold text-michigan-blue">
+              {service.name.toLowerCase()}
+            </Link>
+            .
+          </p>
+        </section>
+      )}
+
       <section id="local-pros" className="container-site pt-[72px]">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
           <h2 className="m-0 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
@@ -133,10 +158,14 @@ export function CityServicePage({
           <div className="rounded-2xl border border-border bg-white p-8 text-[15.5px] leading-[1.6] text-muted">
             We don&apos;t have {service.localTitle.toLowerCase()} specialists
             tagged for {city.name} yet.{" "}
-            <Link href={`/cities/${city.slug}/`} className="font-bold text-michigan-blue">
-              See all {city.name} companies
-            </Link>
-            ,{" "}
+            {cityHubIndexable ? (
+              <>
+                <Link href={`/cities/${city.slug}/`} className="font-bold text-michigan-blue">
+                  See all {city.name} companies
+                </Link>
+                ,{" "}
+              </>
+            ) : null}
             <Link href={`/${service.slug}/`} className="font-bold text-michigan-blue">
               browse statewide {service.name.toLowerCase()}
             </Link>
@@ -149,26 +178,117 @@ export function CityServicePage({
         )}
       </section>
 
+      {costTable && indexable && (
+        <section className="container-site pt-[72px]">
+          <h2 className="mb-3 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
+            Typical {service.localTitle} Costs in {city.name}
+          </h2>
+          <p className="mb-6 max-w-[68ch] text-[15px] leading-[1.6] text-muted text-pretty">
+            {costTable.disclaimer}
+          </p>
+          <div className="overflow-x-auto rounded-2xl border border-border bg-white">
+            <table className="w-full min-w-[320px] border-collapse text-left text-[14.5px]">
+              <thead>
+                <tr className="border-b border-border bg-bg">
+                  <th className="px-5 py-3.5 font-extrabold text-navy">Job</th>
+                  <th className="px-5 py-3.5 font-extrabold text-navy">
+                    Typical range
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {costTable.lines.map((line) => (
+                  <tr key={line.label} className="border-b border-border last:border-0">
+                    <td className="px-5 py-3.5 text-text">
+                      <div className="font-semibold">{line.label}</div>
+                      {line.note ? (
+                        <div className="mt-0.5 text-[13px] text-faint">
+                          {line.note}
+                        </div>
+                      ) : null}
+                    </td>
+                    <td className="px-5 py-3.5 font-bold text-navy whitespace-nowrap">
+                      {formatCostRange(line.low, line.high)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {costPath ? (
+            <p className="mt-3 text-[13px] text-faint">
+              More detail in our{" "}
+              <Link href={costPath} className="font-bold text-michigan-blue">
+                Michigan {service.localTitle.toLowerCase()} cost guide
+              </Link>
+              .
+            </p>
+          ) : null}
+        </section>
+      )}
+
       <section className="container-site pt-[72px]">
-        <h3 className="mb-[18px] text-xl font-extrabold text-navy">
-          Other services in {city.name}
-        </h3>
-        <div className="flex flex-wrap gap-2.5">
-          {SERVICES.filter((s) => s.slug !== service.slug).map((s) => (
-            <Link
-              key={s.slug}
-              href={`/cities/${city.slug}/${s.slug}/`}
-              className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
-            >
-              {s.localTitle}
-            </Link>
-          ))}
-          <Link
-            href={`/${service.slug}/`}
-            className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
-          >
-            Statewide {service.localTitle}
-          </Link>
+        <div
+          data-two-col="1"
+          className="grid items-start gap-12"
+          style={{ gridTemplateColumns: "1fr 1fr" }}
+        >
+          <div>
+            <h3 className="mb-[18px] text-xl font-extrabold text-navy">
+              More in {city.name}
+            </h3>
+            <div className="flex flex-wrap gap-2.5">
+              {cityHubIndexable && (
+                <Link
+                  href={`/cities/${city.slug}/`}
+                  className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
+                >
+                  {city.name} city hub
+                </Link>
+              )}
+              {otherIndexableServices.map((s) => (
+                <Link
+                  key={s.slug}
+                  href={`/cities/${city.slug}/${s.slug}/`}
+                  className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
+                >
+                  {s.localTitle}
+                </Link>
+              ))}
+              <Link
+                href={`/${service.slug}/`}
+                className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
+              >
+                Statewide {service.localTitle}
+              </Link>
+            </div>
+          </div>
+          <div>
+            <h3 className="mb-[18px] text-xl font-extrabold text-navy">
+              Nearby {service.shortName} Markets
+            </h3>
+            {nearbyForService.length > 0 ? (
+              <div className="flex flex-wrap gap-2.5">
+                {nearbyForService.map((n) => (
+                  <Link
+                    key={n.slug}
+                    href={`/cities/${n.slug}/${service.slug}/`}
+                    className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
+                  >
+                    {n.name}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="m-0 text-[14.5px] leading-[1.55] text-muted">
+                See{" "}
+                <Link href={`/${service.slug}/`} className="font-bold text-michigan-blue">
+                  statewide {service.localTitle.toLowerCase()}
+                </Link>{" "}
+                for other Michigan markets.
+              </p>
+            )}
+          </div>
         </div>
       </section>
 

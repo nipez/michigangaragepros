@@ -66,6 +66,36 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://michigangaragepros.com/cost/garage-door-repair/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://michigangaragepros.com/cost/broken-springs/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://michigangaragepros.com/cost/garage-door-openers/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://michigangaragepros.com/cost/garage-door-installation/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://michigangaragepros.com/cost/maintenance/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://michigangaragepros.com/cost/emergency-service/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
     <loc>https://michigangaragepros.com/regions/southeast/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
@@ -186,11 +216,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/rochester-hills/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/southfield/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -206,22 +231,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/westland/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/royal-oak/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/birmingham/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/pontiac/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -232,11 +242,6 @@
   </url>
   <url>
     <loc>https://michigangaragepros.com/cities/shelby-township/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/macomb/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -281,11 +286,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/monroe/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/port-huron/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -307,11 +307,6 @@
   </url>
   <url>
     <loc>https://michigangaragepros.com/cities/marquette/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/benton-harbor/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -341,97 +336,12 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/comstock-park/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/byron-center/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/auburn-hills/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/almont/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/attica/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/auburn/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/avoca/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/bark-river/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/boyne-city/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/cass-city/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/cedar/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/clawson/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/clio/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/commerce-township/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/davison/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/dewitt/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/dexter/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/eaton-rapids/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/escanaba/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -446,67 +356,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/fowler/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/freeland/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/fremont/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/gladstone/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/grand-haven/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/grand-ledge/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/grayling/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/grosse-pointe-woods/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/harbor-springs/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/harrisville/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/holton/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/homer/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/houghton/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -521,57 +371,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/ira/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/kalkaska/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/kimball/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/kingsley/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/kinross/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/laingsburg/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/lapeer/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/lewiston/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/manton/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/mattawan/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/mcmillan/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -581,127 +381,12 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/milford/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/munith/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/negaunee/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/new-haven/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/newaygo/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/north-branch/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/otsego/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/pinckney/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/pullman/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/redford/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/south-haven/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/south-lyon/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/spring-arbor/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/spring-lake/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/st-clair/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/st-clair-shores/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/taylor/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/thompsonville/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/three-rivers/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/trenton/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/vicksburg/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/waterford/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/west-bloomfield/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/west-branch/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/white-cloud/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -787,11 +472,6 @@
   </url>
   <url>
     <loc>https://michigangaragepros.com/cities/lansing/maintenance/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/lansing/emergency-service/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
@@ -941,11 +621,6 @@
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/kalamazoo/emergency-service/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/flint/garage-door-repair/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
@@ -971,11 +646,6 @@
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/flint/emergency-service/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/holland/garage-door-repair/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
@@ -997,11 +667,6 @@
   </url>
   <url>
     <loc>https://michigangaragepros.com/cities/holland/maintenance/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/holland/emergency-service/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
@@ -1057,11 +722,6 @@
   </url>
   <url>
     <loc>https://michigangaragepros.com/cities/saginaw/maintenance/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/saginaw/emergency-service/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
@@ -1126,36 +786,6 @@
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/rochester-hills/garage-door-repair/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/rochester-hills/broken-springs/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/rochester-hills/garage-door-openers/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/rochester-hills/garage-door-installation/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/rochester-hills/maintenance/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/rochester-hills/emergency-service/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/farmington-hills/garage-door-repair/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
@@ -1181,11 +811,6 @@
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://michigangaragepros.com/cities/farmington-hills/emergency-service/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
     <loc>https://michigangaragepros.com/cities/novi/garage-door-repair/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
@@ -1207,11 +832,6 @@
   </url>
   <url>
     <loc>https://michigangaragepros.com/cities/novi/maintenance/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/novi/emergency-service/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
@@ -1297,11 +917,6 @@
   </url>
   <url>
     <loc>https://michigangaragepros.com/cities/midland/maintenance/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://michigangaragepros.com/cities/midland/emergency-service/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>

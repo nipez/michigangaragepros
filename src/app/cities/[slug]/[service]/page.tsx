@@ -4,6 +4,11 @@ import { CityServicePage } from "@/components/CityServicePage";
 import { getCityBySlug } from "@/data/cities";
 import { PRIORITY_CITY_SLUGS } from "@/data/growth";
 import { SERVICES, getServiceBySlug } from "@/data/services";
+import {
+  countProsForCityService,
+  isCityServiceIndexable,
+} from "@/lib/indexability";
+import { buildCityServiceIntro } from "@/lib/localPageContent";
 import { notFoundMetadata } from "@/lib/notFoundMetadata";
 import { buildPageMetadata } from "@/lib/seo";
 
@@ -32,10 +37,19 @@ export async function generateMetadata({
   ) {
     return notFoundMetadata;
   }
+  const indexable = isCityServiceIndexable(city.slug, service);
+  const intro = buildCityServiceIntro(
+    city,
+    service,
+    countProsForCityService(city.slug, service),
+  );
   return buildPageMetadata({
     title: `${service.localTitle} in ${city.name}, ${city.state}`,
-    description: `Compare ${service.localTitle.toLowerCase()} companies serving ${city.name}, Michigan. Browse local pros and request a free quote.`,
+    description: intro.slice(0, 160),
     path: `/cities/${city.slug}/${service.slug}/`,
+    noIndex: !indexable,
+    followWhenNoIndex: true,
+    includeCanonical: true,
   });
 }
 

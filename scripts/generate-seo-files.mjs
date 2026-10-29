@@ -1,6 +1,9 @@
 /**
  * Writes public/sitemap.xml + public/robots.txt for Cloudflare static assets.
  * OpenNext can 404 App Router metadata routes on workers.dev; public files are reliable.
+ *
+ * City and city×service URLs are included only when indexable (shared threshold in
+ * src/lib/indexability.ts) so sitemap and robots meta cannot drift.
  */
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -27,6 +30,13 @@ async function main() {
   const { REGIONS } = await loadTs("src/data/regions.ts");
   const { SERVICES } = await loadTs("src/data/services.ts");
   const { getAllBlogPosts } = await loadTs("src/data/blog.ts");
+  const { COST_GUIDE_SLUGS } = await loadTs("src/data/costGuides.ts");
+  const {
+    isCityIndexable,
+    isCityServiceIndexable,
+    getIndexabilityStats,
+    INDEX_PRO_THRESHOLD,
+  } = await loadTs("src/lib/indexability.ts");
 
   const urls = [];
   const push = (path, priority = "0.7", changefreq = "weekly", lastmod = null) => {
@@ -46,15 +56,35 @@ async function main() {
   push("for-companies", "0.7");
   push("get-a-quote", "0.6");
   for (const s of SERVICES) push(s.slug, "0.8");
+  for (const slug of COST_GUIDE_SLUGS) push(`cost/${slug}`, "0.75");
   for (const r of REGIONS) push(`regions/${r.slug}`, "0.85");
-  for (const c of CITIES) push(`cities/${c.slug}`, "0.8");
-  // Priority city × service landers only (not 122 × N).
-  const { PRIORITY_CITY_SLUGS } = await loadTs("src/data/growth.ts");
-  for (const citySlug of PRIORITY_CITY_SLUGS) {
-    for (const s of SERVICES) {
-      push(`cities/${citySlug}/${s.slug}`, "0.75");
+
+  let citiesInSitemap = 0;
+  let citiesSkipped = 0;
+  for (const c of CITIES) {
+    if (isCityIndexable(c.slug)) {
+      push(`cities/${c.slug}`, "0.8");
+      citiesInSitemap++;
+    } else {
+      citiesSkipped++;
     }
   }
+
+  // Priority city × service landers only (not 122 × N), and only when indexable.
+  const { PRIORITY_CITY_SLUGS } = await loadTs("src/data/growth.ts");
+  let cityServiceInSitemap = 0;
+  let cityServiceSkipped = 0;
+  for (const citySlug of PRIORITY_CITY_SLUGS) {
+    for (const s of SERVICES) {
+      if (isCityServiceIndexable(citySlug, s)) {
+        push(`cities/${citySlug}/${s.slug}`, "0.75");
+        cityServiceInSitemap++;
+      } else {
+        cityServiceSkipped++;
+      }
+    }
+  }
+
   for (const c of COMPANIES) push(`companies/${c.slug}`, "0.6");
   // Blog posts use stable content dates for lastmod (not build time).
   for (const p of getAllBlogPosts()) {
@@ -82,6 +112,7 @@ ${urls
 </urlset>
 `;
 
+  // Keep robots Disallow list aligned with PR #39; PR #40 may add /review/ separately.
   const robots = `User-Agent: *
 Allow: /
 Disallow: /api/
@@ -95,7 +126,17 @@ Sitemap: ${SITE_URL}/sitemap.xml
   mkdirSync(join(root, "public"), { recursive: true });
   writeFileSync(join(root, "public/sitemap.xml"), xml);
   writeFileSync(join(root, "public/robots.txt"), robots);
-  console.log(`Wrote public/sitemap.xml (${urls.length} urls) and public/robots.txt`);
+
+  const stats = getIndexabilityStats();
+  console.log(
+    `Wrote public/sitemap.xml (${urls.length} urls) and public/robots.txt`,
+  );
+  console.log(
+    `Index gating (threshold=${INDEX_PRO_THRESHOLD}): cities sitemap ${citiesInSitemap} in / ${citiesSkipped} excluded; city×service ${cityServiceInSitemap} in / ${cityServiceSkipped} excluded`,
+  );
+  console.log(
+    `Stats: cities indexable ${stats.citiesIndexable}/${stats.citiesTotal}, city×service indexable ${stats.cityServiceIndexable}/${stats.cityServiceTotal}`,
+  );
 }
 
 main().catch((err) => {

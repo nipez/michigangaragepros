@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { getTopCompanies } from "@/data/companies";
 import { getCityBySlug } from "@/data/cities";
+import { costGuidePathForService } from "@/data/costGuides";
 import { PRIORITY_CITY_SLUGS } from "@/data/growth";
 import { SERVICES, type Service } from "@/data/services";
 import { COMMON_PROBLEM_GUIDES, COMMON_PROBLEMS, SITE_URL } from "@/data/site";
+import { isCityServiceIndexable } from "@/lib/indexability";
 import {
   breadcrumbJsonLd,
   faqPageJsonLd,
@@ -17,13 +19,13 @@ import { JsonLd } from "./JsonLd";
 import { LineIcon, PinIcon } from "./Icons";
 import { ServiceHeroSearch } from "./ServiceHeroSearch";
 
-const PRIORITY_CITIES = PRIORITY_CITY_SLUGS.map((slug) => getCityBySlug(slug)).filter(
-  (c): c is NonNullable<typeof c> => Boolean(c),
-);
-
 export function ServicePage({ service }: { service: Service }) {
   const topCompanies = getTopCompanies(3);
   const related = SERVICES.filter((s) => s.slug !== service.slug);
+  const costPath = costGuidePathForService(service.slug);
+  const indexableCities = PRIORITY_CITY_SLUGS.map((slug) => getCityBySlug(slug))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+    .filter((c) => isCityServiceIndexable(c.slug, service));
 
   const jsonLd = [
     {
@@ -172,11 +174,11 @@ export function ServicePage({ service }: { service: Service }) {
                 {service.name} by City
               </h3>
               <p className="mb-5 text-[14.5px] leading-[1.55] text-muted">
-                Priority Michigan markets for {service.name.toLowerCase()} —
-                jump to local {service.localTitle.toLowerCase()} listings.
+                Michigan markets with enough local {service.localTitle.toLowerCase()}{" "}
+                listings to browse — jump to a city service page.
               </p>
               <div className="grid gap-2.5 sm:grid-cols-2">
-                {PRIORITY_CITIES.slice(0, 12).map((city) => (
+                {indexableCities.slice(0, 12).map((city) => (
                   <Link
                     key={city.slug}
                     href={`/cities/${city.slug}/${service.slug}/`}
@@ -198,12 +200,22 @@ export function ServicePage({ service }: { service: Service }) {
                   </Link>
                 ))}
               </div>
-              <Link
-                href="/cities/"
-                className="mt-4 inline-flex text-[14px] font-bold text-michigan-blue hover:underline"
-              >
-                View all Michigan cities →
-              </Link>
+              <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+                {costPath ? (
+                  <Link
+                    href={costPath}
+                    className="inline-flex text-[14px] font-bold text-michigan-blue hover:underline"
+                  >
+                    {service.localTitle} cost guide →
+                  </Link>
+                ) : null}
+                <Link
+                  href="/cities/"
+                  className="inline-flex text-[14px] font-bold text-michigan-blue hover:underline"
+                >
+                  View Michigan city hubs →
+                </Link>
+              </div>
             </div>
           </div>
         </div>

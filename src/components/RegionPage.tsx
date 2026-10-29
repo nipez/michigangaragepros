@@ -8,6 +8,7 @@ import { REGIONS, type Region } from "@/data/regions";
 import { SERVICES } from "@/data/services";
 import { getCitiesByRegion } from "@/data/cities";
 import { SITE_URL } from "@/data/site";
+import { isCityIndexable } from "@/lib/indexability";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo";
 import { CompanyCardGrid } from "./CompanyCardGrid";
 import { CompactFooter } from "./Footer";
@@ -22,9 +23,11 @@ export function RegionPage({ region }: { region: Region }) {
   const cities = (byRegion[region.name] ?? [])
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name));
+  const indexableCities = cities.filter((c) => isCityIndexable(c.slug));
   const hubCities = region.hubCitySlugs
     .map((slug) => getCityBySlug(slug))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c));
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+    .filter((c) => isCityIndexable(c.slug));
 
   const companyBySlug = new Map<string, ReturnType<typeof getCompaniesForCity>[number]>();
   for (const city of cities) {
@@ -47,7 +50,7 @@ export function RegionPage({ region }: { region: Region }) {
     },
     itemListJsonLd({
       name: `Cities in ${region.title}`,
-      items: cities.slice(0, 40).map((c) => ({
+      items: indexableCities.slice(0, 40).map((c) => ({
         name: c.name,
         path: `/cities/${c.slug}/`,
       })),
@@ -233,8 +236,8 @@ export function RegionPage({ region }: { region: Region }) {
             Cities in {region.title}
           </h2>
           <p className="mt-3 max-w-[60ch] text-[15.5px] leading-[1.6] text-muted">
-            Open a city page to see companies that list that market in their
-            primary location or service area.
+            City hubs below have at least a few directory pros listing that
+            market — open one to compare local companies.
           </p>
         </div>
         {hubCities.length > 0 ? (
@@ -256,7 +259,7 @@ export function RegionPage({ region }: { region: Region }) {
           </div>
         ) : null}
         <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
-          {cities.map((city) => {
+          {indexableCities.map((city) => {
             const count = getCompanyCountForCity(city.slug);
             return (
               <Link
