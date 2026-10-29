@@ -2,6 +2,7 @@ User-Agent: *
 Allow: /
 Disallow: /api/
 Disallow: /manage/
+Disallow: /review/
 Disallow: /admin/
 
 Host: https://michigangaragepros.com
