@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CITIES, getCitiesByRegion } from "@/data/cities";
 import { getCompanyCountForCity } from "@/data/companies";
 import { REGIONS, regionSlugFromName } from "@/data/regions";
+import { getIndexableCities, isCityIndexable } from "@/lib/indexability";
 import { itemListJsonLd } from "@/lib/seo";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
@@ -13,6 +14,7 @@ import { MichiganRegionMap } from "./MichiganRegionMap";
 export function CitiesIndexPage() {
   const byRegion = getCitiesByRegion();
   const regions = REGIONS.filter((r) => byRegion[r.name]?.length);
+  const indexableCities = getIndexableCities();
 
   return (
     <>
@@ -21,11 +23,11 @@ export function CitiesIndexPage() {
           {
             "@type": "CollectionPage",
             name: "Garage Door Pros by Michigan City",
-            description: `Browse ${CITIES.length} Michigan markets and compare local garage door companies.`,
+            description: `Browse ${indexableCities.length} Michigan city hubs with enough local garage door companies to compare.`,
           },
           itemListJsonLd({
             name: "Michigan cities with garage door companies",
-            items: CITIES.slice(0, 50).map((c) => ({
+            items: indexableCities.slice(0, 50).map((c) => ({
               name: c.name,
               path: `/cities/${c.slug}/`,
             })),
@@ -53,8 +55,10 @@ export function CitiesIndexPage() {
                 Garage Door Pros by Michigan City
               </h1>
               <p className="mb-[30px] max-w-[58ch] text-lg leading-[1.55] text-hero-muted text-pretty">
-                Browse {CITIES.length} Michigan markets — or start with a region
-                page to see where coverage sits across the state.
+                Browse {indexableCities.length} Michigan city hubs with enough
+                local pros to compare — or start with a region page to see where
+                coverage sits across the state ({CITIES.length} markets in our
+                directory overall).
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link
@@ -122,33 +126,37 @@ export function CitiesIndexPage() {
       <section className="container-site py-[72px]">
         <div className="mb-10">
           <h2 className="m-0 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
-            All Michigan Cities
+            Michigan City Hubs
           </h2>
           <p className="mt-3 max-w-[60ch] text-[15.5px] leading-[1.6] text-muted">
-            Choose a city to see companies that list that market in their
-            primary location or service area.
+            These hubs have enough directory pros to compare. Choose a city to
+            see companies that list that market in their primary location or
+            service area.
           </p>
         </div>
 
         <div className="grid gap-12">
-          {regions.map((region) => (
-            <div key={region.slug}>
-              <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-                <h3 className="m-0 text-lg font-extrabold text-navy">
-                  {region.title}
-                </h3>
-                <Link
-                  href={`/regions/${regionSlugFromName(region.name)}/`}
-                  className="text-[14px] font-bold text-michigan-blue"
-                >
-                  Region guide →
-                </Link>
-              </div>
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
-                {byRegion[region.name]
-                  .slice()
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((city) => {
+          {regions.map((region) => {
+            const regionCities = (byRegion[region.name] ?? [])
+              .filter((c) => isCityIndexable(c.slug))
+              .slice()
+              .sort((a, b) => a.name.localeCompare(b.name));
+            if (regionCities.length === 0) return null;
+            return (
+              <div key={region.slug}>
+                <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+                  <h3 className="m-0 text-lg font-extrabold text-navy">
+                    {region.title}
+                  </h3>
+                  <Link
+                    href={`/regions/${regionSlugFromName(region.name)}/`}
+                    className="text-[14px] font-bold text-michigan-blue"
+                  >
+                    Region guide →
+                  </Link>
+                </div>
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
+                  {regionCities.map((city) => {
                     const count = getCompanyCountForCity(city.slug);
                     return (
                       <Link
@@ -166,9 +174,10 @@ export function CitiesIndexPage() {
                       </Link>
                     );
                   })}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

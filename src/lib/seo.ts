@@ -21,6 +21,13 @@ type PageMetaInput = {
    */
   absoluteTitle?: boolean;
   noIndex?: boolean;
+  /**
+   * When noIndex is true, whether links may still be followed.
+   * Thin city/service landers use true (noindex,follow); private surfaces keep false.
+   */
+  followWhenNoIndex?: boolean;
+  /** When false, omit alternates.canonical (still never points at the homepage). */
+  includeCanonical?: boolean;
 };
 
 export const DEFAULT_OG_IMAGE = "/og-default.png";
@@ -33,6 +40,8 @@ export function buildPageMetadata({
   ogType = "website",
   absoluteTitle = false,
   noIndex = false,
+  followWhenNoIndex = false,
+  includeCanonical = true,
 }: PageMetaInput): Metadata {
   const url = absoluteUrl(path);
   const fullTitle = title;
@@ -43,7 +52,7 @@ export function buildPageMetadata({
   return {
     title: useAbsolute ? { absolute: fullTitle } : fullTitle,
     description,
-    alternates: { canonical: url },
+    ...(includeCanonical ? { alternates: { canonical: url } } : {}),
     openGraph: {
       title: fullTitle,
       description,
@@ -60,7 +69,7 @@ export function buildPageMetadata({
       images: [DEFAULT_OG_IMAGE],
     },
     ...(noIndex
-      ? { robots: { index: false, follow: false } }
+      ? { robots: { index: false, follow: followWhenNoIndex } }
       : { robots: { index: true, follow: true } }),
   };
 }
@@ -147,5 +156,56 @@ export function itemListJsonLd(input: {
       name: item.name,
       url: absoluteUrl(item.path),
     })),
+  };
+}
+
+export type LocalBusinessListItem = {
+  name: string;
+  path: string;
+  phone?: string;
+  address?: string;
+  cityLabel?: string;
+  website?: string;
+};
+
+/**
+ * ItemList whose elements are LocalBusiness nodes built only from fields we have.
+ * Omits empty optional NAP fields so we never invent data.
+ */
+export function localBusinessItemListJsonLd(input: {
+  name: string;
+  items: LocalBusinessListItem[];
+}) {
+  return {
+    "@type": "ItemList",
+    name: input.name,
+    numberOfItems: input.items.length,
+    itemListElement: input.items.map((item, i) => {
+      const business: Record<string, unknown> = {
+        "@type": "LocalBusiness",
+        name: item.name,
+        url: absoluteUrl(item.path),
+      };
+      if (item.phone) business.telephone = item.phone;
+      if (item.website) business.sameAs = item.website;
+      if (item.address || item.cityLabel) {
+        business.address = {
+          "@type": "PostalAddress",
+          ...(item.address ? { streetAddress: item.address } : {}),
+          ...(item.cityLabel
+            ? {
+                addressLocality: item.cityLabel.replace(/,?\s*MI$/i, "").trim(),
+                addressRegion: "MI",
+                addressCountry: "US",
+              }
+            : { addressRegion: "MI", addressCountry: "US" }),
+        };
+      }
+      return {
+        "@type": "ListItem",
+        position: i + 1,
+        item: business,
+      };
+    }),
   };
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "./Logo";
 import { CITIES } from "@/data/cities";
 import { SERVICES } from "@/data/services";
+import { isCityIndexable } from "@/lib/indexability";
 
 const FOOTER_CITIES = [
   "Detroit",
@@ -57,10 +58,11 @@ export function Footer() {
             <div className="grid gap-[9px] text-sm">
               {FOOTER_CITIES.map((name) => {
                 const city = CITIES.find((c) => c.name === name);
+                if (!city || !isCityIndexable(city.slug)) return null;
                 return (
                   <Link
                     key={name}
-                    href={`/cities/${city?.slug ?? name.toLowerCase().replace(/\s+/g, "-")}/`}
+                    href={`/cities/${city.slug}/`}
                     className={FOOTER_LINK}
                   >
                     {name}
