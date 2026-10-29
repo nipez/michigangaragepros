@@ -6,6 +6,10 @@ import {
   formatClaimApprovedNotify,
   notifyCompany,
 } from "@/lib/notify";
+import {
+  ensureReviewToken,
+  reviewRequestUrl,
+} from "@/lib/review-request";
 
 export const runtime = "nodejs";
 
@@ -26,6 +30,7 @@ type ClaimRow = {
   reviewed_at: string | null;
   review_notes: string | null;
   manage_token: string | null;
+  review_token: string | null;
 };
 
 export async function GET() {
@@ -39,7 +44,8 @@ export async function GET() {
     .prepare(
       `SELECT cr.id, cr.company_name, cr.city, cr.contact_name, cr.email, cr.phone,
               cr.website, cr.company_slug, cr.notes, cr.status, cr.created_at,
-              cr.reviewed_at, cr.review_notes, c.manage_token AS manage_token
+              cr.reviewed_at, cr.review_notes, c.manage_token AS manage_token,
+              c.review_token AS review_token
        FROM claim_requests cr
        LEFT JOIN companies c ON c.slug = cr.company_slug
        ORDER BY datetime(cr.created_at) DESC
@@ -50,6 +56,7 @@ export async function GET() {
   const claims = (results ?? []).map((row) => ({
     ...row,
     manage_url: row.manage_token ? manageUrl(row.manage_token) : null,
+    review_url: row.review_token ? reviewRequestUrl(row.review_token) : null,
   }));
 
   return NextResponse.json({ claims });
@@ -171,10 +178,12 @@ export async function PATCH(request: Request) {
 
   await db.batch(statements);
 
-  // Issue (or reuse) an unguessable manage link for the claimed company.
+  // Issue (or reuse) unguessable manage + review-request links.
   let manageToken: string | null = null;
+  let reviewToken: string | null = null;
   if (status === "approved" && slug) {
     manageToken = await ensureManageToken(db, slug);
+    reviewToken = await ensureReviewToken(db, slug);
   }
 
   // Best-effort: email claim contact the manage link. Delivery is optional —
@@ -198,6 +207,8 @@ export async function PATCH(request: Request) {
     claimed_updated: status === "approved" && Boolean(slug),
     manage_token: manageToken,
     manage_url: manageToken ? manageUrl(manageToken) : null,
+    review_token: reviewToken,
+    review_url: reviewToken ? reviewRequestUrl(reviewToken) : null,
     emailed_manage_link: emailedManageLink,
   });
 }

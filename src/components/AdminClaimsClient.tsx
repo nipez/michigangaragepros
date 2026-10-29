@@ -19,6 +19,8 @@ type ClaimRow = {
   review_notes: string | null;
   manage_token: string | null;
   manage_url: string | null;
+  review_token: string | null;
+  review_url: string | null;
 };
 
 type FilterTab = "open" | "done" | "all";
@@ -40,7 +42,11 @@ export function AdminClaimsClient({
   const [filter, setFilter] = useState<FilterTab>("open");
   const [busyId, setBusyId] = useState<number | null>(null);
   const [tokenBusySlug, setTokenBusySlug] = useState<string | null>(null);
+  const [reviewTokenBusySlug, setReviewTokenBusySlug] = useState<string | null>(
+    null,
+  );
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+  const [copiedReviewSlug, setCopiedReviewSlug] = useState<string | null>(null);
 
   const loadClaims = async () => {
     setLoading(true);
@@ -137,6 +143,8 @@ export function AdminClaimsClient({
         error?: string;
         manage_token?: string | null;
         manage_url?: string | null;
+        review_token?: string | null;
+        review_url?: string | null;
       } | null;
       if (!res.ok) {
         setError(data?.error || "Unable to update claim status");
@@ -154,9 +162,15 @@ export function AdminClaimsClient({
             status,
             reviewed_at: reviewedAt,
           };
-          if (status === "approved" && data?.manage_url) {
-            next.manage_token = data.manage_token ?? null;
-            next.manage_url = data.manage_url;
+          if (status === "approved") {
+            if (data?.manage_url) {
+              next.manage_token = data.manage_token ?? null;
+              next.manage_url = data.manage_url;
+            }
+            if (data?.review_url) {
+              next.review_token = data.review_token ?? null;
+              next.review_url = data.review_url;
+            }
           }
           return next;
         }),
@@ -171,6 +185,16 @@ export function AdminClaimsClient({
       await navigator.clipboard.writeText(url);
       setCopiedSlug(slug);
       setTimeout(() => setCopiedSlug(null), 2000);
+    } catch {
+      setError("Unable to copy link — select and copy manually");
+    }
+  };
+
+  const copyReviewLink = async (slug: string, url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedReviewSlug(slug);
+      setTimeout(() => setCopiedReviewSlug(null), 2000);
     } catch {
       setError("Unable to copy link — select and copy manually");
     }
@@ -210,6 +234,43 @@ export function AdminClaimsClient({
       );
     } finally {
       setTokenBusySlug(null);
+    }
+  };
+
+  const reviewTokenAction = async (
+    slug: string,
+    action: "regenerate" | "revoke",
+  ) => {
+    setError("");
+    setReviewTokenBusySlug(slug);
+    try {
+      const res = await fetch("/api/admin/review-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, action }),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        review_token?: string | null;
+        review_url?: string | null;
+      } | null;
+      if (!res.ok) {
+        setError(data?.error || `Unable to ${action} review link`);
+        return;
+      }
+      setClaims((prev) =>
+        prev.map((claim) =>
+          claim.company_slug === slug
+            ? {
+                ...claim,
+                review_token: data?.review_token ?? null,
+                review_url: data?.review_url ?? null,
+              }
+            : claim,
+        ),
+      );
+    } finally {
+      setReviewTokenBusySlug(null);
     }
   };
 
@@ -492,6 +553,66 @@ export function AdminClaimsClient({
                           className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-[#B42318] disabled:opacity-40"
                         >
                           Revoke
+                        </button>
+                      ) : null}
+                    </div>
+                    <div className="mt-4 mb-1.5">
+                      <span className="text-faint">Review request link:</span>{" "}
+                      {claim.review_url ? (
+                        <span className="break-all font-semibold text-navy">
+                          {claim.review_url}
+                        </span>
+                      ) : (
+                        <span className="text-muted">
+                          None — regenerate to issue a link
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {claim.review_url ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            void copyReviewLink(
+                              claim.company_slug!,
+                              claim.review_url!,
+                            )
+                          }
+                          className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-navy"
+                        >
+                          {copiedReviewSlug === claim.company_slug
+                            ? "Copied"
+                            : "Copy review link"}
+                        </button>
+                      ) : null}
+                      <button
+                        type="button"
+                        disabled={reviewTokenBusySlug === claim.company_slug}
+                        onClick={() =>
+                          void reviewTokenAction(
+                            claim.company_slug!,
+                            "regenerate",
+                          )
+                        }
+                        className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-navy disabled:opacity-40"
+                      >
+                        {claim.review_url
+                          ? "Regenerate review link"
+                          : "Issue review link"}
+                      </button>
+                      {claim.review_url ? (
+                        <button
+                          type="button"
+                          disabled={reviewTokenBusySlug === claim.company_slug}
+                          onClick={() =>
+                            void reviewTokenAction(
+                              claim.company_slug!,
+                              "revoke",
+                            )
+                          }
+                          className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-[#B42318] disabled:opacity-40"
+                        >
+                          Revoke review link
                         </button>
                       ) : null}
                     </div>

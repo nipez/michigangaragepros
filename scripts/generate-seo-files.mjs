@@ -117,6 +117,7 @@ ${urls
 Allow: /
 Disallow: /api/
 Disallow: /manage/
+Disallow: /review/
 Disallow: /admin/
 
 Host: ${SITE_URL}
