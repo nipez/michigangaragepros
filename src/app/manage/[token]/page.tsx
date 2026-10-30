@@ -12,6 +12,10 @@ import {
   type ListingFields,
 } from "@/lib/listing-manage";
 import {
+  getListingPerformance,
+  type ListingPerformance,
+} from "@/lib/listing-stats";
+import {
   ensureReviewToken,
   reviewRequestUrl,
 } from "@/lib/review-request";
@@ -37,6 +41,9 @@ type LoadedManage = {
   token: string;
   companyName: string;
   companySlug: string;
+  companyCity: string;
+  featured: boolean;
+  performance: ListingPerformance | null;
   fields: ListingFields;
   pendingEdit: { id: number; createdAt: string } | null;
   reviewUrl: string | null;
@@ -77,12 +84,29 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     .bind(company.slug)
     .first<{ id: number; created_at: string }>();
 
+  const meta = await db
+    .prepare(`SELECT featured, city FROM companies WHERE slug = ? LIMIT 1`)
+    .bind(company.slug)
+    .first<{ featured: number; city: string }>();
+
   const reviewToken = await ensureReviewToken(db, company.slug);
+
+  let performance: ListingPerformance | null = null;
+  try {
+    performance = await getListingPerformance(db, company.slug);
+  } catch (err) {
+    // Stats are additive — never block the manage form if the table is missing.
+    console.error("manage performance load failed", err);
+    performance = null;
+  }
 
   return {
     token,
     companyName: company.name,
     companySlug: company.slug,
+    companyCity: meta?.city || seed?.city || "",
+    featured: Boolean(meta?.featured),
+    performance,
     fields,
     pendingEdit: pending
       ? { id: pending.id, createdAt: pending.created_at }
@@ -110,6 +134,9 @@ export default async function ManageListingPage({ params }: PageProps) {
       token={loaded.token}
       companyName={loaded.companyName}
       companySlug={loaded.companySlug}
+      companyCity={loaded.companyCity}
+      featured={loaded.featured}
+      performance={loaded.performance}
       initialFields={loaded.fields}
       pendingEdit={loaded.pendingEdit}
       initialReviewUrl={loaded.reviewUrl}

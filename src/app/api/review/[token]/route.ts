@@ -6,6 +6,7 @@ import {
   getCompanyByReviewToken,
   isValidReviewTokenFormat,
 } from "@/lib/review-request";
+import { bumpListingStatSafe } from "@/lib/listing-stats";
 import { validateReview, type ReviewSubmit } from "@/lib/review";
 
 export const runtime = "nodejs";
@@ -145,6 +146,7 @@ export async function POST(request: Request, context: RouteContext) {
       .run();
 
     const id = result.meta.last_row_id;
+    bumpListingStatSafe(db, company.slug, "review_submissions");
     void notifyOperator(
       formatReviewNotify({
         id: id ?? "?",
