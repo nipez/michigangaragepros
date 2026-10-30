@@ -8,6 +8,7 @@
     "build": "npm run seo:generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "test:listing-stats": "npx tsx scripts/test-listing-stats.mjs",
     "seo:generate": "npx tsx scripts/generate-seo-files.mjs",
     "preview": "npm run seo:generate && opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "cf:build": "npm run seo:generate && opennextjs-cloudflare build",

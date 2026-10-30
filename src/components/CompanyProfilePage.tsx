@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import type { Company } from "@/data/companies";
 import {
   canEmitLocalBusiness,
@@ -8,6 +9,7 @@ import {
 } from "@/data/companies";
 import { SITE_URL } from "@/data/site";
 import { useCompanyLiveListing } from "@/hooks/useCompanyLiveListing";
+import { recordListingEvent } from "@/lib/listing-stats-client";
 import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
 import { websiteSnapshotUrl } from "@/lib/website-snapshot";
 import { CompanyClaimBadge } from "./CompanyClaimBadge";
@@ -70,6 +72,15 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
     graph.unshift(localBusinessJsonLd(company));
   }
 
+  // First-party profile view — fire once per mount; never blocks render.
+  useEffect(() => {
+    recordListingEvent(company.slug, "profile_view");
+  }, [company.slug]);
+
+  const trackContact = () => {
+    recordListingEvent(company.slug, "contact_click");
+  };
+
   return (
     <>
       <JsonLd data={graph} />
@@ -117,6 +128,7 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
                       <span className="text-[#C4CFDA]">|</span>
                       <a
                         href={`tel:${company.phone}`}
+                        onClick={trackContact}
                         className="font-semibold text-michigan-blue hover:underline"
                       >
                         {company.phone}
@@ -137,7 +149,11 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
             </div>
             <div className="flex flex-wrap gap-3">
               {company.phone ? (
-                <a href={`tel:${company.phone}`} className="btn-outline !rounded-[11px] !px-[22px] !py-[13px] !text-[15px]">
+                <a
+                  href={`tel:${company.phone}`}
+                  onClick={trackContact}
+                  className="btn-outline !rounded-[11px] !px-[22px] !py-[13px] !text-[15px]"
+                >
                   Call Company
                 </a>
               ) : (
@@ -173,6 +189,7 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
                   href={company.website}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={trackContact}
                   className="group block no-underline hover:text-inherit"
                 >
                   <div className="overflow-hidden rounded-[12px] border border-border bg-bg shadow-[0_8px_20px_rgba(16,42,67,0.08)] transition-shadow group-hover:shadow-[0_12px_28px_rgba(16,42,67,0.12)]">
@@ -315,6 +332,7 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
                   <span className="text-faint">Phone</span>
                   <a
                     href={`tel:${company.phone}`}
+                    onClick={trackContact}
                     className="font-semibold text-michigan-blue hover:underline"
                   >
                     {company.phone}
@@ -326,6 +344,7 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
                   <span className="text-faint">Alt phone</span>
                   <a
                     href={`tel:${company.phoneAlt}`}
+                    onClick={trackContact}
                     className="font-semibold text-michigan-blue hover:underline"
                   >
                     {company.phoneAlt}
@@ -351,6 +370,7 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
                     href={company.website}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={trackContact}
                     className="font-semibold text-michigan-blue hover:underline"
                   >
                     Visit site
@@ -364,6 +384,7 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
                     href={company.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={trackContact}
                     className="font-semibold text-michigan-blue hover:underline"
                   >
                     View listing

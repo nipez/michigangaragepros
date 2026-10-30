@@ -5,13 +5,18 @@ import {
   MANAGE_SERVICE_OPTIONS,
   type ListingFields,
 } from "@/lib/listing-manage";
+import type { ListingPerformance } from "@/lib/listing-stats";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
+import { ListingPerformancePanel } from "./ListingPerformancePanel";
 
 type Props = {
   token: string;
   companyName: string;
   companySlug: string;
+  companyCity: string;
+  featured: boolean;
+  performance: ListingPerformance | null;
   initialFields: ListingFields;
   pendingEdit: { id: number; createdAt: string } | null;
   initialReviewUrl: string | null;
@@ -21,6 +26,9 @@ export function ManageListingClient({
   token,
   companyName,
   companySlug,
+  companyCity,
+  featured,
+  performance,
   initialFields,
   pendingEdit,
   initialReviewUrl,
@@ -177,6 +185,20 @@ export function ManageListingClient({
               You have an update pending review
               {pending.createdAt ? ` (submitted ${pending.createdAt})` : ""}.
               Submitting again replaces the previous pending request.
+            </div>
+          ) : null}
+
+          {performance ? (
+            <div className="mt-5">
+              <ListingPerformancePanel
+                performance={performance}
+                featured={featured}
+                companyName={companyName}
+                companySlug={companySlug}
+                companyCity={companyCity}
+                variant="manage"
+                showUpsell
+              />
             </div>
           ) : null}
 

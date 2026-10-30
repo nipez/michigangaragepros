@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import {
   ReviewLinkInvalid,
   ReviewRequestClient,
 } from "@/components/ReviewRequestClient";
 import { getDb } from "@/lib/db";
+import {
+  bumpListingStatSafe,
+  isLikelyBot,
+} from "@/lib/listing-stats";
 import {
   getCompanyByReviewToken,
   isValidReviewTokenFormat,
@@ -52,6 +57,18 @@ export default async function ReviewRequestPage({ params }: PageProps) {
 
   if (!loaded) {
     return <ReviewLinkInvalid />;
+  }
+
+  // Best-effort visit count — never delay or break the review form.
+  try {
+    const hdrs = await headers();
+    const ua = hdrs.get("user-agent");
+    if (!isLikelyBot(ua)) {
+      const db = await getDb();
+      bumpListingStatSafe(db, loaded.companySlug, "review_link_visits");
+    }
+  } catch {
+    /* fail open */
   }
 
   return (

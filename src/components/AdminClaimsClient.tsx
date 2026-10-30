@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { AdminListingStats } from "./AdminListingStats";
 
 type ClaimRow = {
   id: number;
@@ -498,7 +499,12 @@ export function AdminClaimsClient({
                 ) : null}
                 {claim.status === "approved" && claim.company_slug ? (
                   <div className="md:col-span-2">
-                    <div className="mb-1.5">
+                    <AdminListingStats
+                      companySlug={claim.company_slug}
+                      companyName={claim.company_name}
+                      companyCity={claim.city}
+                    />
+                    <div className="mb-1.5 mt-4">
                       <span className="text-faint">Manage link:</span>{" "}
                       {claim.manage_url ? (
                         <span className="break-all font-semibold text-navy">

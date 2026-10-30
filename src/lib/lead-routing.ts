@@ -1,6 +1,7 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import { getCityBySlug } from "@/data/cities";
 import { citySlugForZip, normalizeZip } from "@/data/zipCodes";
+import { bumpListingStatSafe } from "@/lib/listing-stats";
 
 /** Max claimed companies notified for an open (no company_slug) lead. */
 export const AREA_ROUTE_CAP = 3;
@@ -267,6 +268,10 @@ export async function persistLeadRouting(
       .run();
   } else {
     await db.batch(statements);
+    // Best-effort performance counters — never fail routing on stats errors.
+    for (const r of recipients) {
+      bumpListingStatSafe(db, r.companySlug, "leads_routed");
+    }
   }
 
   return { routedAt, recipients, summary };
