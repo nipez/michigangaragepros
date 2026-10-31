@@ -18,6 +18,14 @@ Drop one image per post here. The site looks for:
 - garage-door-dent-panel-repair-or-replace
 - garage-door-reverses-before-closing
 - garage-door-rollers-cables-hinges-wear
+- fall-garage-door-maintenance-checklist-michigan
+- garage-door-spring-repair-cost-michigan
+- repair-vs-replace-garage-door-michigan
+- winter-garage-door-maintenance-checklist-michigan
+- garage-door-opener-battery-backup-michigan
+- questions-to-ask-garage-door-dealer-michigan
+- garage-door-opener-installation-grand-rapids
+- insulated-garage-doors-michigan
 
 ## Tips
 

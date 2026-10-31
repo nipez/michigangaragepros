@@ -27,6 +27,11 @@ export type BlogPost = {
   sections: BlogSection[];
   /** Optional Q&A for on-page FAQ + FAQPage JSON-LD. */
   faqs?: BlogFaq[];
+  /**
+   * Service slugs used to surface indexable city×service internal links
+   * (via src/lib/indexability.ts) on the post page.
+   */
+  relatedServiceSlugs?: string[];
 };
 
 /** Default image path convention — drop files in public/blog/{slug}.webp */
@@ -1118,6 +1123,113 @@ export const BLOG_POSTS: BlogPost[] = [
         question: "Do Grand Rapids companies install openers with battery backup?",
         answer:
           "Many do. Ask whether backup is built-in or an add-on kit, and confirm it is installed and tested before the tech leaves — especially useful for West Michigan outages.",
+      },
+    ],
+  },
+  {
+    slug: "insulated-garage-doors-michigan",
+    title:
+      "Insulated Garage Doors for Michigan Winters: Benefits, Seals, and What to Expect",
+    description:
+      "When an insulated garage door makes sense in Michigan — how insulation and weather seals help in freeze-thaw season, what install day looks like, and how to compare local quotes.",
+    date: "2026-10-31",
+    readMinutes: 9,
+    category: "Guides",
+    relatedServiceSlugs: [
+      "garage-door-installation",
+      "garage-door-repair",
+      "maintenance",
+    ],
+    sections: [
+      {
+        paragraphs: [
+          "Michigan winters punish thin, single-layer garage doors. Cold air floods the attached garage, weather seals freeze to the slab, and openers strain when panels warp or bind after a hard freeze. An insulated door will not heat the garage by itself — but a tighter, better-built door can cut drafts, quiet daily use, and reduce the ice-and-strain problems that lead to January repair calls.",
+          "This guide is for homeowners deciding whether to keep repairing an aging door or step up to an insulated replacement. Michigan Garage Pros is a directory: we help you compare local [installation](/garage-door-installation/) and [repair](/garage-door-repair/) companies; we do not sell doors ourselves.",
+          "If you are still weighing a hardware-only fix, start with [repair vs replace a garage door in Michigan](/blog/repair-vs-replace-garage-door-michigan/). If you are already shopping brands, keep our [dealer questions checklist](/blog/questions-to-ask-garage-door-dealer-michigan/) nearby.",
+        ],
+      },
+      {
+        heading: "What “insulated” actually means on a garage door",
+        paragraphs: [
+          "Most modern residential doors are sectional steel (or steel with composite overlays). Insulation usually means a foam or polystyrene core sandwiched between steel skins, plus better perimeter weather seals than a hollow single-layer door. Manufacturers publish insulation ratings so you can compare models — treat those numbers as relative ranking among doors, not a promise of a specific utility-bill dollar amount.",
+          "Construction quality matters as much as the label. Look at how sections join, whether the bottom seal is replaceable, and whether the bid includes side and top seals. A mid-grade insulated door installed with a compressed, torn, or missing seal will still draft like a bargain door.",
+          "Thermal breaks between inner and outer skins reduce condensation on the garage side of the door — useful in humid summers and wet Michigan winters when warm indoor air meets cold steel. Ask whether the model uses a thermal break and how the manufacturer expects you to maintain the finish so the warranty stays valid.",
+          "Windows, decorative hardware, and carriage-style overlays change price and weight. Heavier doors need correctly sized springs — another reason install quotes should include spring and balance work, not only the panel set.",
+        ],
+      },
+      {
+        heading: "Why Michigan climate tips the decision",
+        paragraphs: [
+          "Freeze-thaw cycles are hard on doors that flex and on seals that bond to wet concrete overnight. Thin single-layer doors sweat, rust from the inside out after years of condensation, and transfer cold into attached living space above or beside the garage. Road salt along Metro Detroit, lakeshore, and highway corridors accelerates hardware corrosion on tracks, hinges, and bottom brackets.",
+          "Lake-effect snow and polar vortex mornings also punish openers. A door that binds on ice or a warped panel makes the motor work harder; battery backup helps during outages but does not fix a door that is too heavy or poorly sealed. Pair insulation upgrades with the [winter maintenance checklist](/blog/winter-garage-door-maintenance-checklist-michigan/) and, if power loss is a worry, [opener battery backup guidance](/blog/garage-door-opener-battery-backup-michigan/).",
+          "Wind-driven snow on the lakeshore and Upper Peninsula routes can pack against the bottom seal and photo eyes. A tighter door with a healthy seal still needs seasonal clearing, but it recovers faster after storms than a warped single-layer door that never seats squarely.",
+          "Detached garages still benefit from durability and wind resistance, even when energy savings matter less. Attached garages — especially under bedrooms or next to a mudroom — are where insulation and seal quality show up every cold morning.",
+        ],
+      },
+      {
+        heading: "Signs your current door is costing you comfort (and repair calls)",
+        paragraphs: [
+          "Visible daylight around the perimeter when the door is closed, frost on the inside face of steel panels, and a garage that stays near outdoor temperature despite a working house HVAC system are soft signals that the door skin and seals are past their useful life.",
+          "Mechanical clues matter too: repeated spring repairs on a rusting door, rollers that go through seasons of salt grit, panels that no longer sit flush, or a weather seal so flattened that ice locks the door to the floor. At that point you are maintaining a shell that will not earn another hardware-only winter.",
+          "Listen for new noise after cold nights — grinding or scraping can mean panels are rubbing because the door has racked or the tracks shifted with an uneven slab. Catching that early with [maintenance](/maintenance/) can buy time; ignoring it often leads to cable or opener damage.",
+          "Cosmetic dents and mismatched replacement sections after years of patchwork can push the curb-appeal decision as well — see [dented panel repair or replace](/blog/garage-door-dent-panel-repair-or-replace/) when damage is limited to one section and the rest of the door is still sound.",
+        ],
+      },
+      {
+        heading: "What to expect on install day",
+        paragraphs: [
+          "A typical residential replacement starts with confirming measurements, clearing the garage opening, and removing the old door. Tracks may be reused only if they are straight and correctly sized; many Michigan installs replace worn track and hardware so the new door travels cleanly. Springs are matched to the new door’s weight — especially important when you move from a light single-layer door to a heavier insulated model.",
+          "Expect the crew to set sections, adjust cables and drums, lubricate where appropriate, and test balance with the opener disconnected. Photo eyes get aligned, travel limits set, and the safety reverse checked with an object on the floor. Ask them to walk you through the emergency release and how to re-engage the trolley after manual use.",
+          "Plan on clearing wall space and floor parking so sections can stage safely. Color-matched trim and stop molding should sit tight against the new door; if the opening is out of square — common in older Michigan homes — the crew may need shims or framing adjustments before the door seals evenly.",
+          "Winter installs still happen across the state, but extreme cold can delay non-emergency projects. If the old door is unsafe — crooked, cables frayed, or stuck open — treat that as [emergency service](/emergency-service/) first, then schedule the full replacement when the opening is secure.",
+        ],
+      },
+      {
+        heading: "Cost framing without fake price tags",
+        paragraphs: [
+          "Insulated door projects span a wide planning range based on size (single vs double), insulation tier, windows, color lead times, removal of the old door, and whether a new opener is bundled. Use the statewide [garage door installation cost guide](/cost/garage-door-installation/) for ballpark bands, then get local written estimates for your opening.",
+          "Ask every bid to itemize door model, labor, disposal, springs/hardware, and opener line items. A low door price that reuses bent tracks or omits haul-away is not a bargain. Likewise, compare the same insulation tier and window package across dealers so you are not pricing different products.",
+          "Lead times for specialty colors or carriage-style overlays can stretch through busy spring and fall seasons. If curb appeal timing matters for a listing or remodel, ask about stock colors versus special orders when you request quotes.",
+          "Spring-only emergencies on a door you plan to keep are a different budget lane — see [spring repair cost in Michigan](/blog/garage-door-spring-repair-cost-michigan/). If panels and insulation are already failing, stacking another spring visit rarely beats a planned replacement before the next polar vortex.",
+        ],
+      },
+      {
+        heading: "Questions that separate clear quotes from vague ones",
+        paragraphs: [
+          "Which exact model and insulation rating are quoted? Is the bottom seal replaceable later? Are new springs, rollers, and tracks included? Will the opener stay, get a battery-backup kit, or be replaced? What labor warranty covers the install if a section settles after the first freeze-thaw month?",
+          "For older Michigan homes, ask how the crew handles out-of-square openings and uneven slabs. Get in writing what happens if framing repairs appear once the old door is off. Bring the same checklist to every company — our [how to choose a garage door company](/blog/how-to-choose-garage-door-company-michigan/) guide covers red flags like “today only” pressure pricing.",
+          "If you are comparing Clopay or other major brands through dealers, insist on the brochure page or spec sheet that matches the bid — a brand name without a model number is incomplete. Our [dealer questions checklist](/blog/questions-to-ask-garage-door-dealer-michigan/) lists warranty and install-day prompts worth repeating on every visit.",
+        ],
+      },
+      {
+        heading: "Compare Michigan installers near you",
+        paragraphs: [
+          "Shortlist [new door installation](/garage-door-installation/) companies that regularly serve your ZIP — including [Detroit](/cities/detroit/garage-door-installation/), [Grand Rapids](/cities/grand-rapids/garage-door-installation/), [Ann Arbor](/cities/ann-arbor/garage-door-installation/), [Lansing](/cities/lansing/garage-door-installation/), and [Traverse City](/cities/traverse-city/garage-door-installation/). For hardware that is failing before you commit to a full door, browse [repair](/garage-door-repair/) or book a [maintenance](/maintenance/) inspection so you are not guessing.",
+          "West Michigan and Metro Detroit markets usually have more same-week install capacity; Northern Michigan routes may need more lead time for non-emergency projects. Confirm your suburb or township ZIP is on the regular route before you wait on a truck that rarely travels that far.",
+          "Or [request a free quote](/get-a-quote/) with door width and height, photos of the opening, whether the garage is attached, and whether you want an opener with battery backup included. Compare at least two written proposals with matching model specs before you lock a date.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Do insulated garage doors help in Michigan winters?",
+        answer:
+          "They reduce drafts and temperature transfer compared with thin single-layer doors, especially on attached garages. Results depend on insulation tier, weather seals, and install quality — not the word “insulated” alone.",
+      },
+      {
+        question: "Should I replace my opener when I install an insulated door?",
+        answer:
+          "Not always required, but heavier insulated doors should be paired with a healthy, correctly sized opener. Many homeowners add battery backup at the same time for storm outages.",
+      },
+      {
+        question: "Is it worth insulating if my garage is detached?",
+        answer:
+          "Energy savings matter less than on attached garages, but a sturdier insulated door can still improve durability, quiet operation, and weather resistance in Michigan wind and snow.",
+      },
+      {
+        question: "How do I compare insulated door quotes fairly?",
+        answer:
+          "Match model, insulation rating, windows, springs/hardware, disposal, and opener scope on every bid. Use the installation cost guide for planning ranges, then choose from local written estimates.",
       },
     ],
   },
