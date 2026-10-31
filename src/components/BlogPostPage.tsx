@@ -1,13 +1,69 @@
 import Link from "next/link";
 import type { BlogPost } from "@/data/blog";
 import { getAllBlogPosts, getBlogImage, hasBlogImageFile } from "@/data/blog";
+import { getServiceBySlug } from "@/data/services";
 import { SITE_NAME, SITE_URL } from "@/data/site";
+import {
+  getIndexableCities,
+  isCityServiceIndexable,
+} from "@/lib/indexability";
 import { absoluteUrl, breadcrumbJsonLd, faqPageJsonLd } from "@/lib/seo";
 import { BlogPostImage } from "./BlogPostImage";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
 import { JsonLd } from "./JsonLd";
+
+/** Priority hubs first, then other indexable cities — only indexable city×service paths. */
+const BLOG_LINK_CITY_PRIORITY = [
+  "detroit",
+  "grand-rapids",
+  "ann-arbor",
+  "lansing",
+  "traverse-city",
+  "warren",
+  "kalamazoo",
+] as const;
+
+function indexableLocalLinks(
+  serviceSlugs: string[] | undefined,
+  limit = 6,
+): { href: string; label: string }[] {
+  const slugs =
+    serviceSlugs?.length && serviceSlugs.length > 0
+      ? serviceSlugs
+      : ["garage-door-repair", "broken-springs", "garage-door-openers"];
+
+  const indexableCities = getIndexableCities();
+  const bySlug = new Map(indexableCities.map((c) => [c.slug, c]));
+  const cityOrder = [
+    ...BLOG_LINK_CITY_PRIORITY.filter((slug) => bySlug.has(slug)),
+    ...indexableCities
+      .map((c) => c.slug)
+      .filter((slug) => !(BLOG_LINK_CITY_PRIORITY as readonly string[]).includes(slug)),
+  ];
+
+  const out: { href: string; label: string }[] = [];
+  const seen = new Set<string>();
+
+  for (const serviceSlug of slugs) {
+    const service = getServiceBySlug(serviceSlug);
+    if (!service) continue;
+    for (const citySlug of cityOrder) {
+      if (out.length >= limit) return out;
+      if (!isCityServiceIndexable(citySlug, service)) continue;
+      const href = `/cities/${citySlug}/${service.slug}/`;
+      if (seen.has(href)) continue;
+      seen.add(href);
+      const cityName = bySlug.get(citySlug)?.name ?? citySlug;
+      out.push({
+        href,
+        label: `${cityName} ${service.shortName.toLowerCase()}`,
+      });
+    }
+  }
+  return out;
+}
 
 function formatDate(date: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -251,12 +307,21 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
                 </div>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {[
-                    { href: "/cities/detroit/garage-door-repair/", label: "Detroit repair" },
-                    { href: "/cities/grand-rapids/broken-springs/", label: "Grand Rapids springs" },
-                    { href: "/cities/ann-arbor/garage-door-repair/", label: "Ann Arbor repair" },
-                    { href: "/cities/traverse-city/emergency-service/", label: "Traverse City emergency" },
-                    { href: "/garage-door-repair/", label: "Repair statewide" },
-                    { href: "/garage-door-openers/", label: "Openers" },
+                    ...indexableLocalLinks(post.relatedServiceSlugs, 4),
+                    ...(post.relatedServiceSlugs ?? [])
+                      .slice(0, 2)
+                      .map((slug) => {
+                        const service = getServiceBySlug(slug);
+                        return service
+                          ? {
+                              href: `/${service.slug}/`,
+                              label: `${service.shortName} statewide`,
+                            }
+                          : null;
+                      })
+                      .filter((l): l is { href: string; label: string } =>
+                        Boolean(l),
+                      ),
                   ].map((link) => (
                     <Link
                       key={link.href}
