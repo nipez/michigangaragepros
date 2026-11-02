@@ -11,6 +11,8 @@ type LeadRouting = {
   reason: string;
   emailed: number;
   created_at: string;
+  company_status?: string;
+  status_updated_at?: string | null;
 };
 
 type LeadRow = {
@@ -344,6 +346,7 @@ function RoutingSummary({ lead }: { lead: LeadRow }) {
             <span className="text-faint">
               {" "}
               ({r.reason}
+              {r.company_status ? ` · ${r.company_status}` : ""}
               {r.emailed ? "" : ", send failed"})
             </span>
           </span>

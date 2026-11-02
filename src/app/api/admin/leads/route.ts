@@ -30,6 +30,8 @@ type RoutingRow = {
   reason: string;
   emailed: number;
   created_at: string;
+  company_status: string;
+  status_updated_at: string | null;
 };
 
 export async function GET() {
@@ -57,7 +59,9 @@ export async function GET() {
     // D1 has no great IN-list binder for dynamic sizes; fetch recent routings and group.
     const { results: routingRows } = await db
       .prepare(
-        `SELECT id, lead_id, company_slug, email, reason, emailed, created_at
+        `SELECT id, lead_id, company_slug, email, reason, emailed, created_at,
+                COALESCE(company_status, 'new') AS company_status,
+                status_updated_at
          FROM lead_routings
          ORDER BY datetime(created_at) DESC
          LIMIT 500`,

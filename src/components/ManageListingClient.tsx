@@ -1,11 +1,16 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import type {
+  CompanyLead,
+  CompanyLeadTotals,
+} from "@/lib/company-leads";
 import {
   MANAGE_SERVICE_OPTIONS,
   type ListingFields,
 } from "@/lib/listing-manage";
 import type { ListingPerformance } from "@/lib/listing-stats";
+import { CompanyLeadInbox } from "./CompanyLeadInbox";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { ListingPerformancePanel } from "./ListingPerformancePanel";
@@ -20,6 +25,8 @@ type Props = {
   initialFields: ListingFields;
   pendingEdit: { id: number; createdAt: string } | null;
   initialReviewUrl: string | null;
+  initialLeads: CompanyLead[];
+  initialLeadTotals: CompanyLeadTotals;
 };
 
 export function ManageListingClient({
@@ -32,6 +39,8 @@ export function ManageListingClient({
   initialFields,
   pendingEdit,
   initialReviewUrl,
+  initialLeads,
+  initialLeadTotals,
 }: Props) {
   const [fields, setFields] = useState<ListingFields>(initialFields);
   const [customService, setCustomService] = useState("");
@@ -201,6 +210,19 @@ export function ManageListingClient({
               />
             </div>
           ) : null}
+
+          <div className="mt-5">
+            <CompanyLeadInbox
+              token={token}
+              companyName={companyName}
+              companySlug={companySlug}
+              companyCity={companyCity}
+              featured={featured}
+              reviewUrl={reviewUrl}
+              initialLeads={initialLeads}
+              initialTotals={initialLeadTotals}
+            />
+          </div>
 
           <div className="mt-5 rounded-[12px] border border-border bg-bg px-4 py-4">
             <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
