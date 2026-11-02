@@ -4,6 +4,13 @@ import {
   ManageListingClient,
 } from "@/components/ManageListingClient";
 import { getCompanyBySlug } from "@/data/companies";
+import {
+  emptyCompanyLeadTotals,
+  listCompanyLeads,
+  summarizeCompanyLeads,
+  type CompanyLead,
+  type CompanyLeadTotals,
+} from "@/lib/company-leads";
 import { getDb } from "@/lib/db";
 import {
   getCompanyByManageToken,
@@ -47,6 +54,8 @@ type LoadedManage = {
   fields: ListingFields;
   pendingEdit: { id: number; createdAt: string } | null;
   reviewUrl: string | null;
+  leads: CompanyLead[];
+  leadTotals: CompanyLeadTotals;
 };
 
 async function loadManagePage(token: string): Promise<LoadedManage | null> {
@@ -100,6 +109,18 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     performance = null;
   }
 
+  let leads: CompanyLead[] = [];
+  let leadTotals: CompanyLeadTotals = emptyCompanyLeadTotals();
+  try {
+    leads = await listCompanyLeads(db, company.slug);
+    leadTotals = summarizeCompanyLeads(leads);
+  } catch (err) {
+    // Inbox is additive — never block the manage form if migration is pending.
+    console.error("manage leads load failed", err);
+    leads = [];
+    leadTotals = emptyCompanyLeadTotals();
+  }
+
   return {
     token,
     companyName: company.name,
@@ -112,6 +133,8 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
       ? { id: pending.id, createdAt: pending.created_at }
       : null,
     reviewUrl: reviewToken ? reviewRequestUrl(reviewToken) : null,
+    leads,
+    leadTotals,
   };
 }
 
@@ -140,6 +163,8 @@ export default async function ManageListingPage({ params }: PageProps) {
       initialFields={loaded.fields}
       pendingEdit={loaded.pendingEdit}
       initialReviewUrl={loaded.reviewUrl}
+      initialLeads={loaded.leads}
+      initialLeadTotals={loaded.leadTotals}
     />
   );
 }
