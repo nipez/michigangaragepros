@@ -26,6 +26,7 @@ Drop one image per post here. The site looks for:
 - questions-to-ask-garage-door-dealer-michigan
 - garage-door-opener-installation-grand-rapids
 - insulated-garage-doors-michigan
+- garage-door-weatherstripping-bottom-seal-michigan
 
 ## Tips
 

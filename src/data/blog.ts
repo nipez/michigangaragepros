@@ -828,7 +828,7 @@ export const BLOG_POSTS: BlogPost[] = [
         heading: "1. Break ice on the weather seal — gently",
         paragraphs: [
           "If the bottom rubber is frozen to the slab, do not run the opener to rip it free — that is how seals tear and openers strain. Crack ice along the seal with care, clear snow from the threshold, and check for tears that let drafts and salt into an attached garage.",
-          "A flattened or split seal is worth replacing mid-season if warm spells allow a short service visit. Waiting until March often means weeks of drafts and more ice bonding every night.",
+          "A flattened or split seal is worth replacing mid-season if warm spells allow a short service visit. Waiting until March often means weeks of drafts and more ice bonding every night. For seal types, DIY vs pro, and planning ranges, see [garage door weatherstripping and bottom seals for Michigan winters](/blog/garage-door-weatherstripping-bottom-seal-michigan/).",
         ],
       },
       {
@@ -1152,7 +1152,7 @@ export const BLOG_POSTS: BlogPost[] = [
         heading: "What “insulated” actually means on a garage door",
         paragraphs: [
           "Most modern residential doors are sectional steel (or steel with composite overlays). Insulation usually means a foam or polystyrene core sandwiched between steel skins, plus better perimeter weather seals than a hollow single-layer door. Manufacturers publish insulation ratings so you can compare models — treat those numbers as relative ranking among doors, not a promise of a specific utility-bill dollar amount.",
-          "Construction quality matters as much as the label. Look at how sections join, whether the bottom seal is replaceable, and whether the bid includes side and top seals. A mid-grade insulated door installed with a compressed, torn, or missing seal will still draft like a bargain door.",
+          "Construction quality matters as much as the label. Look at how sections join, whether the bottom seal is replaceable, and whether the bid includes side and top seals. A mid-grade insulated door installed with a compressed, torn, or missing seal will still draft like a bargain door. If drafts and ice bonding are the main complaint on a door you plan to keep, start with [weatherstripping, bottom seals, and threshold seals](/blog/garage-door-weatherstripping-bottom-seal-michigan/) before assuming you need a full replacement.",
           "Thermal breaks between inner and outer skins reduce condensation on the garage side of the door — useful in humid summers and wet Michigan winters when warm indoor air meets cold steel. Ask whether the model uses a thermal break and how the manufacturer expects you to maintain the finish so the warranty stays valid.",
           "Windows, decorative hardware, and carriage-style overlays change price and weight. Heavier doors need correctly sized springs — another reason install quotes should include spring and balance work, not only the panel set.",
         ],
@@ -1230,6 +1230,118 @@ export const BLOG_POSTS: BlogPost[] = [
         question: "How do I compare insulated door quotes fairly?",
         answer:
           "Match model, insulation rating, windows, springs/hardware, disposal, and opener scope on every bid. Use the installation cost guide for planning ranges, then choose from local written estimates.",
+      },
+    ],
+  },
+  {
+    slug: "garage-door-weatherstripping-bottom-seal-michigan",
+    title:
+      "Garage Door Weatherstripping and Bottom Seals for Michigan Winters",
+    description:
+      "How to spot a failing garage door bottom seal in Michigan, which weatherstripping and threshold seals fit your door, DIY vs pro guidance, rough cost ranges, and how to keep the seal from freezing to the slab.",
+    date: "2026-11-03",
+    readMinutes: 10,
+    category: "Maintenance",
+    relatedServiceSlugs: ["maintenance", "garage-door-repair", "garage-door-installation"],
+    sections: [
+      {
+        paragraphs: [
+          "Michigan winters find every gap under a garage door. Daylight under the bottom rail, a cold draft into an attached mudroom, salt slush creeping across the slab, or a seal that freezes solid overnight are all signs the weatherstripping — especially the bottom seal — is past its useful life.",
+          "This guide covers seal types (bottom astragals, stop molding, top and brush seals, threshold seals), how to tell what your door uses, realistic DIY vs pro choices, and how seals relate to insulated doors and energy loss. Michigan Garage Pros is a directory: we help you compare local [maintenance](/maintenance/) and [repair](/garage-door-repair/) companies; we do not sell seals ourselves.",
+          "If the door will not move at all in the cold, start with [garage door won't open in a Michigan winter](/blog/garage-door-wont-open-winter-michigan/). For the broader mid-winter walkaround, keep the [winter maintenance checklist](/blog/winter-garage-door-maintenance-checklist-michigan/) nearby. Shopping a tighter, better-insulated door instead of another seal patch? See [insulated garage doors for Michigan winters](/blog/insulated-garage-doors-michigan/).",
+        ],
+      },
+      {
+        heading: "Signs your garage door seal is failing",
+        paragraphs: [
+          "Daylight under a closed door is the clearest visual cue. Kneel at the center and both corners — a uniform dark contact line means the seal is seating; bright gaps mean the rubber is flattened, torn, or the door is out of square on an uneven Michigan slab.",
+          "Drafts at the bottom or sides, water or snowmelt that tracks inside after storms, and road-salt slush that stains the first few feet of concrete all point to a seal that no longer compresses against the floor. Critters and insects also exploit the same gaps — especially in fall before the first hard freeze.",
+          "A door that freezes to the slab overnight is not always “bad luck.” A worn, porous, or waterlogged bottom seal holds moisture against cold concrete; when the overnight low drops, ice bonds the rubber to the floor. Forcing the opener then tears the seal and strains the motor — a classic January repair call.",
+          "Also watch for a seal that has hardened into a brittle strip, a retainer that has rusted through at the corners, or stop molding on the jambs that no longer touches the door face when closed. Those are hardware failures, not something silicone caulk on the floor will fix.",
+        ],
+      },
+      {
+        heading: "Seal types — and how to tell which your door uses",
+        paragraphs: [
+          "Bottom seals (often called astragals) are the U-shaped or bulb-style rubber or vinyl strips that ride in an aluminum or steel retainer along the bottom edge of the door. Common profiles include bulb or “P” seals, T-style / T-astragal inserts, and J-style or “J-astragal” shapes. The retainer shape dictates the insert — measure the channel or pull a short sample rather than guessing from a photo online.",
+          "Retainer types vary: some doors use a replaceable aluminum retainer bolted to the bottom section; others have a stamped steel channel built into the panel. If the retainer is bent or corroded from years of salt, replacing only the rubber may not seal — the channel has to be straight so the insert sits evenly.",
+          "Perimeter or stop molding is the vinyl or rubber strip nailed or screwed to the jambs and header so it brushes the face of the closed door. Top seals close the gap at the header; brush seals (nylon or similar bristles in a track) are useful on older or out-of-square openings where a solid bulb cannot conform. Threshold seals are a raised vinyl or rubber strip adhered or fastened to the concrete itself — the door’s bottom seal then compresses against that sill instead of a cracked or uneven slab.",
+          "To identify your setup: close the door, look at the bottom edge from inside, and note whether the rubber slides out of a retainer, whether side stop molding touches the panels, and whether a raised threshold strip is glued to the floor. Take clear photos of the retainer end profile before you shop parts or call a tech — that one picture usually determines whether a stock insert fits.",
+        ],
+      },
+      {
+        heading: "DIY vs calling a Michigan pro",
+        paragraphs: [
+          "DIY is reasonable when the door is balanced, the retainer is intact, and you are swapping a matching bottom insert or replacing stop molding with the door closed and stable. Cut carefully, seat the insert fully into the channel, and avoid stretching the rubber so it thins at the ends.",
+          "Call a pro when the door is crooked, springs feel wrong, cables look frayed, the retainer is rusted or bent, the slab is so uneven that no insert will seat, or ice damage has already torn hardware. Threshold seal installs on cold, damp Michigan concrete also fail when surface prep is rushed — adhesive needs a clean, dry slab and mild enough weather to cure.",
+          "Leave spring, cable, and off-track work to technicians. A seal visit is a good moment for a quick balance and photo-eye check so you are not chasing drafts while the door itself is binding. Browse [garage door maintenance](/maintenance/) and [repair](/garage-door-repair/), or compare planning ranges in the [maintenance cost guide](/cost/maintenance/) and [repair cost guide](/cost/garage-door-repair/).",
+        ],
+      },
+      {
+        heading: "Rough Michigan cost ranges (planning only)",
+        paragraphs: [
+          "Exact prices vary by city, door width (single vs double), seal profile, whether the retainer must be replaced, and whether the visit is bundled with other maintenance. Treat these as honest planning bands — not quotes — then get a local written estimate.",
+          "Parts-only bottom seal inserts for a typical residential door often fall in a low tens-of-dollars to low-hundreds range depending on length and profile. A service visit to replace a bottom seal or stop molding commonly lands somewhere from roughly the low hundreds into the mid-hundreds when labor, trip fee, and hardware are included; double-wide doors, rusted retainers, or same-day winter calls push higher.",
+          "Threshold seal projects (materials plus labor and slab prep) often run higher than a simple rubber swap — think a few hundred dollars in many residential cases, more if the concrete needs repair or the opening is out of square. Full perimeter weatherstripping with a new bottom retainer can approach or overlap light repair-visit pricing.",
+          "For broader repair and tune-up budgeting, use [garage door repair cost in Michigan](/blog/garage-door-repair-cost-michigan/) and the statewide [/cost/](/cost/garage-door-repair/) guides. If seals keep failing because the door skin itself is thin and warped, compare that path to a planned replacement via the [installation cost guide](/cost/garage-door-installation/).",
+        ],
+      },
+      {
+        heading: "Keep the bottom seal from freezing to the slab",
+        paragraphs: [
+          "Clear snow and slush from the threshold before the overnight low. A wet seal pressed into a puddle on cold concrete is how ice bonds form. After storms, sweep the interior line where the seal sits so meltwater is not trapped under the rubber.",
+          "If the door is already frozen, do not run the opener to rip it free. Crack ice gently along the seal, warm the contact line carefully if needed, then open by hand with the opener disconnected once the bond breaks. Inspect for tears afterward — a ripped seal will freeze worse the next night.",
+          "A healthy, flexible seal sheds moisture better than a flattened, porous one. Some homeowners apply a thin film of a garage-door-safe silicone or rubber conditioner on the seal face in deep winter (follow manufacturer guidance; avoid petroleum products that swell or crack vinyl). A threshold seal can also lift the contact plane above low spots and standing meltwater on older slabs.",
+          "Photo eyes sit near the floor — ice chunks and snow piles that pack against the bottom seal often blind sensors too. Clearing both at once prevents the “door won’t close” loop covered in the winter checklist.",
+        ],
+      },
+      {
+        heading: "How seals relate to insulated doors and energy loss",
+        paragraphs: [
+          "Insulation in the door panels reduces temperature transfer through the steel; weatherstripping stops air and moisture at the edges. An insulated door with a torn bottom seal still dumps cold air into an attached garage. Conversely, a perfect seal on a hollow single-layer door helps drafts but will not match the comfort of a foam-core door with intact perimeter seals.",
+          "For attached garages under bedrooms or next to living space, seal quality shows up every morning as comfort and as how hard the house HVAC works to recover. Detached garages still benefit — less wind-driven snow inside, less corrosion on tools and stored vehicles — even when utility savings matter less.",
+          "When you are comparing replacement doors, ask whether the bottom seal is a replaceable insert, whether side and top seals are included, and how the crew handles out-of-square openings common in older Michigan homes. Those details matter as much as the insulation rating on the brochure — more in [insulated garage doors for Michigan winters](/blog/insulated-garage-doors-michigan/).",
+        ],
+      },
+      {
+        heading: "When to call a pro — and where to find one",
+        paragraphs: [
+          "Call sooner rather than later if you see daylight under the door before the first polar vortex, if water or salt regularly enters, if the seal freezes solid more than once, or if DIY parts do not match the retainer. Waiting until a January ice storm often means an emergency opener strain or a door stuck open overnight.",
+          "Shortlist [maintenance](/maintenance/) and [repair](/garage-door-repair/) companies that serve your ZIP — including [Detroit maintenance](/cities/detroit/maintenance/), [Grand Rapids repair](/cities/grand-rapids/garage-door-repair/), [Ann Arbor maintenance](/cities/ann-arbor/maintenance/), [Lansing repair](/cities/lansing/garage-door-repair/), and [Traverse City maintenance](/cities/traverse-city/maintenance/). Fall is the easiest season to schedule non-emergency seal work; see the [fall maintenance checklist](/blog/fall-garage-door-maintenance-checklist-michigan/) if you are planning ahead.",
+          "Or [request a free quote](/get-a-quote/) with your ZIP, door width (single or double), photos of the bottom retainer end and any daylight gaps, and whether you also want a threshold seal or full perimeter weatherstripping. Compare at least two written estimates so you are pricing the same scope.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "How do I know if my garage door bottom seal needs replacement?",
+        answer:
+          "Look for daylight under the closed door, drafts, water or salt slush getting in, a flattened or cracked rubber edge, or a seal that freezes to the slab overnight. Any of those usually means the seal is no longer seating — replace it before deep winter when possible.",
+      },
+      {
+        question: "What is the difference between a bottom seal and a threshold seal?",
+        answer:
+          "A bottom seal attaches to the door and compresses against the floor. A threshold seal is a raised strip fastened to the concrete; the door seal then meets that sill. Thresholds help on cracked or uneven slabs and can reduce standing meltwater under the door.",
+      },
+      {
+        question: "Can I replace garage door weatherstripping myself in Michigan?",
+        answer:
+          "Many homeowners can swap a matching bottom insert or stop molding if the door is balanced and the retainer is sound. Leave bent retainers, spring or cable issues, and cold-weather threshold adhesive jobs to a pro when the slab or opening needs prep.",
+      },
+      {
+        question: "How much does garage door weatherstripping cost in Michigan?",
+        answer:
+          "Parts-only bottom inserts often cost from the low tens of dollars into the low hundreds; installed seal or stop-molding visits commonly fall somewhere in the low-to-mid hundreds depending on door width and hardware. Threshold projects and full perimeter kits run higher. Use these as planning ranges and get local written quotes.",
+      },
+      {
+        question: "How do I stop my garage door seal from freezing to the floor?",
+        answer:
+          "Keep snow and standing water off the threshold, replace a porous or torn seal, and never force the opener if the door is iced down — free it gently first. A threshold seal and a flexible, well-seated bottom insert reduce overnight bonding in Michigan freeze-thaw.",
+      },
+      {
+        question: "Will new weatherstripping fix a cold garage like an insulated door would?",
+        answer:
+          "New seals cut drafts and moisture at the edges, which helps a lot on attached garages. They do not replace panel insulation. If the door skin is thin and warped, pair seal repairs with an insulated replacement conversation rather than expecting weatherstripping alone to match a foam-core door.",
       },
     ],
   },
