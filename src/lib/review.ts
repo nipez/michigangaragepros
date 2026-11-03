@@ -9,12 +9,19 @@ export type ReviewSubmit = {
   website: string;
 };
 
+export type PublicOwnerReply = {
+  body: string;
+  repliedAt: string;
+};
+
 export type PublicReview = {
   id: number;
   authorName: string;
   rating: number;
   body: string;
   createdAt: string;
+  /** Approved business response only — omitted or null when none/pending. */
+  ownerReply?: PublicOwnerReply | null;
 };
 
 export type ReviewSummary = {

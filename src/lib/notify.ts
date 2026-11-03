@@ -8,6 +8,7 @@ export type NotifyPayload = {
     | "featured"
     | "company-lead"
     | "review"
+    | "owner-reply"
     | "listing-edit";
   subject: string;
   text: string;
@@ -401,6 +402,35 @@ export function formatListingEditNotify(edit: {
   return {
     kind: "listing-edit" as const,
     subject: `Listing edit pending: ${edit.companyName}`,
+    text: lines.join("\n"),
+  };
+}
+
+export function formatOwnerReplyNotify(reply: {
+  reviewId: number | string;
+  companyName: string;
+  companySlug: string;
+  reply: string;
+}) {
+  const preview =
+    reply.reply.length > 200
+      ? `${reply.reply.slice(0, 197)}…`
+      : reply.reply;
+
+  const lines = keepLines([
+    "Company owner reply awaiting moderation",
+    "",
+    `Review ID: ${reply.reviewId}`,
+    `Company: ${reply.companyName}`,
+    `Listing slug: ${reply.companySlug}`,
+    `Reply: ${preview}`,
+    "",
+    "Moderate in /admin/reviews/ or: npm run db:reviews",
+  ]);
+
+  return {
+    kind: "owner-reply" as const,
+    subject: `Owner reply pending: ${reply.companyName}`,
     text: lines.join("\n"),
   };
 }
