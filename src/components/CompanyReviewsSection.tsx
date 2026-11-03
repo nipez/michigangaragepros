@@ -138,6 +138,21 @@ export function CompanyReviewsSection({
               <p className="m-0 text-[14.5px] leading-[1.6] text-body-secondary text-pretty">
                 {r.body}
               </p>
+              {r.ownerReply?.body ? (
+                <div className="mt-3 rounded-[10px] border border-border bg-bg px-3.5 py-3">
+                  <div className="mb-1 text-[12px] font-extrabold uppercase tracking-[0.45px] text-michigan-blue">
+                    Response from {companyName}
+                    {r.ownerReply.repliedAt ? (
+                      <span className="ml-1.5 font-semibold normal-case tracking-normal text-faint">
+                        · {formatReviewDate(r.ownerReply.repliedAt)}
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="m-0 text-[14px] leading-[1.55] text-navy text-pretty">
+                    {r.ownerReply.body}
+                  </p>
+                </div>
+              ) : null}
             </li>
           ))}
         </ul>

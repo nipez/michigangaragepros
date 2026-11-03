@@ -10,7 +10,9 @@ import {
   type ListingFields,
 } from "@/lib/listing-manage";
 import type { ListingPerformance } from "@/lib/listing-stats";
+import type { ManageReview } from "@/lib/review-replies";
 import { CompanyLeadInbox } from "./CompanyLeadInbox";
+import { CompanyReviewReplies } from "./CompanyReviewReplies";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { ListingPerformancePanel } from "./ListingPerformancePanel";
@@ -27,6 +29,7 @@ type Props = {
   initialReviewUrl: string | null;
   initialLeads: CompanyLead[];
   initialLeadTotals: CompanyLeadTotals;
+  initialReviews: ManageReview[];
 };
 
 export function ManageListingClient({
@@ -41,6 +44,7 @@ export function ManageListingClient({
   initialReviewUrl,
   initialLeads,
   initialLeadTotals,
+  initialReviews,
 }: Props) {
   const [fields, setFields] = useState<ListingFields>(initialFields);
   const [customService, setCustomService] = useState("");
@@ -221,6 +225,14 @@ export function ManageListingClient({
               reviewUrl={reviewUrl}
               initialLeads={initialLeads}
               initialTotals={initialLeadTotals}
+            />
+          </div>
+
+          <div className="mt-5">
+            <CompanyReviewReplies
+              token={token}
+              companyName={companyName}
+              initialReviews={initialReviews}
             />
           </div>
 

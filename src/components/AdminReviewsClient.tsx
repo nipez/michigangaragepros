@@ -14,12 +14,37 @@ type ReviewRow = {
   status: string;
   created_at: string;
   moderated_at: string | null;
+  owner_reply: string | null;
+  owner_reply_status: string | null;
+  owner_reply_at: string | null;
+  owner_reply_moderated_at: string | null;
 };
 
 type FilterTab = "open" | "done" | "all";
 
-const OPEN_STATUSES = new Set(["pending"]);
-const DONE_STATUSES = new Set(["visible", "hidden", "spam"]);
+const OPEN_REVIEW_STATUSES = new Set(["pending"]);
+const DONE_REVIEW_STATUSES = new Set(["visible", "hidden", "spam"]);
+
+function isOpenItem(review: ReviewRow): boolean {
+  if (OPEN_REVIEW_STATUSES.has(review.status)) return true;
+  // Approved reviews with a pending owner reply still need operator attention.
+  return (
+    review.status === "visible" &&
+    Boolean(review.owner_reply?.trim()) &&
+    review.owner_reply_status === "pending"
+  );
+}
+
+function isDoneItem(review: ReviewRow): boolean {
+  if (!DONE_REVIEW_STATUSES.has(review.status)) return false;
+  if (
+    review.owner_reply?.trim() &&
+    review.owner_reply_status === "pending"
+  ) {
+    return false;
+  }
+  return true;
+}
 
 export function AdminReviewsClient({
   initiallyAuthed,
@@ -149,16 +174,50 @@ export function AdminReviewsClient({
     }
   };
 
+  const setReplyStatus = async (id: number, replyStatus: string) => {
+    setError("");
+    setBusyId(id);
+    try {
+      const res = await fetch("/api/admin/reviews", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, replyStatus }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        setError(data?.error || "Unable to update reply status");
+        return;
+      }
+      const moderatedAt =
+        replyStatus === "visible" || replyStatus === "hidden"
+          ? new Date().toISOString().slice(0, 19).replace("T", " ")
+          : null;
+      setReviews((prev) =>
+        prev.map((review) =>
+          review.id === id
+            ? {
+                ...review,
+                owner_reply_status: replyStatus,
+                owner_reply_moderated_at: moderatedAt,
+              }
+            : review,
+        ),
+      );
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   const filtered = useMemo(() => {
     if (filter === "all") return reviews;
-    if (filter === "open") {
-      return reviews.filter((r) => OPEN_STATUSES.has(r.status));
-    }
-    return reviews.filter((r) => DONE_STATUSES.has(r.status));
+    if (filter === "open") return reviews.filter(isOpenItem);
+    return reviews.filter(isDoneItem);
   }, [reviews, filter]);
 
-  const openCount = reviews.filter((r) => OPEN_STATUSES.has(r.status)).length;
-  const doneCount = reviews.filter((r) => DONE_STATUSES.has(r.status)).length;
+  const openCount = reviews.filter(isOpenItem).length;
+  const doneCount = reviews.filter(isDoneItem).length;
 
   if (!authed) {
     return (
@@ -206,7 +265,7 @@ export function AdminReviewsClient({
             Newest first · {filtered.length} shown
             {filter !== "all" ? ` (${reviews.length} total)` : ""} · Only{" "}
             <span className="font-semibold text-navy">visible</span> reviews
-            appear on public profiles
+            (and approved owner replies) appear on public profiles
           </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
@@ -284,7 +343,7 @@ export function AdminReviewsClient({
           {reviews.length === 0
             ? "No reviews yet."
             : filter === "open"
-              ? "No pending reviews. Switch to Done or All to see moderated ones."
+              ? "No pending reviews or owner replies. Switch to Done or All to see moderated ones."
               : "No reviews in this filter."}
         </div>
       ) : (
@@ -292,6 +351,8 @@ export function AdminReviewsClient({
           {filtered.map((review) => {
             const companyLabel =
               review.company_name?.trim() || review.company_slug;
+            const hasReply = Boolean(review.owner_reply?.trim());
+            const replyPending = review.owner_reply_status === "pending";
             return (
               <article
                 key={review.id}
@@ -315,7 +376,15 @@ export function AdminReviewsClient({
                       {review.rating}/5 stars
                     </div>
                   </div>
-                  <StatusPill status={review.status} />
+                  <div className="flex flex-wrap gap-1.5">
+                    <StatusPill status={review.status} />
+                    {hasReply ? (
+                      <StatusPill
+                        status={`reply:${review.owner_reply_status ?? "none"}`}
+                        label={`reply ${review.owner_reply_status ?? "none"}`}
+                      />
+                    ) : null}
+                  </div>
                 </div>
                 <div className="mb-4 grid gap-1.5 text-sm text-body-secondary md:grid-cols-2">
                   <div>
@@ -329,15 +398,31 @@ export function AdminReviewsClient({
                   <div className="md:col-span-2">
                     <span className="text-faint">Review:</span> {review.body}
                   </div>
+                  {hasReply ? (
+                    <div className="md:col-span-2 rounded-[10px] border border-border bg-bg px-3 py-2.5">
+                      <div className="mb-1 text-[12px] font-extrabold uppercase tracking-[0.4px] text-muted">
+                        Owner reply
+                        {review.owner_reply_at
+                          ? ` · ${review.owner_reply_at}`
+                          : ""}
+                      </div>
+                      <div>{review.owner_reply}</div>
+                      {review.owner_reply_moderated_at ? (
+                        <div className="mt-1 text-[12px] text-faint">
+                          Reply moderated: {review.owner_reply_moderated_at}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
                   {review.moderated_at ? (
                     <div className="md:col-span-2">
-                      <span className="text-faint">Moderated:</span>{" "}
+                      <span className="text-faint">Review moderated:</span>{" "}
                       {review.moderated_at}
                     </div>
                   ) : null}
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {OPEN_STATUSES.has(review.status) ? (
+                  {OPEN_REVIEW_STATUSES.has(review.status) ? (
                     <>
                       <button
                         type="button"
@@ -407,6 +492,76 @@ export function AdminReviewsClient({
                     </>
                   )}
                 </div>
+                {hasReply ? (
+                  <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-3">
+                    <span className="self-center text-[12px] font-bold text-muted">
+                      Owner reply:
+                    </span>
+                    {replyPending ? (
+                      <>
+                        <button
+                          type="button"
+                          disabled={busyId === review.id}
+                          onClick={() =>
+                            void setReplyStatus(review.id, "visible")
+                          }
+                          className="rounded-[10px] border border-border bg-success-bg px-3 py-2 text-xs font-bold text-success disabled:opacity-40"
+                        >
+                          Approve reply
+                        </button>
+                        <button
+                          type="button"
+                          disabled={busyId === review.id}
+                          onClick={() =>
+                            void setReplyStatus(review.id, "hidden")
+                          }
+                          className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-navy disabled:opacity-40"
+                        >
+                          Reject reply
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          disabled={
+                            review.owner_reply_status === "visible" ||
+                            busyId === review.id
+                          }
+                          onClick={() =>
+                            void setReplyStatus(review.id, "visible")
+                          }
+                          className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-navy disabled:opacity-40"
+                        >
+                          Mark reply visible
+                        </button>
+                        <button
+                          type="button"
+                          disabled={
+                            review.owner_reply_status === "hidden" ||
+                            busyId === review.id
+                          }
+                          onClick={() =>
+                            void setReplyStatus(review.id, "hidden")
+                          }
+                          className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-navy disabled:opacity-40"
+                        >
+                          Hide reply
+                        </button>
+                        <button
+                          type="button"
+                          disabled={busyId === review.id}
+                          onClick={() =>
+                            void setReplyStatus(review.id, "pending")
+                          }
+                          className="rounded-[10px] border border-border bg-bg px-3 py-2 text-xs font-bold text-navy disabled:opacity-40"
+                        >
+                          Reopen reply
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ) : null}
               </article>
             );
           })}
@@ -416,11 +571,18 @@ export function AdminReviewsClient({
   );
 }
 
-function StatusPill({ status }: { status: string }) {
+function StatusPill({
+  status,
+  label,
+}: {
+  status: string;
+  label?: string;
+}) {
+  const display = label ?? status;
   const color =
-    status === "pending"
+    status === "pending" || status === "reply:pending"
       ? "bg-[#EEF5FF] text-michigan-blue"
-      : status === "visible"
+      : status === "visible" || status === "reply:visible"
         ? "bg-success-bg text-success"
         : status === "spam"
           ? "bg-[#FEE4E2] text-[#B42318]"
@@ -429,7 +591,7 @@ function StatusPill({ status }: { status: string }) {
     <span
       className={`rounded-full px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.4px] ${color}`}
     >
-      {status}
+      {display}
     </span>
   );
 }

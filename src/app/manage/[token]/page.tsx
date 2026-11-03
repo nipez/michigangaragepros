@@ -23,6 +23,10 @@ import {
   type ListingPerformance,
 } from "@/lib/listing-stats";
 import {
+  listCompanyApprovedReviews,
+  type ManageReview,
+} from "@/lib/review-replies";
+import {
   ensureReviewToken,
   reviewRequestUrl,
 } from "@/lib/review-request";
@@ -56,6 +60,7 @@ type LoadedManage = {
   reviewUrl: string | null;
   leads: CompanyLead[];
   leadTotals: CompanyLeadTotals;
+  reviews: ManageReview[];
 };
 
 async function loadManagePage(token: string): Promise<LoadedManage | null> {
@@ -121,6 +126,15 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     leadTotals = emptyCompanyLeadTotals();
   }
 
+  let reviews: ManageReview[] = [];
+  try {
+    reviews = await listCompanyApprovedReviews(db, company.slug);
+  } catch (err) {
+    // Replies are additive — never block the manage form if migration is pending.
+    console.error("manage reviews load failed", err);
+    reviews = [];
+  }
+
   return {
     token,
     companyName: company.name,
@@ -135,6 +149,7 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     reviewUrl: reviewToken ? reviewRequestUrl(reviewToken) : null,
     leads,
     leadTotals,
+    reviews,
   };
 }
 
@@ -165,6 +180,7 @@ export default async function ManageListingPage({ params }: PageProps) {
       initialReviewUrl={loaded.reviewUrl}
       initialLeads={loaded.leads}
       initialLeadTotals={loaded.leadTotals}
+      initialReviews={loaded.reviews}
     />
   );
 }

@@ -8,6 +8,7 @@ import {
   type ReviewSubmit,
   type ReviewSummary,
 } from "@/lib/review";
+import { publicOwnerReplyFromRow } from "@/lib/review-replies";
 
 export const runtime = "nodejs";
 
@@ -23,6 +24,9 @@ type ReviewRow = {
   rating: number;
   body: string;
   created_at: string;
+  owner_reply: string | null;
+  owner_reply_status: string | null;
+  owner_reply_at: string | null;
 };
 
 type SummaryRow = {
@@ -54,6 +58,7 @@ function toPublic(row: ReviewRow): PublicReview {
     rating: row.rating,
     body: row.body,
     createdAt: row.created_at,
+    ownerReply: publicOwnerReplyFromRow(row),
   };
 }
 
@@ -127,7 +132,8 @@ export async function GET(request: Request) {
         .first<{ avg_rating: number | null; review_count: number }>(),
       db
         .prepare(
-          `SELECT id, author_name, rating, body, created_at
+          `SELECT id, author_name, rating, body, created_at,
+                  owner_reply, owner_reply_status, owner_reply_at
            FROM company_reviews
            WHERE company_slug = ? AND status = 'visible'
            ORDER BY created_at DESC
