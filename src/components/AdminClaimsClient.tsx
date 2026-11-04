@@ -4,6 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AdminListingStats } from "./AdminListingStats";
 
+type ClaimDemand = {
+  profileViews: number;
+  contactClicks: number;
+  quoteRequests: number;
+  summary: string | null;
+  hasSignal: boolean;
+};
+
 type ClaimRow = {
   id: number;
   company_name: string;
@@ -22,6 +30,7 @@ type ClaimRow = {
   manage_url: string | null;
   review_token: string | null;
   review_url: string | null;
+  demand: ClaimDemand | null;
 };
 
 type FilterTab = "open" | "done" | "all";
@@ -61,7 +70,12 @@ export function AdminClaimsClient({
       }
       if (!res.ok) throw new Error("Unable to load claims");
       const data = (await res.json()) as { claims: ClaimRow[] };
-      setClaims(data.claims ?? []);
+      setClaims(
+        (data.claims ?? []).map((c) => ({
+          ...c,
+          demand: c.demand ?? null,
+        })),
+      );
       setAuthed(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to load claims");
@@ -85,7 +99,12 @@ export function AdminClaimsClient({
         if (!res.ok) throw new Error("Unable to load claims");
         const data = (await res.json()) as { claims: ClaimRow[] };
         if (cancelled) return;
-        setClaims(data.claims ?? []);
+        setClaims(
+          (data.claims ?? []).map((c) => ({
+            ...c,
+            demand: c.demand ?? null,
+          })),
+        );
         setAuthed(true);
       } catch (err) {
         if (!cancelled) {
@@ -437,6 +456,9 @@ export function AdminClaimsClient({
                       </>
                     ) : null}
                   </div>
+                  {OPEN_STATUSES.has(claim.status) && claim.company_slug ? (
+                    <DemandLine demand={claim.demand} />
+                  ) : null}
                 </div>
                 <StatusPill status={claim.status} />
               </div>
@@ -682,6 +704,32 @@ export function AdminClaimsClient({
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function DemandLine({ demand }: { demand: ClaimDemand | null }) {
+  if (!demand) {
+    return (
+      <div className="mt-2 text-[12.5px] font-semibold text-faint">
+        30d demand: unavailable
+      </div>
+    );
+  }
+  if (!demand.hasSignal || !demand.summary) {
+    return (
+      <div className="mt-2 text-[12.5px] font-semibold text-faint">
+        30d demand: low / no meaningful signal yet
+      </div>
+    );
+  }
+  return (
+    <div className="mt-2 inline-flex rounded-md bg-[#EEF5FF] px-2.5 py-1 text-[12.5px] font-extrabold text-michigan-blue">
+      {demand.summary}
+      <span className="ml-2 font-semibold text-muted">
+        ({demand.profileViews} views · {demand.quoteRequests} quotes ·{" "}
+        {demand.contactClicks} contacts)
+      </span>
     </div>
   );
 }

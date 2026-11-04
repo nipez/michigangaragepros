@@ -144,8 +144,34 @@ if (slug) {
     );
   }
 
+  // Retain historical leads that targeted this listing into lead_routings so
+  // they appear in the company manage inbox (emailed=0 — no re-notify).
+  const retainEmail =
+    notifyEmail || `retained+${slug}@michigangaragepros.local`;
+  run(
+    `INSERT INTO lead_routings
+       (lead_id, company_id, company_slug, email, reason, emailed, company_status)
+     SELECT l.id,
+            c.id,
+            '${escapeSql(slug)}',
+            '${escapeSql(retainEmail)}',
+            'retained',
+            0,
+            'new'
+     FROM leads l
+     INNER JOIN companies c ON c.slug = '${escapeSql(slug)}'
+     WHERE l.company_slug = '${escapeSql(slug)}'
+       AND NOT EXISTS (
+         SELECT 1 FROM lead_routings lr
+         WHERE lr.lead_id = l.id AND lr.company_slug = '${escapeSql(slug)}'
+       )`,
+  );
+
   console.log(
     `\nApproved claim${id ? ` id ${id}` : ""} for slug "${slug}" and marked companies.claimed = 1 (if row exists)${notifyEmail ? ` with notify_email=${notifyEmail}` : ""}.`,
+  );
+  console.log(
+    "Retained any prior company-targeted leads into lead_routings (reason=retained, emailed=0).",
   );
   if (manageToken) {
     console.log(

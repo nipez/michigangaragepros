@@ -6,7 +6,7 @@ import { bumpListingStatSafe } from "@/lib/listing-stats";
 /** Max claimed companies notified for an open (no company_slug) lead. */
 export const AREA_ROUTE_CAP = 3;
 
-export type LeadRouteReason = "direct" | "area";
+export type LeadRouteReason = "direct" | "area" | "retained";
 
 export type LeadRouteRecipient = {
   companyId: number | null;
