@@ -263,10 +263,10 @@ export function formatCompanyLeadNotify(lead: {
   phone?: string | null;
   email?: string | null;
   timing: string;
-  reason: "direct" | "area";
+  reason: "direct" | "area" | "retained";
 }) {
   const why =
-    lead.reason === "direct"
+    lead.reason === "direct" || lead.reason === "retained"
       ? "A homeowner requested a quote from your listing on Michigan Garage Pros."
       : "A homeowner near your service area requested a quote on Michigan Garage Pros.";
 

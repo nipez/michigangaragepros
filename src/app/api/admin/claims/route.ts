@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
 import { getDb, getEnv } from "@/lib/db";
+import { retainLeadsForClaimedCompany } from "@/lib/lead-retention";
+import {
+  formatClaimDemandCopy,
+  getListingDemandForSlugs,
+  type ListingDemand,
+} from "@/lib/listing-demand";
 import { ensureManageToken, manageUrl } from "@/lib/listing-manage";
 import {
   formatClaimApprovedNotify,
@@ -33,6 +39,25 @@ type ClaimRow = {
   review_token: string | null;
 };
 
+type DemandPayload = {
+  profileViews: number;
+  contactClicks: number;
+  quoteRequests: number;
+  summary: string | null;
+  hasSignal: boolean;
+};
+
+function demandPayload(demand: ListingDemand): DemandPayload {
+  const copy = formatClaimDemandCopy(demand);
+  return {
+    profileViews: demand.profileViews,
+    contactClicks: demand.contactClicks,
+    quoteRequests: demand.quoteRequests,
+    summary: copy.adminSummary,
+    hasSignal: copy.hasSignal,
+  };
+}
+
 export async function GET() {
   const env = await getEnv();
   if (!(await requireAdmin(env))) {
@@ -53,11 +78,24 @@ export async function GET() {
     )
     .all<ClaimRow>();
 
-  const claims = (results ?? []).map((row) => ({
-    ...row,
-    manage_url: row.manage_token ? manageUrl(row.manage_token) : null,
-    review_url: row.review_token ? reviewRequestUrl(row.review_token) : null,
-  }));
+  const rows = results ?? [];
+  const demandBySlug = await getListingDemandForSlugs(
+    db,
+    rows
+      .map((r) => r.company_slug)
+      .filter((s): s is string => Boolean(s && s.trim())),
+  );
+
+  const claims = rows.map((row) => {
+    const slug = (row.company_slug ?? "").trim();
+    const demand = slug ? demandBySlug.get(slug) : undefined;
+    return {
+      ...row,
+      manage_url: row.manage_token ? manageUrl(row.manage_token) : null,
+      review_url: row.review_token ? reviewRequestUrl(row.review_token) : null,
+      demand: demand ? demandPayload(demand) : null,
+    };
+  });
 
   return NextResponse.json({ claims });
 }
@@ -181,9 +219,21 @@ export async function PATCH(request: Request) {
   // Issue (or reuse) unguessable manage + review-request links.
   let manageToken: string | null = null;
   let reviewToken: string | null = null;
+  let leadsRetained = 0;
   if (status === "approved" && slug) {
     manageToken = await ensureManageToken(db, slug);
     reviewToken = await ensureReviewToken(db, slug);
+
+    // Surface historical leads that targeted this listing into the company
+    // inbox. Admin inbox + prior area routings are unchanged; no re-email.
+    try {
+      const retained = await retainLeadsForClaimedCompany(db, slug, {
+        email: claimEmail || null,
+      });
+      leadsRetained = retained.retained;
+    } catch (err) {
+      console.error("lead retention on claim approve failed", slug, err);
+    }
   }
 
   // Best-effort: email claim contact the manage link. Delivery is optional —
@@ -210,5 +260,6 @@ export async function PATCH(request: Request) {
     review_token: reviewToken,
     review_url: reviewToken ? reviewRequestUrl(reviewToken) : null,
     emailed_manage_link: emailedManageLink,
+    leads_retained: leadsRetained,
   });
 }
