@@ -4,6 +4,7 @@ export type NotifyPayload = {
   kind:
     | "claim"
     | "claim-approved"
+    | "manage-recover"
     | "lead"
     | "featured"
     | "company-lead"
@@ -470,6 +471,45 @@ export function formatClaimApprovedNotify(input: {
   return {
     kind: "claim-approved" as const,
     subject: `Your listing is claimed — manage ${input.companyName}`,
+    text: lines.join("\n"),
+    html,
+  };
+}
+
+/** Owner-initiated resend of an existing manage link (does not rotate the token). */
+export function formatManageRecoverNotify(input: {
+  companyName: string;
+  manageUrl: string;
+}) {
+  const lines = keepLines([
+    `Hi ${input.companyName},`,
+    "",
+    "You requested your private manage link for Michigan Garage Pros.",
+    "",
+    "Use this link to update your listing, view leads, check performance,",
+    "share your review-request link, and reply to reviews:",
+    "",
+    input.manageUrl,
+    "",
+    "Keep this link private — anyone with it can propose updates.",
+    "If you did not request this email, you can ignore it.",
+    "",
+    "— Michigan Garage Pros",
+    "https://michigangaragepros.com",
+  ]);
+
+  const html = [
+    `<p>Hi ${escapeHtml(input.companyName)},</p>`,
+    `<p>You requested your private manage link for Michigan Garage Pros.</p>`,
+    `<p>Use this link to update your listing, view leads, check performance, share your review-request link, and reply to reviews:</p>`,
+    `<p><a href="${escapeHtml(input.manageUrl)}">${escapeHtml(input.manageUrl)}</a></p>`,
+    `<p>Keep this link private — anyone with it can propose updates. If you did not request this email, you can ignore it.</p>`,
+    `<p>— Michigan Garage Pros<br/><a href="https://michigangaragepros.com">https://michigangaragepros.com</a></p>`,
+  ].join("\n");
+
+  return {
+    kind: "manage-recover" as const,
+    subject: `Your manage link for ${input.companyName}`,
     text: lines.join("\n"),
     html,
   };

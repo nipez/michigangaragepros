@@ -477,14 +477,14 @@ export function ManageLinkInvalid() {
           </h1>
           <p className="mt-3 text-[15px] leading-[1.6] text-muted">
             This manage link is invalid, expired, or has been revoked. If you
-            recently claimed your company page, ask the Michigan Garage Pros
-            team to send you a new link.
+            recently claimed your company page, recover the link with the email
+            you used when claiming.
           </p>
           <a
-            href="/for-companies/"
+            href="/for-companies/#recover"
             className="btn-primary mt-8 inline-flex !px-6 !py-3"
           >
-            For companies
+            Recover manage link
           </a>
         </div>
       </div>
