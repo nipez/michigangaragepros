@@ -12,6 +12,7 @@
     "test:listing-demand": "npx tsx scripts/test-listing-demand.mjs",
     "test:company-leads": "npx tsx scripts/test-company-leads.mjs",
     "test:review-replies": "npx tsx scripts/test-review-replies.mjs",
+    "test:manage-recover": "npx tsx scripts/test-manage-recover.mjs",
     "seo:generate": "npx tsx scripts/generate-seo-files.mjs",
     "preview": "npm run seo:generate && opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "cf:build": "npm run seo:generate && opennextjs-cloudflare build",

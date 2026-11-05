@@ -9,6 +9,7 @@ import { ClaimForm } from "./ClaimForm";
 import { FeaturedInterestForm } from "./FeaturedInterestForm";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
+import { ManageLinkRecoverForm } from "./ManageLinkRecoverForm";
 
 function ForCompaniesPageInner() {
   const searchParams = useSearchParams();
@@ -178,7 +179,7 @@ function ForCompaniesPageInner() {
         </div>
       </section>
 
-      <section id="claim" className="container-site my-20 mb-[88px]">
+      <section id="claim" className="container-site my-20">
         <div className="cta-gradient px-[clamp(28px,4vw,56px)] py-[clamp(36px,5vw,64px)] text-center">
           <h2 className="mb-3 text-[clamp(26px,3.2vw,40px)] font-extrabold tracking-[-0.8px]">
             Claim Your Free Page
@@ -196,6 +197,28 @@ function ForCompaniesPageInner() {
             Free to claim · No credit card required · Stored securely in our
             claim inbox
           </div>
+          <p className="mx-auto mt-5 mb-0 max-w-[42ch] text-[13.5px] leading-[1.55] text-[#8AA3B8]">
+            Already claimed?{" "}
+            <a
+              href="#recover"
+              className="font-bold text-[#A8D4F5] underline-offset-2 hover:underline"
+            >
+              Email me my manage link
+            </a>
+          </p>
+        </div>
+      </section>
+
+      <section id="recover" className="container-site mb-[88px]">
+        <div className="rounded-[20px] border border-border bg-bg px-[clamp(28px,4vw,56px)] py-[clamp(32px,4vw,48px)] text-center">
+          <h2 className="mb-3 text-[clamp(24px,3vw,32px)] font-extrabold tracking-[-0.7px] text-navy">
+            Already claimed? Get your manage link
+          </h2>
+          <p className="mx-auto mb-7 max-w-[48ch] text-[15.5px] leading-[1.6] text-muted">
+            Enter the email you used when claiming. If we find a claimed listing
+            for that email, we will send the manage link.
+          </p>
+          <ManageLinkRecoverForm />
         </div>
       </section>
 
