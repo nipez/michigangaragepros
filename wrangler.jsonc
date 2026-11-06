@@ -32,5 +32,14 @@
       "database_id": "beb5b737-d0a3-479e-8343-4b7eb2b7fb1a",
       "migrations_dir": "migrations"
     }
+  ],
+  // Company logos + profile photos. One-time create:
+  //   npx wrangler r2 bucket create michigangaragepros-media
+  // Bucket stays private; Worker serves via GET /api/media/<key>.
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "michigangaragepros-media"
+    }
   ]
 }

@@ -38,7 +38,25 @@ Copy the returned `database_id` into `wrangler.jsonc` → `d1_databases[0].datab
 npm run db:migrate:remote
 ```
 
-Confirm **Bindings** shows `DB` → D1 `michigangaragepros`.
+Confirm **Bindings** shows `DB` → D1 `michigangaragepros` and `MEDIA` → R2 `michigangaragepros-media`.
+
+### R2 media bucket (company logos + profile photos)
+
+One-time setup (Nick):
+
+```bash
+npx wrangler r2 bucket create michigangaragepros-media
+```
+
+The bucket stays **private**. The Worker binding `MEDIA` is already in `wrangler.jsonc`. Public reads go through `GET /api/media/<key>` (no R2.dev / custom domain required). After creating the bucket, redeploy so the binding attaches.
+
+Company image columns use migration `0020_company_media.sql` (`companies.logo_key`, `companies.photo_key`). After deploy:
+
+```bash
+npm run db:migrate:remote
+```
+
+Uploads apply **live** for claimed companies (no `listing_edit_requests` queue for binaries). Validation: JPEG/PNG/WebP only; logo ≤512KB (roughly square); photo ≤1.5MB.
 
 ### Secrets (operator alerts + admin inbox + Stripe)
 
@@ -131,8 +149,11 @@ npm run preview
 | `/admin/claims/` | Token-protected claim inbox (triage `pending` → `approved` / `rejected`; approve sets `companies.claimed` + `notify_email`) |
 | `/admin/featured/` | Token-protected Featured interest inbox (triage `new` / `contacted` / `checkout_pending` / `paid` / `won` / `closed`; won sets `companies.featured`) |
 | `/admin/reviews/` | Token-protected review moderation inbox (triage `pending` → `visible` / `hidden` / `spam`) |
-| `/manage/<token>/` | Claimed-company listing self-manage + copy/regenerate review-request link |
+| `/manage/<token>/` | Claimed-company listing self-manage + logo/photo upload + review-request link |
 | `/review/<token>/` | Shareable customer review form locked to one claimed company (`noIndex`) |
+| `GET/POST/DELETE /api/manage/<token>/media` | Claimed company upload/replace/remove logo or profile photo (R2) |
+| `GET /api/media/<key>` | Public read proxy for company media objects in private R2 |
+| `GET /api/companies/media` | Public logo/photo URLs by `slug` or batch `slugs` |
 | `POST /api/leads` | Persist quote leads to D1; notify operator + route to claimed companies |
 | `POST /api/claims` | Persist profile claim requests to D1 |
 | `POST /api/featured` | Persist Featured interest to D1 (offline / talk-to-us fallback) |

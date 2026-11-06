@@ -39,6 +39,11 @@ function localBusinessJsonLd(company: Company) {
 
   if (company.phone) data.telephone = company.phone;
   if (company.website) data.sameAs = [company.website];
+  if (company.logoUrl) {
+    data.image = company.logoUrl.startsWith("http")
+      ? company.logoUrl
+      : `${SITE_URL}${company.logoUrl}`;
+  }
   if (company.address || company.city) {
     data.address = {
       "@type": "PostalAddress",
@@ -108,9 +113,20 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
           </div>
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="flex min-w-[280px] items-center gap-5">
-              <div className="grid size-[72px] shrink-0 place-items-center rounded-2xl bg-navy">
-                <LogoMark size={36} />
-              </div>
+              {company.logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- R2-proxied owner upload
+                <img
+                  src={company.logoUrl}
+                  alt={`${company.name} logo`}
+                  width={72}
+                  height={72}
+                  className="size-[72px] shrink-0 rounded-2xl object-cover bg-bg"
+                />
+              ) : (
+                <div className="grid size-[72px] shrink-0 place-items-center rounded-2xl bg-navy">
+                  <LogoMark size={36} />
+                </div>
+              )}
               <div>
                 <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
                   <h1 className="m-0 text-[clamp(24px,2.6vw,32px)] font-extrabold tracking-[-0.6px] text-navy">
@@ -169,6 +185,18 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
               </Link>
             </div>
           </div>
+          {company.photoUrl ? (
+            <div className="mt-7 overflow-hidden rounded-2xl border border-border bg-bg">
+              {/* eslint-disable-next-line @next/next/no-img-element -- R2-proxied owner upload */}
+              <img
+                src={company.photoUrl}
+                alt={`${company.name}`}
+                width={1200}
+                height={480}
+                className="aspect-[5/2] w-full object-cover"
+              />
+            </div>
+          ) : null}
         </div>
       </section>
 

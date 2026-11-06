@@ -13,6 +13,11 @@ import {
 } from "@/lib/company-leads";
 import { getDb } from "@/lib/db";
 import {
+  emptyCompanyMedia,
+  getCompanyMedia,
+  type CompanyMedia,
+} from "@/lib/company-media";
+import {
   getCompanyByManageToken,
   isValidManageTokenFormat,
   listingFieldsFromCompany,
@@ -61,6 +66,7 @@ type LoadedManage = {
   leads: CompanyLead[];
   leadTotals: CompanyLeadTotals;
   reviews: ManageReview[];
+  media: CompanyMedia;
 };
 
 async function loadManagePage(token: string): Promise<LoadedManage | null> {
@@ -135,6 +141,15 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     reviews = [];
   }
 
+  let media: CompanyMedia = emptyCompanyMedia();
+  try {
+    media = await getCompanyMedia(db, company.slug);
+  } catch (err) {
+    // Media is additive — never block the manage form if migration is pending.
+    console.error("manage media load failed", err);
+    media = emptyCompanyMedia();
+  }
+
   return {
     token,
     companyName: company.name,
@@ -150,6 +165,7 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     leads,
     leadTotals,
     reviews,
+    media,
   };
 }
 
@@ -181,6 +197,8 @@ export default async function ManageListingPage({ params }: PageProps) {
       initialLeads={loaded.leads}
       initialLeadTotals={loaded.leadTotals}
       initialReviews={loaded.reviews}
+      initialLogoUrl={loaded.media.logoUrl}
+      initialPhotoUrl={loaded.media.photoUrl}
     />
   );
 }

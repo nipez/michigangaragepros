@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Company } from "@/data/companies";
 import { fairShuffleCompanies } from "@/lib/companyOrder";
+import { useCompanyMedia } from "@/hooks/useCompanyMedia";
 import { useCompanyReviewSummaries } from "@/hooks/useCompanyReviewSummaries";
 import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 
@@ -27,7 +28,9 @@ export function ShuffledCompanyGrid({
   className = "grid grid-cols-1 gap-4 md:grid-cols-2",
 }: ShuffledCompanyGridProps) {
   const [ordered, setOrdered] = useState(companies);
-  const summaries = useCompanyReviewSummaries(companies.map((c) => c.slug));
+  const slugs = companies.map((c) => c.slug);
+  const summaries = useCompanyReviewSummaries(slugs);
+  const media = useCompanyMedia(slugs);
 
   useEffect(() => {
     // Intentional: randomize after hydration so SSR HTML matches the first paint.
@@ -40,16 +43,27 @@ export function ShuffledCompanyGrid({
   return (
     <div className={className}>
       {!hasPaidFeatured && <BeFeaturedCard cityName={cityName} />}
-      {ordered.map((c) => (
-        <CompanyCard
-          key={c.slug}
-          company={c}
-          reviewSummary={summaries[c.slug] ?? null}
-          quoteHref={
-            typeof quoteHref === "function" ? quoteHref(c) : quoteHref
-          }
-        />
-      ))}
+      {ordered.map((c) => {
+        const m = media[c.slug];
+        const company =
+          m?.logoUrl || m?.photoUrl
+            ? {
+                ...c,
+                logoUrl: m.logoUrl || undefined,
+                photoUrl: m.photoUrl || undefined,
+              }
+            : c;
+        return (
+          <CompanyCard
+            key={c.slug}
+            company={company}
+            reviewSummary={summaries[c.slug] ?? null}
+            quoteHref={
+              typeof quoteHref === "function" ? quoteHref(c) : quoteHref
+            }
+          />
+        );
+      })}
     </div>
   );
 }

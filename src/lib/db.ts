@@ -26,3 +26,12 @@ export async function getDb() {
   }
   return env.DB;
 }
+
+/** R2 bucket for company logos + profile photos. */
+export async function getMediaBucket() {
+  const env = await getEnv();
+  if (!env.MEDIA) {
+    throw new Error("R2 binding MEDIA is not configured");
+  }
+  return env.MEDIA;
+}
