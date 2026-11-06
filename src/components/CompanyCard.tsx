@@ -34,6 +34,7 @@ export function CompanyCard({
 }: CompanyCardProps) {
   const resolvedQuoteHref =
     quoteHref ?? `/get-a-quote/?company=${encodeURIComponent(company.slug)}`;
+  const logoUrl = company.logoUrl;
   const quote = onQuoteClick ? (
     <button
       type="button"
@@ -67,8 +68,20 @@ export function CompanyCard({
           <span className="text-[11px] font-semibold text-faint">Sponsored</span>
         </div>
       ) : null}
-      <div className="mb-1.5 text-[17px] font-extrabold text-navy">
-        {company.name}
+      <div className="mb-1.5 flex items-center gap-3">
+        {logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- R2-proxied owner upload
+          <img
+            src={logoUrl}
+            alt=""
+            width={40}
+            height={40}
+            className="size-10 shrink-0 rounded-[10px] object-cover bg-bg"
+          />
+        ) : null}
+        <div className="min-w-0 text-[17px] font-extrabold text-navy">
+          {company.name}
+        </div>
       </div>
       <div className="mb-1 text-[13.5px] text-muted">{company.city}</div>
       {reviewSummary && reviewSummary.count > 0 ? (

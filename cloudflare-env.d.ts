@@ -4,6 +4,8 @@
 interface CloudflareEnv {
   DB: D1Database;
   ASSETS: Fetcher;
+  /** R2 bucket for company logos + profile photos — binding MEDIA */
+  MEDIA: R2Bucket;
   /** Resend API key — set via `wrangler secret put RESEND_API_KEY` */
   RESEND_API_KEY?: string;
   /** Operator inbox for claim/lead alerts */

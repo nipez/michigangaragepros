@@ -26,6 +26,10 @@ export type Company = {
   confidence?: string;
   region?: string;
   notes?: string;
+  /** Claimed-owner logo (R2 via /api/media/…). Hydrated live; absent on seed. */
+  logoUrl?: string;
+  /** Optional wide profile/hero photo. Hydrated live; absent on seed. */
+  photoUrl?: string;
 };
 
 const FULL_SERVICES = [

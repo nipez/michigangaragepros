@@ -1,10 +1,16 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import {
+  useRef,
+  useState,
+  type ReactNode,
+  type RefObject,
+} from "react";
 import type {
   CompanyLead,
   CompanyLeadTotals,
 } from "@/lib/company-leads";
+import type { MediaKind } from "@/lib/company-media";
 import {
   MANAGE_SERVICE_OPTIONS,
   type ListingFields,
@@ -30,6 +36,8 @@ type Props = {
   initialLeads: CompanyLead[];
   initialLeadTotals: CompanyLeadTotals;
   initialReviews: ManageReview[];
+  initialLogoUrl: string | null;
+  initialPhotoUrl: string | null;
 };
 
 export function ManageListingClient({
@@ -45,6 +53,8 @@ export function ManageListingClient({
   initialLeads,
   initialLeadTotals,
   initialReviews,
+  initialLogoUrl,
+  initialPhotoUrl,
 }: Props) {
   const [fields, setFields] = useState<ListingFields>(initialFields);
   const [customService, setCustomService] = useState("");
@@ -59,6 +69,13 @@ export function ManageListingClient({
   const [reviewBusy, setReviewBusy] = useState(false);
   const [reviewCopied, setReviewCopied] = useState(false);
   const [reviewNote, setReviewNote] = useState("");
+  const [logoUrl, setLogoUrl] = useState<string | null>(initialLogoUrl);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(initialPhotoUrl);
+  const [mediaBusy, setMediaBusy] = useState<MediaKind | null>(null);
+  const [mediaNote, setMediaNote] = useState("");
+  const [mediaError, setMediaError] = useState("");
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const setField = <K extends keyof ListingFields>(
     key: K,
@@ -129,6 +146,70 @@ export function ManageListingClient({
       );
     } finally {
       setReviewBusy(false);
+    }
+  };
+
+  const uploadMedia = async (kind: MediaKind, file: File) => {
+    setMediaBusy(kind);
+    setMediaError("");
+    setMediaNote("");
+    try {
+      const body = new FormData();
+      body.set("kind", kind);
+      body.set("file", file);
+      const res = await fetch(`/api/manage/${token}/media/`, {
+        method: "POST",
+        body,
+      });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        message?: string;
+        logoUrl?: string | null;
+        photoUrl?: string | null;
+      } | null;
+      if (!res.ok) {
+        setMediaError(data?.error || "Unable to upload image");
+        return;
+      }
+      setLogoUrl(data?.logoUrl ?? null);
+      setPhotoUrl(data?.photoUrl ?? null);
+      setMediaNote(
+        data?.message ||
+          (kind === "logo" ? "Logo updated." : "Profile photo updated."),
+      );
+    } finally {
+      setMediaBusy(null);
+    }
+  };
+
+  const removeMedia = async (kind: MediaKind) => {
+    setMediaBusy(kind);
+    setMediaError("");
+    setMediaNote("");
+    try {
+      const res = await fetch(`/api/manage/${token}/media/`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind }),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        message?: string;
+        logoUrl?: string | null;
+        photoUrl?: string | null;
+      } | null;
+      if (!res.ok) {
+        setMediaError(data?.error || "Unable to remove image");
+        return;
+      }
+      setLogoUrl(data?.logoUrl ?? null);
+      setPhotoUrl(data?.photoUrl ?? null);
+      setMediaNote(
+        data?.message ||
+          (kind === "logo" ? "Logo removed." : "Profile photo removed."),
+      );
+    } finally {
+      setMediaBusy(null);
     }
   };
 
@@ -278,6 +359,55 @@ export function ManageListingClient({
             </div>
             {reviewNote ? (
               <p className="mt-2.5 mb-0 text-[12.5px] text-muted">{reviewNote}</p>
+            ) : null}
+          </div>
+
+          <div className="mt-5 rounded-[12px] border border-border bg-bg px-4 py-4">
+            <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
+              Logo &amp; photo
+            </div>
+            <p className="mt-1.5 mb-4 text-[13.5px] leading-[1.5] text-muted">
+              Upload a square logo (required for brand recognition) and
+              optionally one wide profile photo. Changes go live immediately —
+              no review wait.
+            </p>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <MediaSlot
+                label="Logo"
+                hint="Square JPEG, PNG, or WebP · max 512KB"
+                previewUrl={logoUrl}
+                previewClassName="size-[88px] rounded-[14px] object-cover"
+                busy={mediaBusy === "logo"}
+                inputRef={logoInputRef}
+                onPick={() => logoInputRef.current?.click()}
+                onFile={(file) => void uploadMedia("logo", file)}
+                onRemove={
+                  logoUrl ? () => void removeMedia("logo") : undefined
+                }
+              />
+              <MediaSlot
+                label="Profile photo"
+                hint="Wide JPEG, PNG, or WebP · max 1.5MB · optional"
+                previewUrl={photoUrl}
+                previewClassName="aspect-[5/2] w-full rounded-[12px] object-cover"
+                busy={mediaBusy === "photo"}
+                inputRef={photoInputRef}
+                onPick={() => photoInputRef.current?.click()}
+                onFile={(file) => void uploadMedia("photo", file)}
+                onRemove={
+                  photoUrl ? () => void removeMedia("photo") : undefined
+                }
+              />
+            </div>
+            {mediaNote ? (
+              <p className="mt-3 mb-0 text-[12.5px] font-semibold text-success">
+                {mediaNote}
+              </p>
+            ) : null}
+            {mediaError ? (
+              <p className="mt-3 mb-0 text-[12.5px] font-semibold text-[#B42318]">
+                {mediaError}
+              </p>
             ) : null}
           </div>
 
@@ -460,6 +590,82 @@ function Field({
       <span className="text-[13px] font-bold text-navy">{label}</span>
       {children}
     </label>
+  );
+}
+
+function MediaSlot({
+  label,
+  hint,
+  previewUrl,
+  previewClassName,
+  busy,
+  inputRef,
+  onPick,
+  onFile,
+  onRemove,
+}: {
+  label: string;
+  hint: string;
+  previewUrl: string | null;
+  previewClassName: string;
+  busy: boolean;
+  inputRef: RefObject<HTMLInputElement | null>;
+  onPick: () => void;
+  onFile: (file: File) => void;
+  onRemove?: () => void;
+}) {
+  return (
+    <div>
+      <div className="mb-1.5 text-[13px] font-bold text-navy">{label}</div>
+      <div className="mb-2.5 min-h-[88px]">
+        {previewUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- R2-proxied owner upload
+          <img
+            src={previewUrl}
+            alt=""
+            className={`bg-white border border-border ${previewClassName}`}
+          />
+        ) : (
+          <div
+            className={`grid place-items-center border border-dashed border-border bg-white text-[12px] font-semibold text-faint ${previewClassName.includes("aspect") ? previewClassName : "size-[88px] rounded-[14px]"}`}
+          >
+            No image
+          </div>
+        )}
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          if (file) onFile(file);
+        }}
+      />
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          className="btn-outline !px-3 !py-2 !text-[13px]"
+          disabled={busy}
+          onClick={onPick}
+        >
+          {busy ? "Uploading…" : previewUrl ? "Replace" : "Upload"}
+        </button>
+        {onRemove ? (
+          <button
+            type="button"
+            className="btn-outline !px-3 !py-2 !text-[13px]"
+            disabled={busy}
+            onClick={onRemove}
+          >
+            Remove
+          </button>
+        ) : null}
+      </div>
+      <p className="mt-1.5 mb-0 text-[12px] text-muted">{hint}</p>
+    </div>
   );
 }
 
