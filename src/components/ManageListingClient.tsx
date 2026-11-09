@@ -12,6 +12,10 @@ import type {
 } from "@/lib/company-leads";
 import type { MediaKind } from "@/lib/company-media";
 import {
+  emptyCompanyTrust,
+  type CompanyTrust,
+} from "@/lib/company-trust";
+import {
   MANAGE_SERVICE_OPTIONS,
   type ListingFields,
 } from "@/lib/listing-manage";
@@ -38,6 +42,7 @@ type Props = {
   initialReviews: ManageReview[];
   initialLogoUrl: string | null;
   initialPhotoUrl: string | null;
+  initialTrust: CompanyTrust;
 };
 
 export function ManageListingClient({
@@ -55,6 +60,7 @@ export function ManageListingClient({
   initialReviews,
   initialLogoUrl,
   initialPhotoUrl,
+  initialTrust,
 }: Props) {
   const [fields, setFields] = useState<ListingFields>(initialFields);
   const [customService, setCustomService] = useState("");
@@ -74,6 +80,18 @@ export function ManageListingClient({
   const [mediaBusy, setMediaBusy] = useState<MediaKind | null>(null);
   const [mediaNote, setMediaNote] = useState("");
   const [mediaError, setMediaError] = useState("");
+  const [trust, setTrust] = useState<CompanyTrust>(
+    initialTrust ?? emptyCompanyTrust(),
+  );
+  const [yearsText, setYearsText] = useState(
+    initialTrust?.yearsInBusiness !== null &&
+      initialTrust?.yearsInBusiness !== undefined
+      ? String(initialTrust.yearsInBusiness)
+      : "",
+  );
+  const [trustBusy, setTrustBusy] = useState(false);
+  const [trustNote, setTrustNote] = useState("");
+  const [trustError, setTrustError] = useState("");
   const logoInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
@@ -210,6 +228,48 @@ export function ManageListingClient({
       );
     } finally {
       setMediaBusy(null);
+    }
+  };
+
+  const saveTrust = async () => {
+    setTrustBusy(true);
+    setTrustError("");
+    setTrustNote("");
+    try {
+      const yearsTrimmed = yearsText.trim();
+      const payload = {
+        licensed: trust.licensed,
+        licenseNumber: trust.licensed ? trust.licenseNumber : null,
+        insured: trust.insured,
+        bonded: trust.bonded,
+        familyOwned: trust.familyOwned,
+        yearsInBusiness: yearsTrimmed === "" ? null : yearsTrimmed,
+      };
+      const res = await fetch(`/api/manage/${token}/trust/`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        message?: string;
+        trust?: CompanyTrust;
+      } | null;
+      if (!res.ok) {
+        setTrustError(data?.error || "Unable to save trust credentials");
+        return;
+      }
+      if (data?.trust) {
+        setTrust(data.trust);
+        setYearsText(
+          data.trust.yearsInBusiness !== null
+            ? String(data.trust.yearsInBusiness)
+            : "",
+        );
+      }
+      setTrustNote(data?.message || "Trust credentials updated.");
+    } finally {
+      setTrustBusy(false);
     }
   };
 
@@ -407,6 +467,149 @@ export function ManageListingClient({
             {mediaError ? (
               <p className="mt-3 mb-0 text-[12.5px] font-semibold text-[#B42318]">
                 {mediaError}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="mt-5 rounded-[12px] border border-border bg-bg px-4 py-4">
+            <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
+              Trust credentials
+            </div>
+            <p className="mt-1.5 mb-4 text-[13.5px] leading-[1.5] text-muted">
+              Self-report licensed, insured, and related trust signals. These
+              show on your public profile and listing cards, clearly labeled as
+              self-reported — Michigan Garage Pros does not verify them.
+              Changes go live immediately.
+            </p>
+            <div className="grid gap-3">
+              <label className="flex items-start gap-2.5 text-[14px] font-semibold text-navy">
+                <input
+                  type="checkbox"
+                  className="mt-1 size-4 accent-[var(--michigan-blue)]"
+                  checked={trust.licensed}
+                  onChange={(e) =>
+                    setTrust((prev) => ({
+                      ...prev,
+                      licensed: e.target.checked,
+                      licenseNumber: e.target.checked
+                        ? prev.licenseNumber
+                        : null,
+                    }))
+                  }
+                />
+                <span>
+                  Licensed
+                  <span className="mt-0.5 block text-[12.5px] font-medium text-muted">
+                    Optional license number shows next to the badge.
+                  </span>
+                </span>
+              </label>
+              {trust.licensed ? (
+                <div className="ml-6">
+                  <input
+                    className="field-input"
+                    value={trust.licenseNumber ?? ""}
+                    onChange={(e) =>
+                      setTrust((prev) => ({
+                        ...prev,
+                        licenseNumber: e.target.value || null,
+                      }))
+                    }
+                    maxLength={40}
+                    placeholder="License # (optional)"
+                  />
+                </div>
+              ) : null}
+              <label className="flex items-start gap-2.5 text-[14px] font-semibold text-navy">
+                <input
+                  type="checkbox"
+                  className="mt-1 size-4 accent-[var(--michigan-blue)]"
+                  checked={trust.insured}
+                  onChange={(e) =>
+                    setTrust((prev) => ({
+                      ...prev,
+                      insured: e.target.checked,
+                    }))
+                  }
+                />
+                <span>Insured</span>
+              </label>
+              <label className="flex items-start gap-2.5 text-[14px] font-semibold text-navy">
+                <input
+                  type="checkbox"
+                  className="mt-1 size-4 accent-[var(--michigan-blue)]"
+                  checked={trust.bonded}
+                  onChange={(e) =>
+                    setTrust((prev) => ({
+                      ...prev,
+                      bonded: e.target.checked,
+                    }))
+                  }
+                />
+                <span>
+                  Bonded
+                  <span className="mt-0.5 block text-[12.5px] font-medium text-muted">
+                    Optional
+                  </span>
+                </span>
+              </label>
+              <label className="flex items-start gap-2.5 text-[14px] font-semibold text-navy">
+                <input
+                  type="checkbox"
+                  className="mt-1 size-4 accent-[var(--michigan-blue)]"
+                  checked={trust.familyOwned}
+                  onChange={(e) =>
+                    setTrust((prev) => ({
+                      ...prev,
+                      familyOwned: e.target.checked,
+                    }))
+                  }
+                />
+                <span>
+                  Family-owned
+                  <span className="mt-0.5 block text-[12.5px] font-medium text-muted">
+                    Optional
+                  </span>
+                </span>
+              </label>
+              <div className="pt-1">
+                <label className="mb-1.5 block text-[13px] font-bold text-navy">
+                  Years in business
+                </label>
+                <input
+                  className="field-input max-w-[140px]"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={yearsText}
+                  onChange={(e) =>
+                    setYearsText(e.target.value.replace(/[^\d]/g, "").slice(0, 3))
+                  }
+                  maxLength={3}
+                  placeholder="e.g. 12"
+                />
+                <p className="mt-1.5 mb-0 text-[12px] text-muted">
+                  Leave blank to hide. Whole numbers 0–150.
+                </p>
+              </div>
+            </div>
+            <div className="mt-4">
+              <button
+                type="button"
+                className="btn-outline !px-3 !py-2 !text-[13px]"
+                disabled={trustBusy}
+                onClick={() => void saveTrust()}
+              >
+                {trustBusy ? "Saving…" : "Save trust credentials"}
+              </button>
+            </div>
+            {trustNote ? (
+              <p className="mt-3 mb-0 text-[12.5px] font-semibold text-success">
+                {trustNote}
+              </p>
+            ) : null}
+            {trustError ? (
+              <p className="mt-3 mb-0 text-[12.5px] font-semibold text-[#B42318]">
+                {trustError}
               </p>
             ) : null}
           </div>

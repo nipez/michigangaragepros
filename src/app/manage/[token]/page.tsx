@@ -18,6 +18,11 @@ import {
   type CompanyMedia,
 } from "@/lib/company-media";
 import {
+  emptyCompanyTrust,
+  getCompanyTrust,
+  type CompanyTrust,
+} from "@/lib/company-trust";
+import {
   getCompanyByManageToken,
   isValidManageTokenFormat,
   listingFieldsFromCompany,
@@ -67,6 +72,7 @@ type LoadedManage = {
   leadTotals: CompanyLeadTotals;
   reviews: ManageReview[];
   media: CompanyMedia;
+  trust: CompanyTrust;
 };
 
 async function loadManagePage(token: string): Promise<LoadedManage | null> {
@@ -150,6 +156,15 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     media = emptyCompanyMedia();
   }
 
+  let trust: CompanyTrust = emptyCompanyTrust();
+  try {
+    trust = await getCompanyTrust(db, company.slug);
+  } catch (err) {
+    // Trust is additive — never block the manage form if migration is pending.
+    console.error("manage trust load failed", err);
+    trust = emptyCompanyTrust();
+  }
+
   return {
     token,
     companyName: company.name,
@@ -166,6 +181,7 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     leadTotals,
     reviews,
     media,
+    trust,
   };
 }
 
@@ -199,6 +215,7 @@ export default async function ManageListingPage({ params }: PageProps) {
       initialReviews={loaded.reviews}
       initialLogoUrl={loaded.media.logoUrl}
       initialPhotoUrl={loaded.media.photoUrl}
+      initialTrust={loaded.trust}
     />
   );
 }

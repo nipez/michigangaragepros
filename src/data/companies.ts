@@ -30,6 +30,16 @@ export type Company = {
   logoUrl?: string;
   /** Optional wide profile/hero photo. Hydrated live; absent on seed. */
   photoUrl?: string;
+  /** Self-reported trust credentials. Hydrated live; absent on seed. */
+  trust?: {
+    licensed: boolean;
+    licenseNumber: string | null;
+    insured: boolean;
+    bonded: boolean;
+    familyOwned: boolean;
+    yearsInBusiness: number | null;
+    updatedAt: string | null;
+  };
 };
 
 const FULL_SERVICES = [

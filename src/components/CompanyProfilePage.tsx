@@ -13,6 +13,7 @@ import { recordListingEvent } from "@/lib/listing-stats-client";
 import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
 import { websiteSnapshotUrl } from "@/lib/website-snapshot";
 import { CompanyClaimBadge } from "./CompanyClaimBadge";
+import { CompanyTrustBadges } from "./CompanyTrustBadges";
 import { CompanyClaimCard } from "./CompanyClaimCard";
 import { CompanyReviewsSection } from "./CompanyReviewsSection";
 import { CompactFooter } from "./Footer";
@@ -161,6 +162,10 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
                     </>
                   )}
                 </div>
+                <CompanyTrustBadges
+                  trust={company.trust}
+                  className="mt-3"
+                />
               </div>
             </div>
             <div className="flex flex-wrap gap-3">

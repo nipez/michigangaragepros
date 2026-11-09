@@ -5,6 +5,7 @@ import type { Company } from "@/data/companies";
 import { fairShuffleCompanies } from "@/lib/companyOrder";
 import { useCompanyMedia } from "@/hooks/useCompanyMedia";
 import { useCompanyReviewSummaries } from "@/hooks/useCompanyReviewSummaries";
+import { useCompanyTrust } from "@/hooks/useCompanyTrust";
 import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 
 type ShuffledCompanyGridProps = {
@@ -31,6 +32,7 @@ export function ShuffledCompanyGrid({
   const slugs = companies.map((c) => c.slug);
   const summaries = useCompanyReviewSummaries(slugs);
   const media = useCompanyMedia(slugs);
+  const trust = useCompanyTrust(slugs);
 
   useEffect(() => {
     // Intentional: randomize after hydration so SSR HTML matches the first paint.
@@ -45,12 +47,14 @@ export function ShuffledCompanyGrid({
       {!hasPaidFeatured && <BeFeaturedCard cityName={cityName} />}
       {ordered.map((c) => {
         const m = media[c.slug];
+        const t = trust[c.slug];
         const company =
-          m?.logoUrl || m?.photoUrl
+          m?.logoUrl || m?.photoUrl || t
             ? {
                 ...c,
-                logoUrl: m.logoUrl || undefined,
-                photoUrl: m.photoUrl || undefined,
+                logoUrl: m?.logoUrl || undefined,
+                photoUrl: m?.photoUrl || undefined,
+                trust: t || c.trust,
               }
             : c;
         return (
