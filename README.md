@@ -58,6 +58,14 @@ npm run db:migrate:remote
 
 Uploads apply **live** for claimed companies (no `listing_edit_requests` queue for binaries). Validation: JPEG/PNG/WebP only; logo ≤512KB (roughly square); photo ≤1.5MB.
 
+### Trust credentials (self-reported)
+
+Claimed companies can set licensed (optional license #), insured, bonded, family-owned, and years in business on `/manage/<token>/`. Values apply **live** and show on public profiles + listing cards, always labeled **self-reported** (no verification). Columns use migration `0021_company_trust.sql`. After deploy:
+
+```bash
+npm run db:migrate:remote
+```
+
 ### Secrets (operator alerts + admin inbox + Stripe)
 
 Email alerts already use Resend. Set secrets on the Worker:
@@ -149,11 +157,13 @@ npm run preview
 | `/admin/claims/` | Token-protected claim inbox (triage `pending` → `approved` / `rejected`; approve sets `companies.claimed` + `notify_email`) |
 | `/admin/featured/` | Token-protected Featured interest inbox (triage `new` / `contacted` / `checkout_pending` / `paid` / `won` / `closed`; won sets `companies.featured`) |
 | `/admin/reviews/` | Token-protected review moderation inbox (triage `pending` → `visible` / `hidden` / `spam`) |
-| `/manage/<token>/` | Claimed-company listing self-manage + logo/photo upload + review-request link |
+| `/manage/<token>/` | Claimed-company listing self-manage + logo/photo + trust credentials + review-request link |
 | `/review/<token>/` | Shareable customer review form locked to one claimed company (`noIndex`) |
 | `GET/POST/DELETE /api/manage/<token>/media` | Claimed company upload/replace/remove logo or profile photo (R2) |
+| `GET/PUT /api/manage/<token>/trust` | Claimed company self-reported trust credentials (live) |
 | `GET /api/media/<key>` | Public read proxy for company media objects in private R2 |
 | `GET /api/companies/media` | Public logo/photo URLs by `slug` or batch `slugs` |
+| `GET /api/companies/trust` | Public trust credentials by `slug` or batch `slugs` |
 | `POST /api/leads` | Persist quote leads to D1; notify operator + route to claimed companies |
 | `POST /api/claims` | Persist profile claim requests to D1 |
 | `POST /api/featured` | Persist Featured interest to D1 (offline / talk-to-us fallback) |

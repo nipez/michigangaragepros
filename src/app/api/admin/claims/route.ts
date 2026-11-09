@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
+import {
+  companyTrustFromRow,
+  formatTrustSummary,
+  trustHasAny,
+} from "@/lib/company-trust";
 import { getDb, getEnv } from "@/lib/db";
 import { retainLeadsForClaimedCompany } from "@/lib/lead-retention";
 import {
@@ -37,6 +42,13 @@ type ClaimRow = {
   review_notes: string | null;
   manage_token: string | null;
   review_token: string | null;
+  trust_licensed: number | null;
+  trust_license_number: string | null;
+  trust_insured: number | null;
+  trust_bonded: number | null;
+  trust_family_owned: number | null;
+  trust_years_in_business: number | null;
+  trust_updated_at: string | null;
 };
 
 type DemandPayload = {
@@ -65,20 +77,46 @@ export async function GET() {
   }
 
   const db = await getDb();
-  const { results } = await db
-    .prepare(
-      `SELECT cr.id, cr.company_name, cr.city, cr.contact_name, cr.email, cr.phone,
-              cr.website, cr.company_slug, cr.notes, cr.status, cr.created_at,
-              cr.reviewed_at, cr.review_notes, c.manage_token AS manage_token,
-              c.review_token AS review_token
-       FROM claim_requests cr
-       LEFT JOIN companies c ON c.slug = cr.company_slug
-       ORDER BY datetime(cr.created_at) DESC
-       LIMIT 200`,
-    )
-    .all<ClaimRow>();
+  let rows: ClaimRow[] = [];
+  try {
+    const { results } = await db
+      .prepare(
+        `SELECT cr.id, cr.company_name, cr.city, cr.contact_name, cr.email, cr.phone,
+                cr.website, cr.company_slug, cr.notes, cr.status, cr.created_at,
+                cr.reviewed_at, cr.review_notes, c.manage_token AS manage_token,
+                c.review_token AS review_token,
+                c.trust_licensed AS trust_licensed,
+                c.trust_license_number AS trust_license_number,
+                c.trust_insured AS trust_insured,
+                c.trust_bonded AS trust_bonded,
+                c.trust_family_owned AS trust_family_owned,
+                c.trust_years_in_business AS trust_years_in_business,
+                c.trust_updated_at AS trust_updated_at
+         FROM claim_requests cr
+         LEFT JOIN companies c ON c.slug = cr.company_slug
+         ORDER BY datetime(cr.created_at) DESC
+         LIMIT 200`,
+      )
+      .all<ClaimRow>();
+    rows = results ?? [];
+  } catch (err) {
+    // Fallback if migration 0021 is not applied yet.
+    console.error("admin claims trust columns missing; falling back", err);
+    const { results } = await db
+      .prepare(
+        `SELECT cr.id, cr.company_name, cr.city, cr.contact_name, cr.email, cr.phone,
+                cr.website, cr.company_slug, cr.notes, cr.status, cr.created_at,
+                cr.reviewed_at, cr.review_notes, c.manage_token AS manage_token,
+                c.review_token AS review_token
+         FROM claim_requests cr
+         LEFT JOIN companies c ON c.slug = cr.company_slug
+         ORDER BY datetime(cr.created_at) DESC
+         LIMIT 200`,
+      )
+      .all<ClaimRow>();
+    rows = results ?? [];
+  }
 
-  const rows = results ?? [];
   const demandBySlug = await getListingDemandForSlugs(
     db,
     rows
@@ -89,11 +127,15 @@ export async function GET() {
   const claims = rows.map((row) => {
     const slug = (row.company_slug ?? "").trim();
     const demand = slug ? demandBySlug.get(slug) : undefined;
+    const trust = companyTrustFromRow(row);
+    const trustSummary = trustHasAny(trust) ? formatTrustSummary(trust) : null;
     return {
       ...row,
       manage_url: row.manage_token ? manageUrl(row.manage_token) : null,
       review_url: row.review_token ? reviewRequestUrl(row.review_token) : null,
       demand: demand ? demandPayload(demand) : null,
+      trust_summary: trustSummary,
+      trust_updated_at: trust.updatedAt,
     };
   });
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Company } from "@/data/companies";
+import type { CompanyTrust } from "@/lib/company-trust";
 import {
   mergeListingFields,
   type ListingFields,
@@ -13,24 +14,28 @@ type LiveMedia = {
 };
 
 /**
- * Merge admin-approved D1 listing overrides + live logo/photo onto the
- * static company seed. Keeps the profile page statically generated;
- * live fields hydrate client-side (same pattern as claim status / reviews).
+ * Merge admin-approved D1 listing overrides + live logo/photo + trust
+ * credentials onto the static company seed. Keeps the profile page
+ * statically generated; live fields hydrate client-side.
  */
 export function useCompanyLiveListing(company: Company): Company {
   const [override, setOverride] = useState<ListingFields | null>(null);
   const [media, setMedia] = useState<LiveMedia | null>(null);
+  const [trust, setTrust] = useState<CompanyTrust | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     void (async () => {
       try {
-        const [listingRes, mediaRes] = await Promise.all([
+        const [listingRes, mediaRes, trustRes] = await Promise.all([
           fetch(
             `/api/companies/listing?slug=${encodeURIComponent(company.slug)}`,
           ),
           fetch(
             `/api/companies/media/?slug=${encodeURIComponent(company.slug)}`,
+          ),
+          fetch(
+            `/api/companies/trust/?slug=${encodeURIComponent(company.slug)}`,
           ),
         ]);
 
@@ -48,6 +53,11 @@ export function useCompanyLiveListing(company: Company): Company {
             photoUrl: data.photoUrl ?? null,
           });
         }
+
+        if (!cancelled && trustRes.ok) {
+          const data = (await trustRes.json()) as { trust?: CompanyTrust };
+          if (data.trust) setTrust(data.trust);
+        }
       } catch {
         // Keep static seed on failure.
       }
@@ -64,6 +74,9 @@ export function useCompanyLiveListing(company: Company): Company {
       logoUrl: media.logoUrl || undefined,
       photoUrl: media.photoUrl || undefined,
     };
+  }
+  if (trust) {
+    merged = { ...merged, trust };
   }
   return merged;
 }

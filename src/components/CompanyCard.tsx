@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Company } from "@/data/companies";
+import { trustHasAny } from "@/lib/company-trust";
 import type { ReviewSummary } from "@/lib/review";
+import { CompanyTrustBadges } from "./CompanyTrustBadges";
 import { BoltIcon, Stars } from "./Icons";
 
 type CompanyCardProps = {
@@ -35,6 +37,7 @@ export function CompanyCard({
   const resolvedQuoteHref =
     quoteHref ?? `/get-a-quote/?company=${encodeURIComponent(company.slug)}`;
   const logoUrl = company.logoUrl;
+  const hasTrust = Boolean(company.trust && trustHasAny(company.trust));
   const quote = onQuoteClick ? (
     <button
       type="button"
@@ -88,12 +91,21 @@ export function CompanyCard({
         <CompactLiveRating summary={reviewSummary} />
       ) : null}
       {company.phone ? (
-        <div className="mb-3.5 text-[13px] font-semibold text-navy">
+        <div
+          className={`${hasTrust ? "mb-2" : "mb-3.5"} text-[13px] font-semibold text-navy`}
+        >
           {company.phone}
         </div>
-      ) : (
+      ) : null}
+      {hasTrust ? (
+        <CompanyTrustBadges
+          trust={company.trust}
+          compact
+          className="mb-3.5"
+        />
+      ) : !company.phone ? (
         <div className="mb-3.5" />
-      )}
+      ) : null}
       {!compact && company.tags.length > 0 && (
         <div className="mb-2 flex flex-wrap gap-[7px]">
           {company.tags.map((t) => (

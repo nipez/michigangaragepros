@@ -3,6 +3,7 @@
 import type { Company } from "@/data/companies";
 import { useCompanyMedia } from "@/hooks/useCompanyMedia";
 import { useCompanyReviewSummaries } from "@/hooks/useCompanyReviewSummaries";
+import { useCompanyTrust } from "@/hooks/useCompanyTrust";
 import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 
 type CompanyCardGridProps = {
@@ -31,6 +32,7 @@ export function CompanyCardGrid({
   const slugs = companies.map((c) => c.slug);
   const summaries = useCompanyReviewSummaries(slugs);
   const media = useCompanyMedia(slugs);
+  const trust = useCompanyTrust(slugs);
   const hasPaidFeatured = companies.some((c) => c.featured);
 
   return (
@@ -40,12 +42,14 @@ export function CompanyCardGrid({
       ) : null}
       {companies.map((c) => {
         const m = media[c.slug];
+        const t = trust[c.slug];
         const company =
-          m?.logoUrl || m?.photoUrl
+          m?.logoUrl || m?.photoUrl || t
             ? {
                 ...c,
-                logoUrl: m.logoUrl || undefined,
-                photoUrl: m.photoUrl || undefined,
+                logoUrl: m?.logoUrl || undefined,
+                photoUrl: m?.photoUrl || undefined,
+                trust: t || c.trust,
               }
             : c;
         return (
