@@ -17,11 +17,41 @@ Workers Builds is wired to GitHub (`main` + preview branches). Required commands
 | Setting | Value |
 |---|---|
 | **Build command** | `npm run cf:build` |
-| **Deploy command (main)** | `npx wrangler deploy` |
+| **Deploy command (main)** | `npx wrangler deploy && npm run indexnow:postdeploy` |
 | **Deploy command (other branches)** | `npx wrangler versions upload` |
 | **Root directory** | `/` (repo root) |
 
 If Git deploys fail with `Could not find compiled Open Next config`, the build command is missing or empty — set it to `npm run cf:build` and retry.
+
+### IndexNow
+
+After each production deploy, `indexnow:postdeploy` diffs the live sitemap against `data/indexnow-snapshot.json` and POSTs new/changed URLs to [IndexNow](https://www.indexnow.org/). It always exits 0 so a submit failure never fails the deploy.
+
+| Item | Value |
+|---|---|
+| **Key file** | `https://michigangaragepros.com/427fa9d9fd78243932aba8b20d6f7afd.txt` (also `public/427fa9d9fd78243932aba8b20d6f7afd.txt`) |
+| **Snapshot** | `data/indexnow-snapshot.json` (committed; refreshed locally after a successful submit) |
+
+Manual runs:
+
+```bash
+# Diff sitemap and submit (writes snapshot on success)
+npm run indexnow
+
+# Dry-run: print JSON payload only
+npm run indexnow -- --dry-run
+
+# One-time full sitemap submit after the key file is live
+npm run indexnow -- --force-all
+
+# Single new blog article (or any URL)
+npm run indexnow -- https://michigangaragepros.com/blog/your-slug/
+
+# Helper unit checks
+npm run test:indexnow
+```
+
+Set the Workers Builds **Deploy command (main)** to `npx wrangler deploy && npm run indexnow:postdeploy` (dashboard) so production deploys notify search engines automatically. After the first production deploy that publishes the key file, run `npm run indexnow -- --force-all` once, then commit the refreshed `data/indexnow-snapshot.json`.
 
 Do **not** use classic Pages defaults like “framework: Next.js” + output directory `.next` / `out`.
 
