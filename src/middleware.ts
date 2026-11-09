@@ -84,7 +84,9 @@ export const config = {
     /*
      * Run on HTML routes + sitemap/robots. Skip Next internals and
      * common static file extensions so asset caching stays aggressive.
+     * Exclude .txt so IndexNow key files are never trailing-slash
+     * redirected or Cache-Control stamped by this middleware.
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|txt)$).*)",
   ],
 };
