@@ -5,6 +5,7 @@ export type NotifyPayload = {
     | "claim"
     | "claim-approved"
     | "manage-recover"
+    | "notify-email-changed"
     | "lead"
     | "featured"
     | "company-lead"
@@ -510,6 +511,48 @@ export function formatManageRecoverNotify(input: {
   return {
     kind: "manage-recover" as const,
     subject: `Your manage link for ${input.companyName}`,
+    text: lines.join("\n"),
+    html,
+  };
+}
+
+/**
+ * Best-effort notice to the previous notification address after a change.
+ * Sent only when a manage-token holder updates companies.notify_email.
+ */
+export function formatNotifyEmailChangedNotify(input: {
+  companyName: string;
+  previousEmail: string;
+  newEmail: string;
+}) {
+  const lines = keepLines([
+    `Hi ${input.companyName},`,
+    "",
+    "The lead notification email for your Michigan Garage Pros listing was changed.",
+    "",
+    `Previous address: ${input.previousEmail}`,
+    `New address: ${input.newEmail}`,
+    "",
+    "New quote leads and related notices will go to the new address.",
+    "If you did not make this change, contact us right away — anyone with your",
+    "private manage link can update the listing.",
+    "",
+    "— Michigan Garage Pros",
+    "https://michigangaragepros.com",
+  ]);
+
+  const html = [
+    `<p>Hi ${escapeHtml(input.companyName)},</p>`,
+    `<p>The lead notification email for your Michigan Garage Pros listing was changed.</p>`,
+    `<p><strong>Previous address:</strong> ${escapeHtml(input.previousEmail)}<br/>`,
+    `<strong>New address:</strong> ${escapeHtml(input.newEmail)}</p>`,
+    `<p>New quote leads and related notices will go to the new address. If you did not make this change, contact us right away — anyone with your private manage link can update the listing.</p>`,
+    `<p>— Michigan Garage Pros<br/><a href="https://michigangaragepros.com">https://michigangaragepros.com</a></p>`,
+  ].join("\n");
+
+  return {
+    kind: "notify-email-changed" as const,
+    subject: `Notification email changed for ${input.companyName}`,
     text: lines.join("\n"),
     html,
   };

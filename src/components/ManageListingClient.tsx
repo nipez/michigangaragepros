@@ -43,6 +43,7 @@ type Props = {
   initialLogoUrl: string | null;
   initialPhotoUrl: string | null;
   initialTrust: CompanyTrust;
+  initialNotifyEmail: string | null;
 };
 
 export function ManageListingClient({
@@ -61,6 +62,7 @@ export function ManageListingClient({
   initialLogoUrl,
   initialPhotoUrl,
   initialTrust,
+  initialNotifyEmail,
 }: Props) {
   const [fields, setFields] = useState<ListingFields>(initialFields);
   const [customService, setCustomService] = useState("");
@@ -92,6 +94,10 @@ export function ManageListingClient({
   const [trustBusy, setTrustBusy] = useState(false);
   const [trustNote, setTrustNote] = useState("");
   const [trustError, setTrustError] = useState("");
+  const [notifyEmail, setNotifyEmail] = useState(initialNotifyEmail ?? "");
+  const [notifyEmailBusy, setNotifyEmailBusy] = useState(false);
+  const [notifyEmailNote, setNotifyEmailNote] = useState("");
+  const [notifyEmailError, setNotifyEmailError] = useState("");
   const logoInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
@@ -273,6 +279,38 @@ export function ManageListingClient({
     }
   };
 
+  const saveNotifyEmail = async () => {
+    setNotifyEmailBusy(true);
+    setNotifyEmailError("");
+    setNotifyEmailNote("");
+    try {
+      const res = await fetch(`/api/manage/${token}/notify-email/`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: notifyEmail }),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        message?: string;
+        email?: string | null;
+      } | null;
+      if (!res.ok) {
+        setNotifyEmailError(
+          data?.error || "Unable to save notification email",
+        );
+        return;
+      }
+      if (typeof data?.email === "string") {
+        setNotifyEmail(data.email);
+      }
+      setNotifyEmailNote(
+        data?.message || "Notification email updated.",
+      );
+    } finally {
+      setNotifyEmailBusy(false);
+    }
+  };
+
   const submit = async () => {
     setError("");
     setSuccess("");
@@ -367,6 +405,49 @@ export function ManageListingClient({
               initialLeads={initialLeads}
               initialTotals={initialLeadTotals}
             />
+          </div>
+
+          <div className="mt-5 rounded-[12px] border border-border bg-bg px-4 py-4">
+            <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
+              Notification email
+            </div>
+            <p className="mt-1.5 mb-4 text-[13.5px] leading-[1.5] text-muted">
+              New quote leads and related notices go to this address. Changing
+              it does not change your private manage link. The previous address
+              gets a heads-up when email sending is configured.
+            </p>
+            <label className="mb-1.5 block text-[13px] font-bold text-navy">
+              Email
+            </label>
+            <input
+              className="field-input"
+              type="email"
+              autoComplete="email"
+              value={notifyEmail}
+              onChange={(e) => setNotifyEmail(e.target.value)}
+              maxLength={254}
+              placeholder="office@example.com"
+            />
+            <div className="mt-4">
+              <button
+                type="button"
+                className="btn-outline !px-3 !py-2 !text-[13px]"
+                disabled={notifyEmailBusy}
+                onClick={() => void saveNotifyEmail()}
+              >
+                {notifyEmailBusy ? "Saving…" : "Save notification email"}
+              </button>
+            </div>
+            {notifyEmailNote ? (
+              <p className="mt-3 mb-0 text-[12.5px] font-semibold text-success">
+                {notifyEmailNote}
+              </p>
+            ) : null}
+            {notifyEmailError ? (
+              <p className="mt-3 mb-0 text-[12.5px] font-semibold text-[#B42318]">
+                {notifyEmailError}
+              </p>
+            ) : null}
           </div>
 
           <div className="mt-5">
