@@ -28,6 +28,7 @@ import {
   listingFieldsFromCompany,
   type ListingFields,
 } from "@/lib/listing-manage";
+import { getCompanyNotifyEmail } from "@/lib/notify-email";
 import {
   getListingPerformance,
   type ListingPerformance,
@@ -73,6 +74,7 @@ type LoadedManage = {
   reviews: ManageReview[];
   media: CompanyMedia;
   trust: CompanyTrust;
+  notifyEmail: string | null;
 };
 
 async function loadManagePage(token: string): Promise<LoadedManage | null> {
@@ -165,6 +167,15 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     trust = emptyCompanyTrust();
   }
 
+  let notifyEmail: string | null = null;
+  try {
+    notifyEmail = await getCompanyNotifyEmail(db, company.slug);
+  } catch (err) {
+    // notify_email has existed since migration 0012 — still never block the form.
+    console.error("manage notify email load failed", err);
+    notifyEmail = null;
+  }
+
   return {
     token,
     companyName: company.name,
@@ -182,6 +193,7 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     reviews,
     media,
     trust,
+    notifyEmail,
   };
 }
 
@@ -216,6 +228,7 @@ export default async function ManageListingPage({ params }: PageProps) {
       initialLogoUrl={loaded.media.logoUrl}
       initialPhotoUrl={loaded.media.photoUrl}
       initialTrust={loaded.trust}
+      initialNotifyEmail={loaded.notifyEmail}
     />
   );
 }

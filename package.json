@@ -15,6 +15,7 @@
     "test:manage-recover": "npx tsx scripts/test-manage-recover.mjs",
     "test:company-media": "npx tsx scripts/test-company-media.mjs",
     "test:company-trust": "npx tsx scripts/test-company-trust.mjs",
+    "test:notify-email": "npx tsx scripts/test-notify-email.mjs",
     "test:indexnow": "node scripts/test-indexnow.mjs",
     "seo:generate": "npx tsx scripts/generate-seo-files.mjs",
     "indexnow": "node scripts/indexnow-submit.mjs",
