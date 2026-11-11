@@ -174,6 +174,37 @@ function fillDailySeries(
 }
 
 /**
+ * Sum listing_stats_daily counters for an inclusive UTC day range.
+ */
+export async function sumListingStatsForRange(
+  db: D1Database,
+  companySlug: string,
+  startDay: string,
+  endDay: string,
+): Promise<ListingStatTotals> {
+  const slug = companySlug.trim();
+  if (!slug || !/^\d{4}-\d{2}-\d{2}$/.test(startDay) || !/^\d{4}-\d{2}-\d{2}$/.test(endDay)) {
+    return emptyListingTotals();
+  }
+  if (startDay > endDay) return emptyListingTotals();
+
+  const { results } = await db
+    .prepare(
+      `SELECT day, profile_views, contact_clicks, leads_routed,
+              review_link_visits, review_submissions
+       FROM listing_stats_daily
+       WHERE company_slug = ?
+         AND day >= ?
+         AND day <= ?
+       ORDER BY day ASC`,
+    )
+    .bind(slug, startDay, endDay)
+    .all<DailyRow>();
+
+  return sumRows(results ?? []);
+}
+
+/**
  * Aggregate last 30 UTC days vs the prior 30, plus a daily series for trends.
  */
 export async function getListingPerformance(

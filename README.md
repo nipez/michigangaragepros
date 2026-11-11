@@ -151,6 +151,28 @@ Seed columns `companies.rating` / `companies.reviews` remain unused for display 
 
 **Review request links:** claimed companies get a regenerable `/review/<token>/` URL (shown on `/manage/<token>/` and in `/admin/claims/`). Customers submit anonymously through that link; company context is locked from the token. Submissions still insert as `pending` and use the same IP rate limits + honeypot as `POST /api/reviews`.
 
+### Weekly performance digest (claimed companies)
+
+Cron Trigger `0 14 * * 1` (Monday 14:00 UTC ≈ 9am Eastern Standard / 10am Eastern Daylight) runs from `custom-worker.ts` and emails each claimed company that has a notification email, has not opted out, and has activity in the prior Mon–Sun UTC window (profile views / contact clicks / leads / reviews). Sends are recorded in `weekly_digest_sends` (migration `0023_weekly_digest.sql`) so the same company is never emailed twice for the same `week_start`.
+
+Requires `RESEND_API_KEY` (same as other company emails). Without it the scheduled handler logs and skips — it never throws. Opt-out: manage page toggle or unsubscribe link in the email (`/api/manage/<token>/digest/?action=unsubscribe`).
+
+Admin (cookie + `ADMIN_TOKEN`):
+
+```bash
+# Preview one company (no send)
+# GET /api/admin/weekly-digest?slug=<company-slug>
+
+# Dry-run all eligible (default) or one slug
+# POST /api/admin/weekly-digest  {"dryRun":true,"slug":"optional-slug"}
+```
+
+After deploy, apply the migration:
+
+```bash
+npm run db:migrate:remote
+```
+
 ### Public URL
 
 Worker → **Settings → Domains & Routes**: enable **workers.dev**, and optionally add `michigangaragepros.com`.
@@ -191,6 +213,8 @@ npm run preview
 | `/review/<token>/` | Shareable customer review form locked to one claimed company (`noIndex`) |
 | `GET/POST/DELETE /api/manage/<token>/media` | Claimed company upload/replace/remove logo or profile photo (R2) |
 | `GET/PUT /api/manage/<token>/trust` | Claimed company self-reported trust credentials (live) |
+| `GET/PUT /api/manage/<token>/digest` | Weekly digest opt-out (`?action=unsubscribe` HTML link) |
+| `GET/POST /api/admin/weekly-digest` | Admin preview / dry-run (or single live send with slug) |
 | `GET /api/media/<key>` | Public read proxy for company media objects in private R2 |
 | `GET /api/companies/media` | Public logo/photo URLs by `slug` or batch `slugs` |
 | `GET /api/companies/trust` | Public trust credentials by `slug` or batch `slugs` |

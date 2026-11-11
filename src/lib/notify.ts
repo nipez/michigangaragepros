@@ -11,7 +11,8 @@ export type NotifyPayload = {
     | "company-lead"
     | "review"
     | "owner-reply"
-    | "listing-edit";
+    | "listing-edit"
+    | "weekly-digest";
   subject: string;
   text: string;
   html?: string;

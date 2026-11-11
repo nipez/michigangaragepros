@@ -42,6 +42,7 @@ import {
   reviewRequestUrl,
 } from "@/lib/review-request";
 import { buildPageMetadata } from "@/lib/seo";
+import { getWeeklyDigestOptOut } from "@/lib/weekly-digest";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +76,7 @@ type LoadedManage = {
   media: CompanyMedia;
   trust: CompanyTrust;
   notifyEmail: string | null;
+  weeklyDigestOptOut: boolean;
 };
 
 async function loadManagePage(token: string): Promise<LoadedManage | null> {
@@ -176,6 +178,15 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     notifyEmail = null;
   }
 
+  let weeklyDigestOptOut = false;
+  try {
+    weeklyDigestOptOut = await getWeeklyDigestOptOut(db, company.slug);
+  } catch (err) {
+    // Digest prefs are additive (migration 0023) — never block the form.
+    console.error("manage weekly digest preference load failed", err);
+    weeklyDigestOptOut = false;
+  }
+
   return {
     token,
     companyName: company.name,
@@ -194,6 +205,7 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     media,
     trust,
     notifyEmail,
+    weeklyDigestOptOut,
   };
 }
 
@@ -229,6 +241,7 @@ export default async function ManageListingPage({ params }: PageProps) {
       initialPhotoUrl={loaded.media.photoUrl}
       initialTrust={loaded.trust}
       initialNotifyEmail={loaded.notifyEmail}
+      initialWeeklyDigestOptOut={loaded.weeklyDigestOptOut}
     />
   );
 }
