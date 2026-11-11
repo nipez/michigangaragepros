@@ -44,6 +44,7 @@ type Props = {
   initialPhotoUrl: string | null;
   initialTrust: CompanyTrust;
   initialNotifyEmail: string | null;
+  initialWeeklyDigestOptOut: boolean;
 };
 
 export function ManageListingClient({
@@ -63,6 +64,7 @@ export function ManageListingClient({
   initialPhotoUrl,
   initialTrust,
   initialNotifyEmail,
+  initialWeeklyDigestOptOut,
 }: Props) {
   const [fields, setFields] = useState<ListingFields>(initialFields);
   const [customService, setCustomService] = useState("");
@@ -98,6 +100,12 @@ export function ManageListingClient({
   const [notifyEmailBusy, setNotifyEmailBusy] = useState(false);
   const [notifyEmailNote, setNotifyEmailNote] = useState("");
   const [notifyEmailError, setNotifyEmailError] = useState("");
+  const [digestOptOut, setDigestOptOut] = useState(
+    Boolean(initialWeeklyDigestOptOut),
+  );
+  const [digestBusy, setDigestBusy] = useState(false);
+  const [digestNote, setDigestNote] = useState("");
+  const [digestError, setDigestError] = useState("");
   const logoInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
@@ -311,6 +319,41 @@ export function ManageListingClient({
     }
   };
 
+  const saveDigestPreference = async (nextOptOut: boolean) => {
+    setDigestBusy(true);
+    setDigestError("");
+    setDigestNote("");
+    try {
+      const res = await fetch(`/api/manage/${token}/digest/`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ optedOut: nextOptOut }),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        message?: string;
+        optedOut?: boolean;
+      } | null;
+      if (!res.ok) {
+        setDigestError(data?.error || "Unable to save email preference");
+        return;
+      }
+      if (typeof data?.optedOut === "boolean") {
+        setDigestOptOut(data.optedOut);
+      } else {
+        setDigestOptOut(nextOptOut);
+      }
+      setDigestNote(
+        data?.message ||
+          (nextOptOut
+            ? "Weekly performance emails turned off."
+            : "Weekly performance emails turned on."),
+      );
+    } finally {
+      setDigestBusy(false);
+    }
+  };
+
   const submit = async () => {
     setError("");
     setSuccess("");
@@ -448,6 +491,42 @@ export function ManageListingClient({
                 {notifyEmailError}
               </p>
             ) : null}
+
+            <div className="mt-5 border-t border-border pt-4">
+              <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
+                Weekly performance email
+              </div>
+              <p className="mt-1.5 mb-3 text-[13.5px] leading-[1.5] text-muted">
+                Once a week we summarize your recent profile views, leads, and
+                reviews when there is something to report. Sent to the
+                notification email above.
+              </p>
+              <label className="flex cursor-pointer items-start gap-2.5 text-[13.5px] text-navy">
+                <input
+                  type="checkbox"
+                  className="mt-0.5"
+                  checked={!digestOptOut}
+                  disabled={digestBusy}
+                  onChange={(e) => {
+                    void saveDigestPreference(!e.target.checked);
+                  }}
+                />
+                <span>
+                  Send me a weekly performance email
+                  {digestBusy ? " (saving…)" : ""}
+                </span>
+              </label>
+              {digestNote ? (
+                <p className="mt-3 mb-0 text-[12.5px] font-semibold text-success">
+                  {digestNote}
+                </p>
+              ) : null}
+              {digestError ? (
+                <p className="mt-3 mb-0 text-[12.5px] font-semibold text-[#B42318]">
+                  {digestError}
+                </p>
+              ) : null}
+            </div>
           </div>
 
           <div className="mt-5">
