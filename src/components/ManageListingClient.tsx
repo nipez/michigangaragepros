@@ -27,12 +27,23 @@ import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { ListingPerformancePanel } from "./ListingPerformancePanel";
 
+export type ManageBillingState = {
+  stripeConfigured: boolean;
+  planId: string | null;
+  planName: string | null;
+  planPriceMonthly: number | null;
+  subscriptionStatus: string | null;
+  subscriptionStatusLabel: string;
+  canManageBilling: boolean;
+};
+
 type Props = {
   token: string;
   companyName: string;
   companySlug: string;
   companyCity: string;
   featured: boolean;
+  billing: ManageBillingState;
   performance: ListingPerformance | null;
   initialFields: ListingFields;
   pendingEdit: { id: number; createdAt: string } | null;
@@ -53,6 +64,7 @@ export function ManageListingClient({
   companySlug,
   companyCity,
   featured,
+  billing,
   performance,
   initialFields,
   pendingEdit,
@@ -106,6 +118,8 @@ export function ManageListingClient({
   const [digestBusy, setDigestBusy] = useState(false);
   const [digestNote, setDigestNote] = useState("");
   const [digestError, setDigestError] = useState("");
+  const [billingBusy, setBillingBusy] = useState(false);
+  const [billingError, setBillingError] = useState("");
   const logoInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
@@ -319,6 +333,33 @@ export function ManageListingClient({
     }
   };
 
+  const openBillingPortal = async () => {
+    setBillingBusy(true);
+    setBillingError("");
+    try {
+      const res = await fetch(`/api/manage/${token}/billing/`, {
+        method: "POST",
+      });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        url?: string;
+      } | null;
+      if (!res.ok) {
+        setBillingError(
+          data?.error || "Unable to open billing portal right now",
+        );
+        return;
+      }
+      if (!data?.url) {
+        setBillingError("Stripe did not return a billing portal URL");
+        return;
+      }
+      window.location.href = data.url;
+    } finally {
+      setBillingBusy(false);
+    }
+  };
+
   const saveDigestPreference = async (nextOptOut: boolean) => {
     setDigestBusy(true);
     setDigestError("");
@@ -434,6 +475,82 @@ export function ManageListingClient({
                 variant="manage"
                 showUpsell
               />
+            </div>
+          ) : null}
+
+          {featured ? (
+            <div className="mt-5 rounded-[12px] border border-border bg-bg px-4 py-4">
+              <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
+                Featured billing
+              </div>
+              <p className="mt-1.5 mb-3 text-[13.5px] leading-[1.5] text-muted">
+                Update your card, view invoices, or cancel in the Stripe
+                Customer Portal. Placement stays Sponsored while the
+                subscription is active.
+              </p>
+              <div className="mb-3 grid gap-1 text-[13.5px] text-body-secondary">
+                <div>
+                  <span className="text-faint">Plan:</span>{" "}
+                  <span className="font-semibold text-navy">
+                    {billing.planName
+                      ? `${billing.planName}${
+                          billing.planPriceMonthly
+                            ? ` · $${billing.planPriceMonthly}/mo`
+                            : ""
+                        }`
+                      : "Featured Pro"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-faint">Status:</span>{" "}
+                  <span className="font-semibold capitalize text-navy">
+                    {billing.subscriptionStatus
+                      ? billing.subscriptionStatusLabel
+                      : "active"}
+                  </span>
+                </div>
+              </div>
+              {billing.canManageBilling ? (
+                <button
+                  type="button"
+                  className="btn-outline !px-3 !py-2 !text-[13px]"
+                  disabled={billingBusy}
+                  onClick={() => void openBillingPortal()}
+                >
+                  {billingBusy ? "Opening…" : "Manage billing"}
+                </button>
+              ) : billing.stripeConfigured ? (
+                <p className="mb-0 text-[12.5px] text-muted">
+                  Billing self-serve isn’t linked yet for this listing. Email
+                  us and we’ll help with card updates or cancellation.
+                </p>
+              ) : (
+                <p className="mb-0 text-[12.5px] text-muted">
+                  Online billing management isn’t available yet. Email us and
+                  we’ll help with card updates or cancellation.
+                </p>
+              )}
+              {billingError ? (
+                <p className="mt-3 mb-0 text-[12.5px] font-semibold text-[#B42318]">
+                  {billingError}
+                </p>
+              ) : null}
+            </div>
+          ) : !performance ? (
+            <div className="mt-5 rounded-[12px] border border-[#B6D4FE] bg-[#EEF5FF] px-4 py-4">
+              <div className="text-[14px] font-extrabold text-navy">
+                Get Featured placement
+              </div>
+              <p className="mt-1 mb-0 text-[13px] leading-[1.5] text-muted">
+                Featured Pros sit at the top of city results with a Sponsored
+                badge.{" "}
+                <a
+                  href={`/for-companies/?company=${encodeURIComponent(companyName)}&city=${encodeURIComponent(companyCity)}&slug=${encodeURIComponent(companySlug)}#featured`}
+                  className="font-semibold text-michigan-blue hover:underline"
+                >
+                  Open Featured plans →
+                </a>
+              </p>
             </div>
           ) : null}
 

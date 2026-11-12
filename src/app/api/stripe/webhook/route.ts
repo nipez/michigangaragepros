@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getDb, getEnv } from "@/lib/db";
 import { activateFeaturedFromCheckout } from "@/lib/featured-activate";
+import { applySubscriptionStatusChange } from "@/lib/featured-billing";
 import { formatFeaturedNotify, notifyOperator } from "@/lib/notify";
 import { createStripeClient } from "@/lib/stripe";
 
@@ -9,7 +10,10 @@ export const runtime = "nodejs";
 
 /**
  * Stripe webhook for Featured subscriptions.
- * Primary event: checkout.session.completed → mark paid/won + set companies.featured.
+ * Events:
+ * - checkout.session.completed → mark paid/won + set companies.featured + Stripe ids
+ * - customer.subscription.updated → sync status; feature / un-feature
+ * - customer.subscription.deleted → clear Featured placement
  */
 export async function POST(request: Request) {
   const env = await getEnv();
@@ -63,8 +67,16 @@ export async function POST(request: Request) {
         db,
         event.data.object as Stripe.Checkout.Session,
       );
+    } else if (
+      event.type === "customer.subscription.updated" ||
+      event.type === "customer.subscription.deleted"
+    ) {
+      await handleSubscriptionChange(
+        db,
+        event.data.object as Stripe.Subscription,
+        event.type === "customer.subscription.deleted" ? "canceled" : null,
+      );
     }
-    // Future: customer.subscription.deleted → clear featured. Out of scope for v1.
 
     await db
       .prepare(
@@ -124,6 +136,7 @@ async function handleCheckoutCompleted(
     stripeSessionId: session.id,
     stripeSubscriptionId: subscriptionId,
     stripeCustomerId: customerId,
+    stripeSubscriptionStatus: "active",
   });
 
   if (!result) {
@@ -173,8 +186,83 @@ async function handleCheckoutCompleted(
           : "No company_slug — link a listing in /admin/featured/ then mark won if needed",
         `Stripe session: ${session.id}`,
         subscriptionId ? `Subscription: ${subscriptionId}` : null,
+        customerId ? `Customer: ${customerId}` : null,
         "",
         "Review: /admin/featured/ or npm run db:featured",
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    });
+  }
+}
+
+async function handleSubscriptionChange(
+  db: D1Database,
+  subscription: Stripe.Subscription,
+  forceStatus: string | null,
+) {
+  const subscriptionId = subscription.id;
+  if (!subscriptionId) {
+    console.error("Subscription event missing id");
+    return;
+  }
+
+  const customerId =
+    typeof subscription.customer === "string"
+      ? subscription.customer
+      : subscription.customer?.id ?? null;
+
+  const status = forceStatus || subscription.status || "canceled";
+  const companySlugHint =
+    subscription.metadata?.company_slug?.trim() || null;
+
+  const result = await applySubscriptionStatusChange(db, {
+    stripeSubscriptionId: subscriptionId,
+    status,
+    stripeCustomerId: customerId,
+    companySlugHint,
+  });
+
+  console.log(
+    "Stripe subscription sync",
+    subscriptionId,
+    status,
+    result.companySlug,
+    result.featuredUpdated,
+  );
+
+  if (result.featuredUpdated === "deactivated" && result.companySlug) {
+    await notifyOperator({
+      kind: "featured",
+      subject: `Featured ended: ${result.companySlug} (${status})`,
+      text: [
+        "Featured subscription canceled or lapsed",
+        "",
+        `Company slug: ${result.companySlug}`,
+        `Subscription: ${subscriptionId}`,
+        customerId ? `Customer: ${customerId}` : null,
+        `Status: ${status}`,
+        "companies.featured cleared (no other won request).",
+        "",
+        "Review: /admin/featured/",
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    });
+  } else if (result.featuredUpdated === "activated" && result.companySlug) {
+    await notifyOperator({
+      kind: "featured",
+      subject: `Featured reactivated: ${result.companySlug} (${status})`,
+      text: [
+        "Featured subscription active again",
+        "",
+        `Company slug: ${result.companySlug}`,
+        `Subscription: ${subscriptionId}`,
+        customerId ? `Customer: ${customerId}` : null,
+        `Status: ${status}`,
+        "companies.featured set to 1.",
+        "",
+        "Review: /admin/featured/",
       ]
         .filter(Boolean)
         .join("\n"),

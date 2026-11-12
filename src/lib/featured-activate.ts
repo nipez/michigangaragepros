@@ -1,4 +1,5 @@
 import type { D1Database } from "@cloudflare/workers-types";
+import { syncCompanyStripeBilling } from "@/lib/featured-billing";
 
 export type ActivateFeaturedResult = {
   status: "won" | "paid";
@@ -9,6 +10,8 @@ export type ActivateFeaturedResult = {
 /**
  * Mark a featured_request as paid/won after successful Stripe Checkout.
  * Sets companies.featured = 1 when company_slug resolves to a listing.
+ * Also mirrors Stripe customer/subscription ids + active status onto the
+ * company row (migration 0024) for Customer Portal + webhook sync.
  * Idempotent if the row is already won/paid with the same session.
  */
 export async function activateFeaturedFromCheckout(
@@ -18,6 +21,8 @@ export async function activateFeaturedFromCheckout(
     stripeSessionId: string;
     stripeSubscriptionId?: string | null;
     stripeCustomerId?: string | null;
+    /** Defaults to "active" for a just-completed paid Checkout. */
+    stripeSubscriptionStatus?: string | null;
   },
 ): Promise<ActivateFeaturedResult | null> {
   const row = await db
@@ -36,16 +41,31 @@ export async function activateFeaturedFromCheckout(
 
   if (!row) return null;
 
-  // Already processed for this session — treat as success (idempotent).
+  const subscriptionStatus =
+    (input.stripeSubscriptionStatus ?? "active").trim().toLowerCase() ||
+    "active";
+
+  // Already processed for this session — still ensure company Stripe ids are
+  // mirrored (safe for pre-0024 checkouts / verify-page retries).
   if (
     row.paid_at &&
     row.stripe_session_id === input.stripeSessionId &&
     (row.status === "won" || row.status === "paid")
   ) {
+    const slug = (row.company_slug ?? "").trim() || null;
+    if (slug && row.status === "won") {
+      await syncCompanyStripeBilling(db, {
+        companySlug: slug,
+        stripeCustomerId: input.stripeCustomerId,
+        stripeSubscriptionId: input.stripeSubscriptionId,
+        stripeSubscriptionStatus: subscriptionStatus,
+        featured: true,
+      });
+    }
     return {
       status: row.status === "won" ? "won" : "paid",
       featuredUpdated: false,
-      companySlug: (row.company_slug ?? "").trim() || null,
+      companySlug: slug,
     };
   }
 
@@ -68,6 +88,7 @@ export async function activateFeaturedFromCheckout(
              stripe_session_id = ?,
              stripe_subscription_id = COALESCE(?, stripe_subscription_id),
              stripe_customer_id = COALESCE(?, stripe_customer_id),
+             stripe_subscription_status = COALESCE(?, stripe_subscription_status),
              paid_at = COALESCE(paid_at, datetime('now'))
          WHERE id = ?`,
       )
@@ -76,6 +97,7 @@ export async function activateFeaturedFromCheckout(
         input.stripeSessionId,
         input.stripeSubscriptionId ?? null,
         input.stripeCustomerId ?? null,
+        subscriptionStatus,
         input.requestId,
       ),
   ];
@@ -84,8 +106,20 @@ export async function activateFeaturedFromCheckout(
   if (nextStatus === "won" && slug) {
     statements.push(
       db
-        .prepare(`UPDATE companies SET featured = 1 WHERE slug = ?`)
-        .bind(slug),
+        .prepare(
+          `UPDATE companies
+           SET featured = 1,
+               stripe_customer_id = COALESCE(?, stripe_customer_id),
+               stripe_subscription_id = COALESCE(?, stripe_subscription_id),
+               stripe_subscription_status = COALESCE(?, stripe_subscription_status)
+           WHERE slug = ?`,
+        )
+        .bind(
+          input.stripeCustomerId ?? null,
+          input.stripeSubscriptionId ?? null,
+          subscriptionStatus,
+          slug,
+        ),
     );
     featuredUpdated = true;
   }
