@@ -27,9 +27,13 @@ type FeaturedRow = {
   status: string;
   created_at: string;
   stripe_session_id: string | null;
+  stripe_subscription_id: string | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_status: string | null;
   paid_at: string | null;
   company_featured: number | null;
   company_exists: number | null;
+  company_subscription_status: string | null;
 };
 
 export async function GET() {
@@ -39,21 +43,50 @@ export async function GET() {
   }
 
   const db = await getDb();
-  const { results } = await db
-    .prepare(
-      `SELECT fr.id, fr.company_name, fr.city, fr.plan, fr.contact_name, fr.email,
-              fr.phone, fr.company_slug, fr.notes, fr.status, fr.created_at,
-              fr.stripe_session_id, fr.paid_at,
-              c.featured AS company_featured,
-              CASE WHEN c.slug IS NULL THEN 0 ELSE 1 END AS company_exists
-       FROM featured_requests fr
-       LEFT JOIN companies c ON c.slug = fr.company_slug
-       ORDER BY datetime(fr.created_at) DESC
-       LIMIT 200`,
-    )
-    .all<FeaturedRow>();
+  try {
+    const { results } = await db
+      .prepare(
+        `SELECT fr.id, fr.company_name, fr.city, fr.plan, fr.contact_name, fr.email,
+                fr.phone, fr.company_slug, fr.notes, fr.status, fr.created_at,
+                fr.stripe_session_id, fr.stripe_subscription_id, fr.stripe_customer_id,
+                fr.stripe_subscription_status, fr.paid_at,
+                c.featured AS company_featured,
+                c.stripe_subscription_status AS company_subscription_status,
+                CASE WHEN c.slug IS NULL THEN 0 ELSE 1 END AS company_exists
+         FROM featured_requests fr
+         LEFT JOIN companies c ON c.slug = fr.company_slug
+         ORDER BY datetime(fr.created_at) DESC
+         LIMIT 200`,
+      )
+      .all<FeaturedRow>();
 
-  return NextResponse.json({ requests: results ?? [] });
+    return NextResponse.json({ requests: results ?? [] });
+  } catch (err) {
+    // Migration 0024 may not be applied yet — fall back without sub status cols.
+    console.error("admin featured GET with billing cols failed; falling back", err);
+    const { results } = await db
+      .prepare(
+        `SELECT fr.id, fr.company_name, fr.city, fr.plan, fr.contact_name, fr.email,
+                fr.phone, fr.company_slug, fr.notes, fr.status, fr.created_at,
+                fr.stripe_session_id, fr.stripe_subscription_id, fr.stripe_customer_id,
+                fr.paid_at,
+                c.featured AS company_featured,
+                CASE WHEN c.slug IS NULL THEN 0 ELSE 1 END AS company_exists
+         FROM featured_requests fr
+         LEFT JOIN companies c ON c.slug = fr.company_slug
+         ORDER BY datetime(fr.created_at) DESC
+         LIMIT 200`,
+      )
+      .all<FeaturedRow>();
+
+    return NextResponse.json({
+      requests: (results ?? []).map((row) => ({
+        ...row,
+        stripe_subscription_status: row.stripe_subscription_status ?? null,
+        company_subscription_status: null,
+      })),
+    });
+  }
 }
 
 /**

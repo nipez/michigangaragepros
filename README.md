@@ -124,10 +124,12 @@ Without `STRIPE_SECRET_KEY`, `/api/featured/checkout` returns 503 and the form�
 **Stripe webhook endpoint** (Dashboard → Developers → Webhooks, or Stripe CLI):
 
 - URL: `https://michigangaragepros.com/api/stripe/webhook/`
-- Events: at least `checkout.session.completed`
+- Events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
 - Signing secret → `STRIPE_WEBHOOK_SECRET`
 
-Featured Stripe columns use migration `0011_featured_stripe.sql`. After deploy, Nick must run:
+**Stripe Customer Portal** (Dashboard → Settings → Billing → Customer portal): enable so claimed companies can update cards / view invoices / cancel from `/manage/<token>/`.
+
+Featured Stripe columns use migrations `0011_featured_stripe.sql` + `0024_company_stripe_billing.sql`. After deploy, Nick must run:
 
 ```bash
 npm run db:migrate:remote
@@ -223,7 +225,8 @@ npm run preview
 | `POST /api/featured` | Persist Featured interest to D1 (offline / talk-to-us fallback) |
 | `POST /api/featured/checkout` | Create Stripe Checkout Session (subscription) for Featured |
 | `GET /api/featured/checkout/verify` | Verify Checkout Session + activate Featured (success page) |
-| `POST /api/stripe/webhook` | Stripe webhooks (`checkout.session.completed`) |
+| `POST /api/stripe/webhook` | Stripe webhooks (`checkout.session.completed`, `customer.subscription.updated|deleted`) |
+| `GET/POST /api/manage/<token>/billing` | Featured plan status + Stripe Customer Portal session |
 | `GET/POST /api/reviews` | List/submit homeowner reviews (D1); new submissions start as `pending` |
 | `POST /api/review/<token>` | Submit review via shareable review-request token (company locked server-side) |
 | `POST /api/manage/<token>/review-token` | Claimed company ensure/regenerate review-request link |

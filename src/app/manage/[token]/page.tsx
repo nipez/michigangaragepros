@@ -11,7 +11,7 @@ import {
   type CompanyLead,
   type CompanyLeadTotals,
 } from "@/lib/company-leads";
-import { getDb } from "@/lib/db";
+import { getDb, getEnv } from "@/lib/db";
 import {
   emptyCompanyMedia,
   getCompanyMedia,
@@ -22,6 +22,11 @@ import {
   getCompanyTrust,
   type CompanyTrust,
 } from "@/lib/company-trust";
+import {
+  formatSubscriptionStatus,
+  getCompanyBillingInfo,
+  type CompanyBillingInfo,
+} from "@/lib/featured-billing";
 import {
   getCompanyByManageToken,
   isValidManageTokenFormat,
@@ -60,12 +65,23 @@ export async function generateMetadata({
   });
 }
 
+type ManageBillingProps = {
+  stripeConfigured: boolean;
+  planId: string | null;
+  planName: string | null;
+  planPriceMonthly: number | null;
+  subscriptionStatus: string | null;
+  subscriptionStatusLabel: string;
+  canManageBilling: boolean;
+};
+
 type LoadedManage = {
   token: string;
   companyName: string;
   companySlug: string;
   companyCity: string;
   featured: boolean;
+  billing: ManageBillingProps;
   performance: ListingPerformance | null;
   fields: ListingFields;
   pendingEdit: { id: number; createdAt: string } | null;
@@ -79,9 +95,40 @@ type LoadedManage = {
   weeklyDigestOptOut: boolean;
 };
 
+function emptyBilling(stripeConfigured: boolean): ManageBillingProps {
+  return {
+    stripeConfigured,
+    planId: null,
+    planName: null,
+    planPriceMonthly: null,
+    subscriptionStatus: null,
+    subscriptionStatusLabel: formatSubscriptionStatus(null),
+    canManageBilling: false,
+  };
+}
+
+function billingFromInfo(
+  info: CompanyBillingInfo,
+  stripeConfigured: boolean,
+): ManageBillingProps {
+  return {
+    stripeConfigured,
+    planId: info.planId,
+    planName: info.planName,
+    planPriceMonthly: info.planPriceMonthly,
+    subscriptionStatus: info.stripeSubscriptionStatus,
+    subscriptionStatusLabel: formatSubscriptionStatus(
+      info.stripeSubscriptionStatus,
+    ),
+    canManageBilling: stripeConfigured && info.canManageBilling,
+  };
+}
+
 async function loadManagePage(token: string): Promise<LoadedManage | null> {
   if (!isValidManageTokenFormat(token)) return null;
 
+  const env = await getEnv();
+  const stripeConfigured = Boolean(env.STRIPE_SECRET_KEY?.trim());
   const db = await getDb();
   const company = await getCompanyByManageToken(db, token);
   if (!company) return null;
@@ -187,12 +234,23 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     weeklyDigestOptOut = false;
   }
 
+  let billing = emptyBilling(stripeConfigured);
+  try {
+    const info = await getCompanyBillingInfo(db, company.slug);
+    billing = billingFromInfo(info, stripeConfigured);
+  } catch (err) {
+    // Billing columns are additive (migration 0024) — never block the form.
+    console.error("manage billing load failed", err);
+    billing = emptyBilling(stripeConfigured);
+  }
+
   return {
     token,
     companyName: company.name,
     companySlug: company.slug,
     companyCity: meta?.city || seed?.city || "",
     featured: Boolean(meta?.featured),
+    billing,
     performance,
     fields,
     pendingEdit: pending
@@ -230,6 +288,7 @@ export default async function ManageListingPage({ params }: PageProps) {
       companySlug={loaded.companySlug}
       companyCity={loaded.companyCity}
       featured={loaded.featured}
+      billing={loaded.billing}
       performance={loaded.performance}
       initialFields={loaded.fields}
       pendingEdit={loaded.pendingEdit}

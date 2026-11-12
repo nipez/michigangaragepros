@@ -17,6 +17,10 @@ type FeaturedRow = {
   status: string;
   created_at: string;
   stripe_session_id?: string | null;
+  stripe_subscription_id?: string | null;
+  stripe_customer_id?: string | null;
+  stripe_subscription_status?: string | null;
+  company_subscription_status?: string | null;
   paid_at?: string | null;
   company_featured: number | null;
   company_exists: number | null;
@@ -404,6 +408,28 @@ export function AdminFeaturedClient({
                         {" · "}
                         <span className="font-mono text-[12px] text-navy">
                           {row.stripe_session_id}
+                        </span>
+                      </>
+                    ) : null}
+                  </div>
+                ) : null}
+                {row.stripe_subscription_status ||
+                row.company_subscription_status ||
+                row.stripe_subscription_id ? (
+                  <div className="md:col-span-2">
+                    <span className="text-faint">Subscription:</span>{" "}
+                    <span className="font-semibold capitalize text-navy">
+                      {(
+                        row.stripe_subscription_status ||
+                        row.company_subscription_status ||
+                        "linked"
+                      ).replaceAll("_", " ")}
+                    </span>
+                    {row.stripe_subscription_id ? (
+                      <>
+                        {" · "}
+                        <span className="font-mono text-[12px] text-navy">
+                          {row.stripe_subscription_id}
                         </span>
                       </>
                     ) : null}
