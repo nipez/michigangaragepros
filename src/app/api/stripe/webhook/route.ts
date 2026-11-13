@@ -12,8 +12,11 @@ export const runtime = "nodejs";
  * Stripe webhook for Featured subscriptions.
  * Events:
  * - checkout.session.completed → mark paid/won + set companies.featured + Stripe ids
- * - customer.subscription.updated → sync status; feature / un-feature
+ * - customer.subscription.updated → sync status; feature / un-feature / payment issue
  * - customer.subscription.deleted → clear Featured placement
+ *
+ * past_due keeps Featured during Stripe dunning; unpaid/canceled clear it.
+ * Operator emails fire once per genuine prior→new transition (not renewals).
  */
 export async function POST(request: Request) {
   const env = await getEnv();
@@ -75,6 +78,7 @@ export async function POST(request: Request) {
         db,
         event.data.object as Stripe.Subscription,
         event.type === "customer.subscription.deleted" ? "canceled" : null,
+        event.created,
       );
     }
 
@@ -200,6 +204,7 @@ async function handleSubscriptionChange(
   db: D1Database,
   subscription: Stripe.Subscription,
   forceStatus: string | null,
+  eventCreated: number,
 ) {
   const subscriptionId = subscription.id;
   if (!subscriptionId) {
@@ -221,6 +226,7 @@ async function handleSubscriptionChange(
     status,
     stripeCustomerId: customerId,
     companySlugHint,
+    eventAt: eventCreated,
   });
 
   console.log(
@@ -228,10 +234,17 @@ async function handleSubscriptionChange(
     subscriptionId,
     status,
     result.companySlug,
+    result.transition,
+    result.operatorNotify,
     result.featuredUpdated,
+    result.skippedStale ? "stale-skipped" : null,
   );
 
-  if (result.featuredUpdated === "deactivated" && result.companySlug) {
+  if (result.skippedStale || !result.companySlug || !result.operatorNotify) {
+    return;
+  }
+
+  if (result.operatorNotify === "deactivated") {
     await notifyOperator({
       kind: "featured",
       subject: `Featured ended: ${result.companySlug} (${status})`,
@@ -241,6 +254,7 @@ async function handleSubscriptionChange(
         `Company slug: ${result.companySlug}`,
         `Subscription: ${subscriptionId}`,
         customerId ? `Customer: ${customerId}` : null,
+        `Prior status: ${result.priorStatus ?? "(none)"}`,
         `Status: ${status}`,
         "companies.featured cleared (no other won request).",
         "",
@@ -249,7 +263,10 @@ async function handleSubscriptionChange(
         .filter(Boolean)
         .join("\n"),
     });
-  } else if (result.featuredUpdated === "activated" && result.companySlug) {
+    return;
+  }
+
+  if (result.operatorNotify === "reactivated") {
     await notifyOperator({
       kind: "featured",
       subject: `Featured reactivated: ${result.companySlug} (${status})`,
@@ -259,8 +276,32 @@ async function handleSubscriptionChange(
         `Company slug: ${result.companySlug}`,
         `Subscription: ${subscriptionId}`,
         customerId ? `Customer: ${customerId}` : null,
+        `Prior status: ${result.priorStatus ?? "(none)"}`,
         `Status: ${status}`,
         "companies.featured set to 1.",
+        "",
+        "Review: /admin/featured/",
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    });
+    return;
+  }
+
+  if (result.operatorNotify === "payment_issue") {
+    await notifyOperator({
+      kind: "featured",
+      subject: `Featured payment issue: ${result.companySlug} (${status})`,
+      text: [
+        "Featured subscription payment failed (Stripe dunning)",
+        "",
+        `Company slug: ${result.companySlug}`,
+        `Subscription: ${subscriptionId}`,
+        customerId ? `Customer: ${customerId}` : null,
+        `Prior status: ${result.priorStatus ?? "(none)"}`,
+        `Status: ${status}`,
+        "Featured placement kept during grace period (past_due).",
+        "Owner can update the card via Manage billing on their manage page.",
         "",
         "Review: /admin/featured/",
       ]

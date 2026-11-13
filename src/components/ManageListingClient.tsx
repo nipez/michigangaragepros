@@ -478,7 +478,9 @@ export function ManageListingClient({
             </div>
           ) : null}
 
-          {featured ? (
+          {featured ||
+          billing.canManageBilling ||
+          Boolean(billing.subscriptionStatus) ? (
             <div className="mt-5 rounded-[12px] border border-border bg-bg px-4 py-4">
               <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
                 Featured billing
@@ -486,8 +488,21 @@ export function ManageListingClient({
               <p className="mt-1.5 mb-3 text-[13.5px] leading-[1.5] text-muted">
                 Update your card, view invoices, or cancel in the Stripe
                 Customer Portal. Placement stays Sponsored while the
-                subscription is active.
+                subscription is active
+                {billing.subscriptionStatus === "past_due"
+                  ? " (including during payment retry)"
+                  : ""}
+                .
               </p>
+              {billing.subscriptionStatus === "past_due" ||
+              billing.subscriptionStatus === "unpaid" ? (
+                <div className="mb-3 rounded-[10px] border border-[#F5C2C0] bg-[#FFF5F5] px-3 py-2.5 text-[13.5px] leading-[1.45] text-[#B42318]">
+                  <span className="font-extrabold">Payment issue.</span>{" "}
+                  {billing.subscriptionStatus === "past_due"
+                    ? "Update your billing method to keep Featured placement — Stripe is retrying the charge and your listing stays Sponsored for now."
+                    : "Featured placement is paused until payment is resolved. Update your billing method to restore it."}
+                </div>
+              ) : null}
               <div className="mb-3 grid gap-1 text-[13.5px] text-body-secondary">
                 <div>
                   <span className="text-faint">Plan:</span>{" "}
@@ -503,10 +518,19 @@ export function ManageListingClient({
                 </div>
                 <div>
                   <span className="text-faint">Status:</span>{" "}
-                  <span className="font-semibold capitalize text-navy">
+                  <span
+                    className={`font-semibold capitalize ${
+                      billing.subscriptionStatus === "past_due" ||
+                      billing.subscriptionStatus === "unpaid"
+                        ? "text-[#B42318]"
+                        : "text-navy"
+                    }`}
+                  >
                     {billing.subscriptionStatus
                       ? billing.subscriptionStatusLabel
-                      : "active"}
+                      : featured
+                        ? "active"
+                        : "unknown"}
                   </span>
                 </div>
               </div>
@@ -517,7 +541,12 @@ export function ManageListingClient({
                   disabled={billingBusy}
                   onClick={() => void openBillingPortal()}
                 >
-                  {billingBusy ? "Opening…" : "Manage billing"}
+                  {billingBusy
+                    ? "Opening…"
+                    : billing.subscriptionStatus === "past_due" ||
+                        billing.subscriptionStatus === "unpaid"
+                      ? "Update billing"
+                      : "Manage billing"}
                 </button>
               ) : billing.stripeConfigured ? (
                 <p className="mb-0 text-[12.5px] text-muted">
