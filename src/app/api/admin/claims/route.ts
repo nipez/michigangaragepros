@@ -8,6 +8,12 @@ import {
 import { getDb, getEnv } from "@/lib/db";
 import { retainLeadsForClaimedCompany } from "@/lib/lead-retention";
 import {
+  computeListingCompleteness,
+  formatCompletenessAdminSummary,
+  loadCompletenessInputsBySlugs,
+  topMissingCompletenessItems,
+} from "@/lib/listing-completeness";
+import {
   formatClaimDemandCopy,
   getListingDemandForSlugs,
   type ListingDemand,
@@ -117,12 +123,46 @@ export async function GET() {
     rows = results ?? [];
   }
 
-  const demandBySlug = await getListingDemandForSlugs(
-    db,
-    rows
-      .map((r) => r.company_slug)
-      .filter((s): s is string => Boolean(s && s.trim())),
-  );
+  const claimSlugs = rows
+    .map((r) => r.company_slug)
+    .filter((s): s is string => Boolean(s && s.trim()));
+
+  const demandBySlug = await getListingDemandForSlugs(db, claimSlugs);
+
+  const approvedSlugs = [
+    ...new Set(
+      rows
+        .filter((r) => r.status === "approved" && r.company_slug?.trim())
+        .map((r) => r.company_slug!.trim()),
+    ),
+  ];
+
+  let completenessBySlug: Record<
+    string,
+    {
+      score: number;
+      complete: boolean;
+      summary: string;
+      missing: string[];
+    }
+  > = {};
+  try {
+    const inputs = await loadCompletenessInputsBySlugs(db, approvedSlugs);
+    for (const slug of approvedSlugs) {
+      const input = inputs[slug];
+      if (!input) continue;
+      const result = computeListingCompleteness(input);
+      completenessBySlug[slug] = {
+        score: result.score,
+        complete: result.complete,
+        summary: formatCompletenessAdminSummary(result, 2),
+        missing: topMissingCompletenessItems(result, 3).map((m) => m.action),
+      };
+    }
+  } catch (err) {
+    console.error("admin claims completeness load failed", err);
+    completenessBySlug = {};
+  }
 
   const claims = rows.map((row) => {
     const slug = (row.company_slug ?? "").trim();
@@ -136,6 +176,10 @@ export async function GET() {
       demand: demand ? demandPayload(demand) : null,
       trust_summary: trustSummary,
       trust_updated_at: trust.updatedAt,
+      completeness:
+        row.status === "approved" && slug
+          ? (completenessBySlug[slug] ?? null)
+          : null,
     };
   });
 

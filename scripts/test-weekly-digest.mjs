@@ -8,6 +8,10 @@
 import assert from "node:assert/strict";
 import { SITE_URL } from "../src/data/site.ts";
 import {
+  computeListingCompleteness,
+  emptyCompletenessInput,
+} from "../src/lib/listing-completeness.ts";
+import {
   WEEKLY_DIGEST_CRON,
   digestUnsubscribeUrl,
   digestWindowFor,
@@ -101,6 +105,7 @@ const payload = formatWeeklyDigestNotify({
     slug: "acme-doors",
   }),
   hasActivity: true,
+  completeness: null,
 });
 
 assert.equal(payload.kind, "weekly-digest");
@@ -113,6 +118,50 @@ assert.match(payload.text, /unsubscribe/i);
 assert.match(payload.html, /Profile views: 12/);
 assert.match(payload.html, /manage/);
 assert.match(payload.html, /unsubscribe/i);
+assert.doesNotMatch(payload.text, /Profile completeness/);
+
+const incomplete = computeListingCompleteness({
+  ...emptyCompletenessInput(),
+  phone: "616-555-0100",
+  hasLogo: true,
+});
+const withCompleteness = formatWeeklyDigestNotify({
+  company: {
+    slug: "acme-doors",
+    name: "Acme Doors",
+    city: "Ann Arbor",
+    featured: true,
+    notifyEmail: "owner@example.com",
+    manageToken: token,
+    weeklyDigestOptOut: false,
+  },
+  window,
+  stats: {
+    listing: {
+      profile_views: 4,
+      contact_clicks: 0,
+      leads_routed: 0,
+      review_link_visits: 0,
+      review_submissions: 0,
+    },
+    leadsCount: 0,
+    reviewsCount: 0,
+  },
+  managePageUrl: `${SITE_URL}/manage/${token}/`,
+  unsubscribeUrl: digestUnsubscribeUrl(token),
+  featuredUrl: featuredPlansUrl({
+    name: "Acme Doors",
+    city: "Ann Arbor",
+    slug: "acme-doors",
+  }),
+  hasActivity: true,
+  completeness: incomplete,
+});
+assert.match(withCompleteness.text, /Profile completeness: 22%/);
+assert.match(withCompleteness.text, /Next steps/);
+assert.match(withCompleteness.text, /#profile-completeness/);
+assert.match(withCompleteness.html, /Profile completeness: 22%/);
+assert.match(withCompleteness.html, /profile-completeness/);
 
 const featuredPayload = formatWeeklyDigestNotify({
   company: {
@@ -144,6 +193,7 @@ const featuredPayload = formatWeeklyDigestNotify({
     slug: "acme-doors",
   }),
   hasActivity: true,
+  completeness: null,
 });
 assert.doesNotMatch(featuredPayload.text, /Featured Pros sit/);
 assert.doesNotMatch(featuredPayload.html, /see Featured plans/);
