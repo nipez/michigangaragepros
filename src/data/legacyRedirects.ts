@@ -31,6 +31,7 @@ export const RESERVED_TOP_LEVEL_SEGMENTS: ReadonlySet<string> = new Set([
   "companies",
   "company",
   "contact",
+  "cost",
   "emergency-service",
   "for-companies",
   "garage-door-installation",

@@ -8,6 +8,7 @@ import {
 import type { Service } from "@/data/services";
 import { SITE_URL } from "@/data/site";
 import {
+  cityServicePath,
   getIndexableServicesForCity,
   getNearbyIndexableCitiesForService,
   getProsForCityService,
@@ -249,7 +250,7 @@ export function CityServicePage({
               {otherIndexableServices.map((s) => (
                 <Link
                   key={s.slug}
-                  href={`/cities/${city.slug}/${s.slug}/`}
+                  href={cityServicePath(city.slug, s)}
                   className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
                 >
                   {s.localTitle}
@@ -272,7 +273,7 @@ export function CityServicePage({
                 {nearbyForService.map((n) => (
                   <Link
                     key={n.slug}
-                    href={`/cities/${n.slug}/${service.slug}/`}
+                    href={cityServicePath(n.slug, service)}
                     className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
                   >
                     {n.name}

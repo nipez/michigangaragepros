@@ -5,7 +5,10 @@ import { costGuidePathForService } from "@/data/costGuides";
 import { PRIORITY_CITY_SLUGS } from "@/data/growth";
 import { SERVICES, type Service } from "@/data/services";
 import { COMMON_PROBLEM_GUIDES, COMMON_PROBLEMS, SITE_URL } from "@/data/site";
-import { isCityServiceIndexable } from "@/lib/indexability";
+import {
+  cityServicePath,
+  isCityServiceIndexable,
+} from "@/lib/indexability";
 import {
   breadcrumbJsonLd,
   faqPageJsonLd,
@@ -181,7 +184,7 @@ export function ServicePage({ service }: { service: Service }) {
                 {indexableCities.slice(0, 12).map((city) => (
                   <Link
                     key={city.slug}
-                    href={`/cities/${city.slug}/${service.slug}/`}
+                    href={cityServicePath(city.slug, service)}
                     className="group flex items-center gap-2.5 rounded-xl border border-border bg-bg px-3.5 py-3 transition-colors hover:border-bright-blue hover:bg-white hover:text-inherit"
                   >
                     <PinIcon

@@ -4,8 +4,9 @@ import { getAllBlogPosts, getBlogImage, hasBlogImageFile } from "@/data/blog";
 import { getServiceBySlug } from "@/data/services";
 import { SITE_NAME, SITE_URL } from "@/data/site";
 import {
+  cityServicePath,
   getIndexableCities,
-  isCityServiceIndexable,
+  isCityServiceRoutable,
 } from "@/lib/indexability";
 import { absoluteUrl, breadcrumbJsonLd, faqPageJsonLd } from "@/lib/seo";
 import { BlogPostImage } from "./BlogPostImage";
@@ -51,8 +52,8 @@ function indexableLocalLinks(
     if (!service) continue;
     for (const citySlug of cityOrder) {
       if (out.length >= limit) return out;
-      if (!isCityServiceIndexable(citySlug, service)) continue;
-      const href = `/cities/${citySlug}/${service.slug}/`;
+      if (!isCityServiceRoutable(citySlug, service)) continue;
+      const href = cityServicePath(citySlug, service);
       if (seen.has(href)) continue;
       seen.add(href);
       const cityName = bySlug.get(citySlug)?.name ?? citySlug;

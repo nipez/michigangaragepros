@@ -7,6 +7,7 @@ import { SERVICES, getServiceBySlug } from "@/data/services";
 import {
   countProsForCityService,
   isCityServiceIndexable,
+  isPriorityCitySlug,
 } from "@/lib/indexability";
 import { buildCityServiceIntro } from "@/lib/localPageContent";
 import { notFoundMetadata } from "@/lib/notFoundMetadata";
@@ -30,11 +31,7 @@ export async function generateMetadata({
   const { slug, service: serviceSlug } = await params;
   const city = getCityBySlug(slug);
   const service = getServiceBySlug(serviceSlug);
-  if (
-    !city ||
-    !service ||
-    !(PRIORITY_CITY_SLUGS as readonly string[]).includes(slug)
-  ) {
+  if (!city || !service || !isPriorityCitySlug(slug)) {
     return notFoundMetadata;
   }
   const indexable = isCityServiceIndexable(city.slug, service);
@@ -60,7 +57,8 @@ export default async function Page({
 }) {
   const { slug, service: serviceSlug } = await params;
   // Only ship priority city × service URLs (not all 122 cities).
-  if (!(PRIORITY_CITY_SLUGS as readonly string[]).includes(slug)) {
+  // Non-priority /cities/{city}/{service}/ → 301 to city hub (next.config).
+  if (!isPriorityCitySlug(slug)) {
     notFound();
   }
   const city = getCityBySlug(slug);

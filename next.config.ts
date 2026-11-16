@@ -2,11 +2,13 @@ import type { NextConfig } from "next";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import { CITIES } from "./src/data/cities";
 import { COMPANIES } from "./src/data/companies";
+import { PRIORITY_CITY_SLUGS } from "./src/data/growth";
 import {
   REMOVED_COMPANY_TO_CITY,
   RESERVED_TOP_LEVEL_SEGMENTS,
 } from "./src/data/legacyRedirects";
 import { REGIONS } from "./src/data/regions";
+import { SERVICES } from "./src/data/services";
 
 initOpenNextCloudflareForDev();
 
@@ -83,6 +85,20 @@ async function legacyRedirects() {
       destination: `/cities/${citySlug}/`,
       statusCode: 301,
     });
+  }
+
+  // Non-priority /cities/{city}/{service}/ → city hub (301).
+  // Derived from PRIORITY_CITY_SLUGS so priority city×service stays 200.
+  const priority = new Set<string>(PRIORITY_CITY_SLUGS);
+  for (const city of CITIES) {
+    if (priority.has(city.slug)) continue;
+    for (const service of SERVICES) {
+      redirects.push({
+        source: `/cities/${city.slug}/${service.slug}`,
+        destination: `/cities/${city.slug}/`,
+        statusCode: 301,
+      });
+    }
   }
 
   return redirects;
