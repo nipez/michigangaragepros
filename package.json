@@ -18,6 +18,7 @@
     "test:notify-email": "npx tsx scripts/test-notify-email.mjs",
     "test:weekly-digest": "npx tsx scripts/test-weekly-digest.mjs",
     "test:featured-billing": "npx tsx scripts/test-featured-billing.mjs",
+    "test:listing-completeness": "npx tsx scripts/test-listing-completeness.mjs",
     "test:indexnow": "node scripts/test-indexnow.mjs",
     "seo:generate": "npx tsx scripts/generate-seo-files.mjs",
     "indexnow": "node scripts/indexnow-submit.mjs",

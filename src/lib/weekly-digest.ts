@@ -9,6 +9,11 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import { SITE_URL } from "@/data/site";
 import {
+  loadListingCompleteness,
+  topMissingCompletenessItems,
+  type ListingCompleteness,
+} from "@/lib/listing-completeness";
+import {
   addUtcDays,
   emptyListingTotals,
   LISTING_STAT_LABELS,
@@ -56,6 +61,8 @@ export type CompanyDigest = {
   unsubscribeUrl: string;
   featuredUrl: string;
   hasActivity: boolean;
+  /** Profile completeness when loadable; null if company row missing. */
+  completeness: ListingCompleteness | null;
 };
 
 export type DigestPayload = {
@@ -178,7 +185,7 @@ function formatDayLabel(day: string): string {
 
 /** Build subject/text/html for one company's weekly digest. */
 export function formatWeeklyDigestNotify(digest: CompanyDigest): DigestPayload {
-  const { company, window, stats } = digest;
+  const { company, window, stats, completeness } = digest;
   const rangeLabel = `${formatDayLabel(window.periodStart)} – ${formatDayLabel(window.periodEnd)}`;
   const subject = `Your week on Michigan Garage Pros (${formatDayLabel(window.periodStart)})`;
 
@@ -189,18 +196,39 @@ export function formatWeeklyDigestNotify(digest: CompanyDigest): DigestPayload {
     `New reviews: ${stats.reviewsCount}`,
   ];
 
+  const missing = completeness
+    ? topMissingCompletenessItems(completeness, 3)
+    : [];
+  const completenessManageUrl = `${digest.managePageUrl}#profile-completeness`;
+
   const textLines = [
     `Hi ${company.name},`,
     "",
     `Here's your listing activity for ${rangeLabel} (UTC):`,
     "",
     ...metricLines.map((l) => `  • ${l}`),
+  ];
+
+  if (completeness) {
+    textLines.push("", `Profile completeness: ${completeness.score}%`);
+    if (completeness.complete) {
+      textLines.push("Your listing profile is complete — nice work.");
+    } else if (missing.length) {
+      textLines.push("Next steps to strengthen your listing:");
+      for (const item of missing) {
+        textLines.push(`  • ${item.action}`);
+      }
+      textLines.push(`Finish these on your manage page: ${completenessManageUrl}`);
+    }
+  }
+
+  textLines.push(
     "",
     "Open your manage page to update your listing, reply to reviews, and work leads:",
     digest.managePageUrl,
     "",
     "Lead inbox is on the same page (scroll to Leads).",
-  ];
+  );
 
   if (!company.featured) {
     textLines.push(
@@ -223,6 +251,26 @@ export function formatWeeklyDigestNotify(digest: CompanyDigest): DigestPayload {
     .map((l) => `<li>${escapeHtml(l)}</li>`)
     .join("");
 
+  let completenessHtml = "";
+  if (completeness) {
+    if (completeness.complete) {
+      completenessHtml = `<p><strong>Profile completeness: ${completeness.score}%</strong> — your listing profile is complete. Nice work.</p>`;
+    } else {
+      const missingHtml = missing
+        .map((m) => `<li>${escapeHtml(m.action)}</li>`)
+        .join("");
+      completenessHtml = [
+        `<p><strong>Profile completeness: ${completeness.score}%</strong></p>`,
+        missingHtml
+          ? `<p>Next steps to strengthen your listing:</p><ul>${missingHtml}</ul>`
+          : "",
+        `<p><a href="${escapeHtml(completenessManageUrl)}">Finish these on your manage page</a>.</p>`,
+      ]
+        .filter(Boolean)
+        .join("\n");
+    }
+  }
+
   const featuredHtml = company.featured
     ? ""
     : [
@@ -233,6 +281,7 @@ export function formatWeeklyDigestNotify(digest: CompanyDigest): DigestPayload {
     `<p>Hi ${escapeHtml(company.name)},</p>`,
     `<p>Here's your listing activity for <strong>${escapeHtml(rangeLabel)}</strong> (UTC):</p>`,
     `<ul>${metricHtml}</ul>`,
+    completenessHtml,
     `<p><a href="${escapeHtml(digest.managePageUrl)}">Open your manage page</a> to update your listing, reply to reviews, and work your <strong>lead inbox</strong>.</p>`,
     featuredHtml,
     `<p style="color:#666;font-size:13px">To stop these weekly emails, <a href="${escapeHtml(digest.unsubscribeUrl)}">unsubscribe</a>.</p>`,
@@ -354,6 +403,16 @@ export async function buildCompanyDigest(
   window: DigestWindow,
 ): Promise<CompanyDigest> {
   const stats = await loadCompanyDigestStats(db, company.slug, window);
+
+  let completeness: ListingCompleteness | null = null;
+  try {
+    completeness = await loadListingCompleteness(db, company.slug);
+  } catch (err) {
+    // Completeness is additive — never block the digest send.
+    console.error("weekly-digest completeness load failed", company.slug, err);
+    completeness = null;
+  }
+
   return {
     company,
     window,
@@ -362,6 +421,7 @@ export async function buildCompanyDigest(
     unsubscribeUrl: digestUnsubscribeUrl(company.manageToken),
     featuredUrl: featuredPlansUrl(company),
     hasActivity: hasDigestActivity(stats),
+    completeness,
   };
 }
 

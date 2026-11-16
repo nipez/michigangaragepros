@@ -93,6 +93,7 @@ type LoadedManage = {
   trust: CompanyTrust;
   notifyEmail: string | null;
   weeklyDigestOptOut: boolean;
+  reviewLinkVisits: number;
 };
 
 function emptyBilling(stripeConfigured: boolean): ManageBillingProps {
@@ -244,6 +245,22 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     billing = emptyBilling(stripeConfigured);
   }
 
+  let reviewLinkVisits = 0;
+  try {
+    const row = await db
+      .prepare(
+        `SELECT COALESCE(SUM(review_link_visits), 0) AS n
+         FROM listing_stats_daily WHERE company_slug = ?`,
+      )
+      .bind(company.slug)
+      .first<{ n: number }>();
+    reviewLinkVisits = Number(row?.n ?? 0);
+  } catch (err) {
+    // Stats are additive — never block the manage form.
+    console.error("manage review link visits load failed", err);
+    reviewLinkVisits = 0;
+  }
+
   return {
     token,
     companyName: company.name,
@@ -264,6 +281,7 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     trust,
     notifyEmail,
     weeklyDigestOptOut,
+    reviewLinkVisits,
   };
 }
 
@@ -301,6 +319,7 @@ export default async function ManageListingPage({ params }: PageProps) {
       initialTrust={loaded.trust}
       initialNotifyEmail={loaded.notifyEmail}
       initialWeeklyDigestOptOut={loaded.weeklyDigestOptOut}
+      initialReviewLinkVisits={loaded.reviewLinkVisits}
     />
   );
 }

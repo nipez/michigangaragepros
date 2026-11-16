@@ -16,6 +16,11 @@ import {
   type CompanyTrust,
 } from "@/lib/company-trust";
 import {
+  completenessInputFromManageState,
+  computeListingCompleteness,
+  topMissingCompletenessItems,
+} from "@/lib/listing-completeness";
+import {
   MANAGE_SERVICE_OPTIONS,
   type ListingFields,
 } from "@/lib/listing-manage";
@@ -56,6 +61,8 @@ type Props = {
   initialTrust: CompanyTrust;
   initialNotifyEmail: string | null;
   initialWeeklyDigestOptOut: boolean;
+  /** Lifetime review-request link visits (for completeness scoring). */
+  initialReviewLinkVisits?: number;
 };
 
 export function ManageListingClient({
@@ -77,6 +84,7 @@ export function ManageListingClient({
   initialTrust,
   initialNotifyEmail,
   initialWeeklyDigestOptOut,
+  initialReviewLinkVisits = 0,
 }: Props) {
   const [fields, setFields] = useState<ListingFields>(initialFields);
   const [customService, setCustomService] = useState("");
@@ -157,6 +165,24 @@ export function ManageListingClient({
     (s) =>
       !(MANAGE_SERVICE_OPTIONS as readonly string[]).includes(s),
   );
+
+  const liveServiceAreas = areasText
+    .split(/[\n,]+/)
+    .map((a) => a.trim())
+    .filter(Boolean);
+
+  const completeness = computeListingCompleteness(
+    completenessInputFromManageState({
+      fields: { ...fields, serviceArea: liveServiceAreas },
+      hasLogo: Boolean(logoUrl),
+      hasPhoto: Boolean(photoUrl),
+      trust,
+      approvedReviewCount: initialReviews.length,
+      reviewLinkVisits: initialReviewLinkVisits,
+      notifyEmail,
+    }),
+  );
+  const topMissing = topMissingCompletenessItems(completeness, 4);
 
   const copyReviewLink = async () => {
     if (!reviewUrl) return;
@@ -464,6 +490,57 @@ export function ManageListingClient({
             </div>
           ) : null}
 
+          <div
+            id="profile-completeness"
+            className="mt-5 scroll-mt-24 rounded-[12px] border border-border bg-bg px-4 py-4"
+          >
+            <div className="flex items-baseline justify-between gap-3">
+              <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
+                Profile completeness
+              </div>
+              <div className="text-[15px] font-extrabold tabular-nums text-navy">
+                {completeness.score}%
+              </div>
+            </div>
+            <div
+              className="mt-3 h-2.5 overflow-hidden rounded-[6px] bg-[#E8EEF5]"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={completeness.score}
+              aria-label="Profile completeness"
+            >
+              <div
+                className="h-full rounded-[6px] bg-michigan-blue transition-[width] duration-300 ease-out"
+                style={{ width: `${completeness.score}%` }}
+              />
+            </div>
+            {completeness.complete ? (
+              <p className="mt-3 mb-0 text-[13.5px] leading-[1.5] text-success">
+                Your listing profile is complete — nice work. Keep reviews and
+                photos fresh so homeowners keep choosing you.
+              </p>
+            ) : (
+              <>
+                <p className="mt-3 mb-2 text-[13.5px] leading-[1.5] text-muted">
+                  Complete profiles convert more homeowners. Finish these next:
+                </p>
+                <ul className="m-0 list-none space-y-1.5 p-0">
+                  {topMissing.map((item) => (
+                    <li key={item.id}>
+                      <a
+                        href={`#${item.sectionId}`}
+                        className="text-[13.5px] font-semibold text-michigan-blue hover:underline"
+                      >
+                        {item.action}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+
           {performance ? (
             <div className="mt-5">
               <ListingPerformancePanel
@@ -596,7 +673,10 @@ export function ManageListingClient({
             />
           </div>
 
-          <div className="mt-5 rounded-[12px] border border-border bg-bg px-4 py-4">
+          <div
+            id="notify-email"
+            className="mt-5 scroll-mt-24 rounded-[12px] border border-border bg-bg px-4 py-4"
+          >
             <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
               Notification email
             </div>
@@ -683,7 +763,10 @@ export function ManageListingClient({
             />
           </div>
 
-          <div className="mt-5 rounded-[12px] border border-border bg-bg px-4 py-4">
+          <div
+            id="review-link"
+            className="mt-5 scroll-mt-24 rounded-[12px] border border-border bg-bg px-4 py-4"
+          >
             <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
               Review request link
             </div>
@@ -728,7 +811,10 @@ export function ManageListingClient({
             ) : null}
           </div>
 
-          <div className="mt-5 rounded-[12px] border border-border bg-bg px-4 py-4">
+          <div
+            id="media"
+            className="mt-5 scroll-mt-24 rounded-[12px] border border-border bg-bg px-4 py-4"
+          >
             <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
               Logo &amp; photo
             </div>
@@ -777,7 +863,10 @@ export function ManageListingClient({
             ) : null}
           </div>
 
-          <div className="mt-5 rounded-[12px] border border-border bg-bg px-4 py-4">
+          <div
+            id="trust"
+            className="mt-5 scroll-mt-24 rounded-[12px] border border-border bg-bg px-4 py-4"
+          >
             <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
               Trust credentials
             </div>
@@ -930,17 +1019,22 @@ export function ManageListingClient({
           ) : null}
 
           <div className="mt-8 grid gap-5">
-            <Field label="About">
-              <textarea
-                className="field-input min-h-[120px]"
-                value={fields.about}
-                onChange={(e) => setField("about", e.target.value)}
-                maxLength={1200}
-                placeholder="Tell homeowners about your company…"
-              />
-            </Field>
+            <div id="details-about" className="scroll-mt-24">
+              <Field label="About">
+                <textarea
+                  className="field-input min-h-[120px]"
+                  value={fields.about}
+                  onChange={(e) => setField("about", e.target.value)}
+                  maxLength={1200}
+                  placeholder="Tell homeowners about your company…"
+                />
+              </Field>
+            </div>
 
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div
+              id="details-phone"
+              className="grid scroll-mt-24 gap-5 sm:grid-cols-2"
+            >
               <Field label="Phone">
                 <input
                   className="field-input"
@@ -961,15 +1055,17 @@ export function ManageListingClient({
               </Field>
             </div>
 
-            <Field label="Website">
-              <input
-                className="field-input"
-                value={fields.website}
-                onChange={(e) => setField("website", e.target.value)}
-                maxLength={200}
-                placeholder="https://example.com"
-              />
-            </Field>
+            <div id="details-website" className="scroll-mt-24">
+              <Field label="Website">
+                <input
+                  className="field-input"
+                  value={fields.website}
+                  onChange={(e) => setField("website", e.target.value)}
+                  maxLength={200}
+                  placeholder="https://example.com"
+                />
+              </Field>
+            </div>
 
             <Field label="Address">
               <input
@@ -981,7 +1077,10 @@ export function ManageListingClient({
               />
             </Field>
 
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div
+              id="details-hours"
+              className="grid scroll-mt-24 gap-5 sm:grid-cols-2"
+            >
               <Field label="Hours">
                 <input
                   className="field-input"
@@ -1002,70 +1101,76 @@ export function ManageListingClient({
               </Field>
             </div>
 
-            <Field label="Services offered">
-              <div className="grid gap-2">
-                {MANAGE_SERVICE_OPTIONS.map((service) => (
-                  <label
-                    key={service}
-                    className="flex items-center gap-2.5 text-sm font-semibold text-navy"
-                  >
+            <div id="details-services" className="scroll-mt-24">
+              <Field label="Services offered">
+                <div className="grid gap-2">
+                  {MANAGE_SERVICE_OPTIONS.map((service) => (
+                    <label
+                      key={service}
+                      className="flex items-center gap-2.5 text-sm font-semibold text-navy"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={fields.services.includes(service)}
+                        onChange={() => toggleService(service)}
+                      />
+                      {service}
+                    </label>
+                  ))}
+                  {extraServices.map((service) => (
+                    <label
+                      key={service}
+                      className="flex items-center gap-2.5 text-sm font-semibold text-navy"
+                    >
+                      <input
+                        type="checkbox"
+                        checked
+                        onChange={() => toggleService(service)}
+                      />
+                      {service}
+                    </label>
+                  ))}
+                  <div className="mt-1 flex gap-2">
                     <input
-                      type="checkbox"
-                      checked={fields.services.includes(service)}
-                      onChange={() => toggleService(service)}
+                      className="field-input"
+                      value={customService}
+                      onChange={(e) => setCustomService(e.target.value)}
+                      placeholder="Add another service"
+                      maxLength={80}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addCustomService();
+                        }
+                      }}
                     />
-                    {service}
-                  </label>
-                ))}
-                {extraServices.map((service) => (
-                  <label
-                    key={service}
-                    className="flex items-center gap-2.5 text-sm font-semibold text-navy"
-                  >
-                    <input
-                      type="checkbox"
-                      checked
-                      onChange={() => toggleService(service)}
-                    />
-                    {service}
-                  </label>
-                ))}
-                <div className="mt-1 flex gap-2">
-                  <input
-                    className="field-input"
-                    value={customService}
-                    onChange={(e) => setCustomService(e.target.value)}
-                    placeholder="Add another service"
-                    maxLength={80}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addCustomService();
-                      }
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="btn-outline !px-3 !py-2 shrink-0"
-                    onClick={addCustomService}
-                  >
-                    Add
-                  </button>
+                    <button
+                      type="button"
+                      className="btn-outline !px-3 !py-2 shrink-0"
+                      onClick={addCustomService}
+                    >
+                      Add
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </Field>
+              </Field>
+            </div>
 
-            <Field label="Service areas / cities">
-              <textarea
-                className="field-input min-h-[110px]"
-                value={areasText}
-                onChange={(e) => setAreasText(e.target.value)}
-                placeholder={"One city per line\nGrand Rapids\nHolland\nWyoming"}
-              />
-              <p className="mt-1.5 mb-0 text-[12.5px] text-muted">
-                One city per line (or comma-separated).
-              </p>
-            </Field>
+            <div id="details-service-areas" className="scroll-mt-24">
+              <Field label="Service areas / cities">
+                <textarea
+                  className="field-input min-h-[110px]"
+                  value={areasText}
+                  onChange={(e) => setAreasText(e.target.value)}
+                  placeholder={
+                    "One city per line\nGrand Rapids\nHolland\nWyoming"
+                  }
+                />
+                <p className="mt-1.5 mb-0 text-[12.5px] text-muted">
+                  One city per line (or comma-separated).
+                </p>
+              </Field>
+            </div>
 
             <button
               type="button"

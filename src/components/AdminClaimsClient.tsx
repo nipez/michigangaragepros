@@ -34,6 +34,13 @@ type ClaimRow = {
   /** Self-reported trust summary from companies.*; null when unset. */
   trust_summary: string | null;
   trust_updated_at: string | null;
+  /** Profile completeness for approved/claimed companies. */
+  completeness: {
+    score: number;
+    complete: boolean;
+    summary: string;
+    missing: string[];
+  } | null;
 };
 
 type FilterTab = "open" | "done" | "all";
@@ -79,6 +86,7 @@ export function AdminClaimsClient({
           demand: c.demand ?? null,
           trust_summary: c.trust_summary ?? null,
           trust_updated_at: c.trust_updated_at ?? null,
+          completeness: c.completeness ?? null,
         })),
       );
       setAuthed(true);
@@ -531,6 +539,22 @@ export function AdminClaimsClient({
                       companyName={claim.company_name}
                       companyCity={claim.city}
                     />
+                    <div className="mb-1.5 mt-4">
+                      <span className="text-faint">Profile completeness:</span>{" "}
+                      {claim.completeness ? (
+                        <span className="font-semibold text-navy">
+                          {claim.completeness.summary}
+                          {!claim.completeness.complete &&
+                          claim.completeness.missing.length ? (
+                            <span className="mt-1 block font-medium text-muted">
+                              Next: {claim.completeness.missing.join(" · ")}
+                            </span>
+                          ) : null}
+                        </span>
+                      ) : (
+                        <span className="text-muted">Unavailable</span>
+                      )}
+                    </div>
                     <div className="mb-1.5 mt-4">
                       <span className="text-faint">Trust (self-reported):</span>{" "}
                       {claim.trust_summary ? (
