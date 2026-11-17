@@ -3,6 +3,7 @@ import type { CostGuidePage as CostGuideData } from "@/data/costGuides";
 import { formatCostRange, getServiceCostGuide } from "@/data/serviceCosts";
 import { SITE_URL } from "@/data/site";
 import {
+  cityServicePath,
   getIndexableCityServicePairs,
 } from "@/lib/indexability";
 import {
@@ -31,8 +32,8 @@ export function CostGuidePage({ guide }: { guide: CostGuideData }) {
     faqPageJsonLd(guide.faqs),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: guide.service.name, path: `/${guide.service.slug}/` },
-      { name: "Cost guide", path: guide.path },
+      { name: "Cost guides", path: "/cost/" },
+      { name: guide.h1, path: guide.path },
     ]),
   ];
 
@@ -48,11 +49,15 @@ export function CostGuidePage({ guide }: { guide: CostGuideData }) {
               Home
             </Link>
             <span className="mx-1.5 text-[#8AA3B8]">/</span>
+            <Link href="/cost/" className="on-dark-link">
+              Cost
+            </Link>
+            <span className="mx-1.5 text-[#8AA3B8]">/</span>
             <Link href={`/${guide.service.slug}/`} className="on-dark-link">
               {guide.service.shortName}
             </Link>
             <span className="mx-1.5">/</span>
-            <span className="text-footer-link">Cost</span>
+            <span className="text-footer-link">Guide</span>
           </div>
           <h1 className="mb-3.5 max-w-[24ch] text-[clamp(32px,3.8vw,48px)] font-extrabold leading-[1.1] tracking-[-1px] text-balance">
             {guide.h1}
@@ -133,7 +138,7 @@ export function CostGuidePage({ guide }: { guide: CostGuideData }) {
             {cityLinks.map(({ city }) => (
               <Link
                 key={city.slug}
-                href={`/cities/${city.slug}/${guide.service.slug}/`}
+                href={cityServicePath(city.slug, guide.service)}
                 className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
               >
                 {city.name}

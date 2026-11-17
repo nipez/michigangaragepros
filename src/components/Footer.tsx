@@ -101,6 +101,9 @@ export function Footer() {
               <Link href="/blog/" className={FOOTER_LINK}>
                 Blog
               </Link>
+              <Link href="/cost/" className={FOOTER_LINK}>
+                Cost Guides
+              </Link>
               <Link href="/cities/" className={FOOTER_LINK}>
                 Cities & Regions
               </Link>
@@ -148,6 +151,9 @@ export function CompactFooter() {
             </Link>
             <Link href="/blog/" className={FOOTER_LINK}>
               Blog
+            </Link>
+            <Link href="/cost/" className={FOOTER_LINK}>
+              Cost Guides
             </Link>
             <Link href="/about/" className={FOOTER_LINK}>
               About

@@ -6,9 +6,10 @@ import {
 } from "@/data/serviceCosts";
 import { SITE_URL } from "@/data/site";
 import {
-  getIndexableServicesForCity,
+  cityServicePath,
   getNearbyIndexableCities,
   getProsForCity,
+  getServicesWithProsForCity,
   INDEX_PRO_THRESHOLD,
   isCityIndexable,
 } from "@/lib/indexability";
@@ -39,7 +40,7 @@ export function CityPage({ city }: { city: City }) {
   const intro = buildCityIntro(city, companies.length);
   const faqs = buildCityFaqs(city, companies.length);
   const costTable = buildCityCostBlurb(city);
-  const indexableServices = getIndexableServicesForCity(city.slug);
+  const serviceChips = getServicesWithProsForCity(city.slug);
   const nearbyIndexable = getNearbyIndexableCities(city, 6);
 
   const jsonLd = [
@@ -207,12 +208,12 @@ export function CityPage({ city }: { city: City }) {
             <h3 className="mb-[18px] text-xl font-extrabold text-navy">
               Services in {city.name}
             </h3>
-            {indexableServices.length > 0 ? (
+            {serviceChips.length > 0 ? (
               <div className="flex flex-wrap gap-2.5">
-                {indexableServices.map((s) => (
+                {serviceChips.map((s) => (
                   <Link
                     key={s.slug}
-                    href={`/cities/${city.slug}/${s.slug}/`}
+                    href={cityServicePath(city.slug, s)}
                     className="rounded-full border border-border bg-white px-4 py-[9px] text-sm font-semibold text-text transition-colors hover:border-bright-blue hover:text-michigan-blue"
                   >
                     {s.localTitle}

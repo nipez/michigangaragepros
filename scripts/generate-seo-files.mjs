@@ -33,7 +33,7 @@ async function main() {
   const { COST_GUIDE_SLUGS } = await loadTs("src/data/costGuides.ts");
   const {
     isCityIndexable,
-    isCityServiceIndexable,
+    isCityServiceRoutable,
     getIndexabilityStats,
     INDEX_PRO_THRESHOLD,
   } = await loadTs("src/lib/indexability.ts");
@@ -56,6 +56,7 @@ async function main() {
   push("for-companies", "0.7");
   push("get-a-quote", "0.6");
   for (const s of SERVICES) push(s.slug, "0.8");
+  push("cost", "0.75");
   for (const slug of COST_GUIDE_SLUGS) push(`cost/${slug}`, "0.75");
   for (const r of REGIONS) push(`regions/${r.slug}`, "0.85");
 
@@ -76,7 +77,7 @@ async function main() {
   let cityServiceSkipped = 0;
   for (const citySlug of PRIORITY_CITY_SLUGS) {
     for (const s of SERVICES) {
-      if (isCityServiceIndexable(citySlug, s)) {
+      if (isCityServiceRoutable(citySlug, s)) {
         push(`cities/${citySlug}/${s.slug}`, "0.75");
         cityServiceInSitemap++;
       } else {

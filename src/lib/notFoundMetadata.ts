@@ -7,5 +7,7 @@ import type { Metadata } from "next";
  */
 export const notFoundMetadata: Metadata = {
   title: "Page Not Found",
-  robots: { index: false, follow: false },
+  // Single robots directive (string form). Object form previously resolved
+  // into duplicate noindex / noindex,nofollow signals in the HTML head.
+  robots: "noindex, nofollow",
 };

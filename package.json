@@ -20,6 +20,7 @@
     "test:featured-billing": "npx tsx scripts/test-featured-billing.mjs",
     "test:listing-completeness": "npx tsx scripts/test-listing-completeness.mjs",
     "test:indexnow": "node scripts/test-indexnow.mjs",
+    "test:city-service-links": "npx tsx scripts/test-city-service-links.mjs",
     "seo:generate": "npx tsx scripts/generate-seo-files.mjs",
     "indexnow": "node scripts/indexnow-submit.mjs",
     "indexnow:postdeploy": "node scripts/indexnow-submit.mjs --from-sitemap --never-fail",
