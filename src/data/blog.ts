@@ -1,6 +1,11 @@
 export type BlogSection = {
   heading?: string;
   paragraphs: string[];
+  /** Optional comparison / reference table rendered under the paragraphs. */
+  table?: {
+    headers: string[];
+    rows: string[][];
+  };
 };
 
 export type BlogImage = {
@@ -1484,6 +1489,244 @@ export const BLOG_POSTS: BlogPost[] = [
         question: "How much does a new garage door opener cost in Michigan?",
         answer:
           "As planning estimates, many installed chain or belt units fall roughly in the mid-hundreds, while wall-mount or premium backup-equipped units often run higher into the upper hundreds or around $1,000+. Get itemized local quotes — see the opener cost guide for shared planning ranges.",
+      },
+    ],
+  },
+  {
+    slug: "steel-vs-wood-vs-composite-garage-doors-michigan",
+    title:
+      "Steel vs Wood vs Composite vs Fiberglass vs Aluminum Garage Doors in Michigan",
+    description:
+      "Michigan homeowner materials guide: how steel, wood, composite, fiberglass, and aluminum garage doors handle freeze-thaw, road salt, lake-effect snow, wind, insulation, dents, maintenance, lifespan, curb appeal, and rough cost ranges.",
+    date: "2026-11-17",
+    readMinutes: 12,
+    category: "Guides",
+    relatedServiceSlugs: [
+      "garage-door-installation",
+      "garage-door-repair",
+      "maintenance",
+    ],
+    sections: [
+      {
+        paragraphs: [
+          "Choosing a garage door in Michigan is a materials decision as much as a style decision. Freeze-thaw cycles, road salt, lake-effect snow and humidity, and Great Lakes shoreline wind punish finishes, seals, and hardware differently depending on whether the door skin is steel, wood, composite, fiberglass, or aluminum.",
+          "This buyer guide compares those five materials for Michigan homes — insulation and R-value interplay, dent resistance, maintenance, lifespan, curb appeal, and rough installed-cost framing consistent with our shared [/cost/](/cost/) guides. It is not a repeat of [insulated garage doors for Michigan winters](/blog/insulated-garage-doors-michigan/) (how insulation and seals work), [repair vs replace](/blog/repair-vs-replace-garage-door-michigan/) (keep or swap the whole door), [dented panel repair or replace](/blog/garage-door-dent-panel-repair-or-replace/) (one damaged section), or [chain vs belt vs wall-mount openers](/blog/chain-vs-belt-vs-wall-mount-garage-door-opener-michigan/) (how the door moves).",
+          "Michigan Garage Pros is a directory: we help you compare local [installation](/garage-door-installation/) companies; we do not sell doors. Use [questions to ask a garage door dealer in Michigan](/blog/questions-to-ask-garage-door-dealer-michigan/) once you shortlist materials and models.",
+        ],
+      },
+      {
+        heading: "At-a-glance materials comparison",
+        paragraphs: [
+          "Use this table as a planning snapshot — not a lab rating. Real doors vary by gauge, core, finish, and install quality. “Insulation” here means how well the material family typically supports foam-core or insulated construction for attached Michigan garages.",
+        ],
+        table: {
+          headers: [
+            "Material",
+            "Michigan climate fit",
+            "Insulation options",
+            "Dent / impact",
+            "Maintenance",
+            "Typical cost band*",
+          ],
+          rows: [
+            [
+              "Steel",
+              "Excellent all-around; finish + seals matter near salt and shoreline",
+              "Best mainstream foam-core choices",
+              "Thin skins dent; thicker gauges better",
+              "Low if finish intact",
+              "Mid — often lands in insulated single/double ranges",
+            ],
+            [
+              "Wood",
+              "Beautiful but weather-sensitive; finish work is ongoing",
+              "Solid feel; energy depends on build + seals",
+              "Resists small dents; can split or swell",
+              "High (stain/paint, moisture)",
+              "Premium — often toward carriage-style bands",
+            ],
+            [
+              "Composite",
+              "Strong wood-look alternative for wet winters",
+              "Good when paired with insulated cores",
+              "Generally better than thin steel for small hits",
+              "Low–moderate",
+              "Mid to premium",
+            ],
+            [
+              "Fiberglass",
+              "Light and corrosion-resistant; less common new stock",
+              "Varies by model; confirm core and seals",
+              "Can crack or spider under hard impact",
+              "Low–moderate; watch UV chalking",
+              "Mid; availability varies",
+            ],
+            [
+              "Aluminum",
+              "Light, corrosion-resistant; popular with glass designs",
+              "Often weaker thermally unless well insulated",
+              "Dents more easily than steel of similar use",
+              "Low",
+              "Mid to premium (glass packages higher)",
+            ],
+          ],
+        },
+      },
+      {
+        paragraphs: [
+          "*Cost bands are rough relative framing against the statewide [garage door installation cost guide](/cost/garage-door-installation/) — for example, planning ranges commonly cited there for insulated single-car installs roughly in the low-to-mid thousands, double-car insulated higher, and premium / carriage-style projects often several thousand more. Exact material premiums depend on size, windows, color, removal, and whether an opener is bundled. Always get written local estimates.",
+        ],
+      },
+      {
+        heading: "Why Michigan climate changes the materials shortlist",
+        paragraphs: [
+          "Freeze-thaw is hard on anything that absorbs moisture or flexes against ice-bonded seals. Wood and poorly sealed hollow doors suffer most; insulated steel and quality composites with replaceable bottom seals recover better after polar-vortex mornings — still clear snow and free a frozen seal gently before you run the opener ([winter open troubleshooting](/blog/garage-door-wont-open-winter-michigan/)).",
+          "Road salt along Metro Detroit, highway corridors, and lake-effect routes accelerates rust on unprotected steel hardware and can stain or pit finishes when splash meets damaged paint. Corrosion resistance favors aluminum, fiberglass, and well-coated steel or composite skins — but hinges, tracks, and bottom brackets are still steel on most residential doors, so [maintenance](/maintenance/) still matters.",
+          "Lake-effect snow and humid summers load weather seals and promote condensation on cold metal. Thermal breaks and foam cores help steel doors; aluminum glass walls look stunning and stay light but need honest insulation expectations on attached garages. Great Lakes shoreline wind argues for doors and hardware rated for your exposure — ask dealers for wind-load language that matches lakeshore or open-lot sites, not just suburban inland lots.",
+          "Insulation is not the same as material. A thin single-layer steel door drafts; a foam-core steel door with intact perimeter seals is a different product. Pair this materials guide with [insulated door guidance](/blog/insulated-garage-doors-michigan/) and [weatherstripping / bottom seals](/blog/garage-door-weatherstripping-bottom-seal-michigan/) when comfort is the main goal.",
+        ],
+      },
+      {
+        heading: "Steel — the Michigan default for a reason",
+        paragraphs: [
+          "Most modern residential replacements in Michigan are sectional steel, often with a foam or polystyrene core between steel skins. Steel wins on parts availability, insulation tiers, color options, and installer familiarity from Detroit to Traverse City.",
+          "Strengths: durable structure when gauges and reinforcement match the opening; excellent insulated options for attached garages; relatively low finish maintenance if the factory coating stays intact; section replacement is sometimes possible when a single panel is damaged ([dent / panel guidance](/blog/garage-door-dent-panel-repair-or-replace/)).",
+          "Watch-outs: thin skins dent from basketballs, bikes, and bumper taps; scratched paint plus salt invites surface rust; heavier insulated steel needs correctly sized springs and a healthy opener. For noise into rooms above the garage, the opener drive type often matters more than the steel skin — see [chain vs belt vs wall-mount](/blog/chain-vs-belt-vs-wall-mount-garage-door-opener-michigan/).",
+          "Best fit: most attached Michigan garages that want insulation, predictable service, and mid-range installed cost inside the site’s installation planning bands.",
+        ],
+      },
+      {
+        heading: "Wood — curb appeal with a maintenance contract",
+        paragraphs: [
+          "Real wood (cedar and other species) delivers unmatched texture and custom carriage-house looks that photograph well for listings and historic neighborhoods. Many Michigan buyers love wood on detached carriage houses or street-facing facades where craftsmanship is the point.",
+          "Strengths: premium curb appeal; can be stained or painted to match trim; solid feel; small cosmetic dings are often less glaring than creased steel.",
+          "Watch-outs: moisture, UV, and freeze-thaw demand regular finish maintenance — neglect shows as swelling, checking, rot at bottom rails, and sticky travel. Wood doors are usually heavier; springs and openers must be sized correctly. Insurance and long wet springs near lakeshore raise the stakes on seal and finish discipline.",
+          "Best fit: homeowners who will maintain the finish on schedule and are budgeting toward premium / carriage-style ranges on the [installation cost guide](/cost/garage-door-installation/). If you want the look without the upkeep, compare composite overlays next.",
+        ],
+      },
+      {
+        heading: "Composite — wood look, less Michigan upkeep",
+        paragraphs: [
+          "Composite doors and composite overlays on steel cores aim to mimic painted or stained wood without the same absorption and rot risk. Constructions vary: some are full composite skins; many popular residential lines are steel doors with composite decorative overlays.",
+          "Strengths: convincing curb appeal; better moisture behavior than unfinished wood in wet Michigan winters; often pairs with insulated steel cores so you do not give up winter comfort; lower finish maintenance than real wood.",
+          "Watch-outs: quality and UV stability vary by brand — insist on the exact model and overlay system on the bid. Overlay damage can be harder to match years later than a stock steel section. Price usually sits above basic steel and below fully custom wood.",
+          "Best fit: street-facing attached garages that want carriage style plus insulation, without committing to annual wood finishing.",
+        ],
+      },
+      {
+        heading: "Fiberglass — light and corrosion-resistant, confirm availability",
+        paragraphs: [
+          "Fiberglass doors are lighter than many steel and wood options and do not rust. They can be a niche fit where corrosion resistance and weight matter, but they are less dominant in today’s mainstream Michigan residential catalogs than insulated steel.",
+          "Strengths: no rust; relatively light for the opener and springs; can accept woodgrain or painted looks depending on the product line.",
+          "Watch-outs: hard impacts can crack or spider the skin rather than dent it; UV can chalk or fade some finishes; insulation performance and parts support vary — confirm the core, seals, and local warranty service before you buy on a flyer price. Not every installer stocks fiberglass regularly.",
+          "Best fit: specific product lines a local dealer supports well, or replacements matching an existing fiberglass door when sections are still available. Ask availability early so you are not comparing a theoretical brochure to an in-stock steel bid.",
+        ],
+      },
+      {
+        heading: "Aluminum — light, modern, and glass-friendly",
+        paragraphs: [
+          "Aluminum shines for contemporary full-view and glass-heavy designs, and it resists rust in salt-adjacent environments. Pure aluminum panel doors are lighter than comparable steel but typically dent more readily and can feel colder on attached garages unless the design includes meaningful insulation and good seals.",
+          "Strengths: corrosion resistance; clean modern aesthetics; excellent pairing with glass for studios, show garages, and design-forward remodels; lighter operating weight when springs are correct.",
+          "Watch-outs: dent resistance is often weaker than steel; thermal comfort on attached garages may lag foam-core steel unless you choose an insulated aluminum system and treat seals seriously; glass packages raise cost, privacy, and wind considerations on exposed lots.",
+          "Best fit: modern curb appeal, lakeshore corrosion concerns paired with realistic insulation expectations, or glass-forward designs where look is the priority and the garage is detached or already climate-managed.",
+        ],
+      },
+      {
+        heading: "Insulation and R-value: material is only half the story",
+        paragraphs: [
+          "Manufacturers publish insulation ratings so you can rank models — treat them as relative comparisons among doors, not a guaranteed utility-bill savings number. Foam-core steel usually offers the clearest path to higher residential insulation tiers; wood, composite, fiberglass, and aluminum can all be built better or worse depending on the core and section design.",
+          "Seals and install quality close the loop. An insulated steel door with a torn bottom seal still dumps cold air into an attached mudroom. An aluminum full-view door with excellent perimeter seals can still transfer more temperature through glass than a foam-core steel panel door. For the insulation-and-seal deep dive, use [insulated garage doors for Michigan winters](/blog/insulated-garage-doors-michigan/); for edge drafts, use the [weatherstripping guide](/blog/garage-door-weatherstripping-bottom-seal-michigan/).",
+          "Heavier insulated doors need matched springs and a correctly rated opener. If you are upgrading from a light single-layer door, say so on every quote so hardware is not reused past its useful life.",
+        ],
+      },
+      {
+        heading: "Which material fits which Michigan situation?",
+        paragraphs: [
+          "Attached garage under bedrooms, Metro Detroit / Grand Rapids suburb, wants comfort and low drama: insulated steel (or steel with composite overlay if you want carriage style). Prioritize foam core, thermal break if offered, and replaceable seals.",
+          "Historic or custom facade where authentic wood grain is non-negotiable: wood — if you will maintain the finish — or a high-quality composite system if upkeep is the deal-breaker.",
+          "Lakeshore or heavy road-salt splash with a modern look: aluminum or well-coated steel/composite; still maintain tracks and hardware. Ask about wind rating language for open exposures.",
+          "Detached workshop or storage where energy savings matter less: durable steel or aluminum; put budget into hardware, weather seal, and a reliable opener rather than the highest insulation tier.",
+          "One creased panel on an otherwise healthy insulated steel door: start with [dent / panel repair or replace](/blog/garage-door-dent-panel-repair-or-replace/) and [repair vs replace](/blog/repair-vs-replace-garage-door-michigan/) before you shop a whole new material family.",
+          "Shopping brands through a dealer showroom: bring material + insulation + wind questions from this guide and the [dealer checklist](/blog/questions-to-ask-garage-door-dealer-michigan/) so Clopay or other brand quotes list exact models, not logos alone.",
+        ],
+      },
+      {
+        heading: "Maintenance by material",
+        paragraphs: [
+          "Steel: wash salt film in spring and fall; touch up deep scratches before rust blooms; lubricate hinges and steel roller stems as the manufacturer allows; keep bottom seals flexible and clear of ice. Schedule a yearly [maintenance](/maintenance/) visit if you skip DIY.",
+          "Wood: inspect finish every season; reseal or paint on the manufacturer’s schedule; watch bottom rails and end grain after wet winters; never let standing meltwater soak the lower sections.",
+          "Composite: clean per product guidance; inspect overlays and fasteners after big wind events; treat the underlying steel (if present) like any steel door for seals and hardware.",
+          "Fiberglass: gentle washing; watch for cracks after impact; ask the dealer which cleaners are finish-safe so you do not haze a woodgrain surface.",
+          "Aluminum: rinse salt; check glass seals and gaskets on full-view doors; avoid aggressive polishing that thins protective coatings. Dent repair options differ from steel section swaps — ask before you assume a panel is “just like steel.”",
+          "Across all materials: photo eyes, balance, and spring health are shared failure points in Michigan winters. Use the [winter maintenance checklist](/blog/winter-garage-door-maintenance-checklist-michigan/) and [fall checklist](/blog/fall-garage-door-maintenance-checklist-michigan/) so material choice is not undone by neglected hardware.",
+        ],
+      },
+      {
+        heading: "Rough cost framing (planning only)",
+        paragraphs: [
+          "Do not treat internet price stickers as Michigan quotes. On this directory’s shared installation table, residential insulated single-car projects often plan roughly in a low-to-mid thousands band, double-car insulated higher, premium / carriage-style and glass-heavy designs higher still, and door-plus-opener packages spanning a wide combined range — details on the [garage door installation cost guide](/cost/garage-door-installation/) and the [/cost/ hub](/cost/).",
+          "As relative framing only: basic insulated steel usually anchors the mid band; composite overlays and designer aluminum/glass push toward premium; custom wood often competes with premium carriage-style totals once finish, labor, and weight-related hardware are included. Fiberglass pricing depends heavily on what local dealers still stock.",
+          "Ask every bid to itemize door model/material, insulation tier, windows, springs/hardware, disposal, and opener. A low door price that reuses bent tracks or omits haul-away is not a bargain. Compare the same material family and insulation tier across companies so you are not pricing different products.",
+        ],
+      },
+      {
+        heading: "Questions to ask before you buy",
+        paragraphs: [
+          "1) Which exact material construction is quoted — full wood, steel with composite overlay, insulated steel skins, aluminum full-view, or fiberglass — and what is the model number? 2) What insulation rating and seal package are included? 3) How does this door handle salt splash and lakeshore wind for my address? 4) What is the finish warranty vs labor warranty, and what maintenance voids coverage?",
+          "5) If a section dents or cracks in five years, can it be matched? 6) Are new springs, rollers, and tracks included for the door’s weight? 7) Should the opener be upgraded for a heavier insulated door or quieter belt/wall-mount operation?",
+          "Get answers in writing and compare at least two proposals. The [dealer questions checklist](/blog/questions-to-ask-garage-door-dealer-michigan/) and [how to choose a garage door company](/blog/how-to-choose-garage-door-company-michigan/) cover red flags like “today only” pressure and vague brand-only quotes.",
+        ],
+      },
+      {
+        heading: "Compare Michigan installers near you",
+        paragraphs: [
+          "Shortlist [new door installation](/garage-door-installation/) companies that regularly serve your ZIP — including [Detroit](/cities/detroit/garage-door-installation/), [Grand Rapids](/cities/grand-rapids/garage-door-installation/), [Ann Arbor](/cities/ann-arbor/garage-door-installation/), [Lansing](/cities/lansing/garage-door-installation/), and [Traverse City](/cities/traverse-city/garage-door-installation/). City hubs such as [Detroit](/cities/detroit/), [Grand Rapids](/cities/grand-rapids/), and [Ann Arbor](/cities/ann-arbor/) help you browse pros before you filter by service.",
+          "If hardware is failing on a door you might keep, start with [repair](/garage-door-repair/) or [maintenance](/maintenance/) rather than assuming a full material upgrade. Planning ranges live on the [installation cost guide](/cost/garage-door-installation/) and the statewide [/cost/](/cost/) hub.",
+          "Or [request a free quote](/get-a-quote/) with door width and height, photos of the opening, whether the garage is attached, material preference (steel, wood, composite, fiberglass, or aluminum), and whether an opener should be included. Compare matching model specs before you lock a date.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question:
+          "What is the best garage door material for Michigan winters?",
+        answer:
+          "For most attached garages, insulated steel (sometimes with a composite overlay for style) is the practical default because of foam-core options, parts availability, and manageable maintenance. Wood looks great but needs ongoing finish care; aluminum and fiberglass resist rust but need careful insulation and impact expectations.",
+      },
+      {
+        question:
+          "Is a composite garage door better than wood in Michigan?",
+        answer:
+          "Often yes if you want a wood look with less moisture and finish upkeep. Composite quality varies — compare exact models, UV warranties, and whether the door uses an insulated steel core underneath decorative overlays.",
+      },
+      {
+        question: "Do aluminum garage doors dent easily?",
+        answer:
+          "Many residential aluminum doors dent more readily than comparable steel. They excel at corrosion resistance and modern glass designs. If kids, sports, or tight parking are factors, ask dealers to show steel vs aluminum samples side by side.",
+      },
+      {
+        question:
+          "Does a higher R-value matter more than the door material?",
+        answer:
+          "Insulation rating, weather seals, and install quality often affect winter comfort more than the marketing name of the skin alone. Material still matters for dents, rust, weight, and maintenance — compare both the core rating and the construction.",
+      },
+      {
+        question:
+          "How much does a new steel or wood garage door cost in Michigan?",
+        answer:
+          "Use planning bands from the installation cost guide: insulated residential projects commonly fall in broad low-to-mid thousands for many single-car jobs, higher for doubles, and premium/carriage or custom wood and glass packages higher still. Get itemized local quotes for your opening.",
+      },
+      {
+        question:
+          "Should I repair a dented steel panel or replace the whole door?",
+        answer:
+          "If the rest of the door is sound and sections are available, a panel repair or section swap can be enough. Multiple rusted panels, poor insulation, and repeated hardware failures usually favor full replacement — see the dented-panel and repair-vs-replace guides.",
+      },
+      {
+        question:
+          "What should I ask a Michigan dealer when comparing materials?",
+        answer:
+          "Ask for exact model numbers, material construction, insulation and seal package, wind exposure guidance, finish and labor warranties, section matchability later, and whether springs and opener sizing are included for the new door weight.",
       },
     ],
   },

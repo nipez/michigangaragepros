@@ -250,6 +250,45 @@ export function BlogPostPage({ post }: { post: BlogPost }) {
                           </p>
                         ))}
                       </div>
+                      {section.table ? (
+                        <div className="mt-5 overflow-x-auto rounded-2xl border border-border bg-white">
+                          <table className="w-full min-w-[560px] border-collapse text-left text-[14px]">
+                            <thead>
+                              <tr className="border-b border-border bg-bg">
+                                {section.table.headers.map((header) => (
+                                  <th
+                                    key={header}
+                                    className="px-4 py-3 font-extrabold text-navy whitespace-nowrap"
+                                  >
+                                    {header}
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {section.table.rows.map((row) => (
+                                <tr
+                                  key={row.join("|")}
+                                  className="border-b border-border last:border-0 align-top"
+                                >
+                                  {row.map((cell, cellIndex) => (
+                                    <td
+                                      key={`${row[0]}-${cellIndex}`}
+                                      className={`px-4 py-3 text-body-secondary ${
+                                        cellIndex === 0
+                                          ? "font-semibold text-navy whitespace-nowrap"
+                                          : ""
+                                      }`}
+                                    >
+                                      {cell}
+                                    </td>
+                                  ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : null}
                     </div>
                   );
                 })}
