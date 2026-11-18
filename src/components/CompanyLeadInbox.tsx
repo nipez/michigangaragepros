@@ -10,6 +10,7 @@ import {
   type CompanyLeadStatus,
   type CompanyLeadTotals,
 } from "@/lib/company-leads";
+import { formatReviewRequestedLabel } from "@/lib/lead-review-request";
 
 type Props = {
   token: string;
@@ -51,7 +52,9 @@ export function CompanyLeadInbox({
 }: Props) {
   const [leads, setLeads] = useState(initialLeads);
   const [busyId, setBusyId] = useState<number | null>(null);
+  const [reviewBusyId, setReviewBusyId] = useState<number | null>(null);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
   const [copied, setCopied] = useState(false);
   const [filter, setFilter] = useState<CompanyLeadStatus | "all">("all");
 
@@ -102,6 +105,45 @@ export function CompanyLeadInbox({
       setTimeout(() => setCopied(false), 2000);
     } catch {
       setError("Unable to copy review link — copy it from the section below.");
+    }
+  };
+
+  const askForReview = async (routingId: number) => {
+    setError("");
+    setInfo("");
+    setReviewBusyId(routingId);
+    try {
+      const res = await fetch(
+        `/api/manage/${token}/leads/review-request/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ routingId }),
+        },
+      );
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        message?: string;
+        lead?: CompanyLead;
+        alreadySent?: boolean;
+      } | null;
+      if (!res.ok || !data?.lead) {
+        setError(data?.error || "Unable to send review request");
+        return;
+      }
+      setLeads((prev) =>
+        prev.map((lead) =>
+          lead.routingId === routingId ? data.lead! : lead,
+        ),
+      );
+      setInfo(
+        data.message ||
+          (data.alreadySent
+            ? "Review request already sent for this lead."
+            : "Review request email sent."),
+      );
+    } finally {
+      setReviewBusyId(null);
     }
   };
 
@@ -157,6 +199,9 @@ export function CompanyLeadInbox({
 
       {error ? (
         <p className="mb-3 text-[13px] font-semibold text-[#B42318]">{error}</p>
+      ) : null}
+      {info ? (
+        <p className="mb-3 text-[13px] font-semibold text-success">{info}</p>
       ) : null}
 
       {visible.length === 0 ? (
@@ -250,33 +295,68 @@ export function CompanyLeadInbox({
                   <div className="text-[13px] font-extrabold text-navy">
                     Ask for a review
                   </div>
-                  <p className="mt-1 mb-2 text-[12.5px] leading-[1.5] text-muted">
-                    Nice win — send your review-request link so they can leave
-                    feedback on your public profile.
-                  </p>
-                  {reviewUrl ? (
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        className="btn-outline !px-3 !py-1.5 !text-[12.5px]"
-                        onClick={() => void copyReviewLink()}
-                      >
-                        {copied ? "Copied" : "Copy review link"}
-                      </button>
-                      <a
-                        href={reviewUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-outline !px-3 !py-1.5 !text-[12.5px] inline-flex items-center"
-                      >
-                        Open link
-                      </a>
-                    </div>
+                  {lead.reviewRequestedAt ? (
+                    <p className="mt-1 mb-2 text-[12.5px] leading-[1.5] text-muted">
+                      {formatReviewRequestedLabel(lead.reviewRequestedAt)}
+                      {lead.email
+                        ? ` · emailed to ${lead.email}`
+                        : ""}
+                      . You can still copy the link below if you want to
+                      follow up.
+                    </p>
                   ) : (
-                    <p className="m-0 text-[12.5px] text-muted">
-                      Issue a review link in the section below, then share it.
+                    <p className="mt-1 mb-2 text-[12.5px] leading-[1.5] text-muted">
+                      Nice win — email this homeowner a one-click review
+                      request, or copy the link to send yourself.
                     </p>
                   )}
+                  <div className="flex flex-wrap gap-2">
+                    {!lead.reviewRequestedAt ? (
+                      <button
+                        type="button"
+                        className="btn-primary !px-3 !py-1.5 !text-[12.5px]"
+                        disabled={
+                          reviewBusyId === lead.routingId ||
+                          busyId === lead.routingId ||
+                          !lead.email
+                        }
+                        onClick={() => void askForReview(lead.routingId)}
+                      >
+                        {reviewBusyId === lead.routingId
+                          ? "Sending…"
+                          : "Ask for a review"}
+                      </button>
+                    ) : null}
+                    {reviewUrl ? (
+                      <>
+                        <button
+                          type="button"
+                          className="btn-outline !px-3 !py-1.5 !text-[12.5px]"
+                          onClick={() => void copyReviewLink()}
+                        >
+                          {copied ? "Copied" : "Copy review link"}
+                        </button>
+                        <a
+                          href={reviewUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-outline !px-3 !py-1.5 !text-[12.5px] inline-flex items-center"
+                        >
+                          Open link
+                        </a>
+                      </>
+                    ) : (
+                      <p className="m-0 text-[12.5px] text-muted">
+                        Issue a review link in the section below, then share
+                        it.
+                      </p>
+                    )}
+                  </div>
+                  {!lead.email && !lead.reviewRequestedAt ? (
+                    <p className="mt-2 mb-0 text-[12px] text-muted">
+                      This lead has no email on file — copy the link instead.
+                    </p>
+                  ) : null}
                 </div>
               ) : null}
             </article>

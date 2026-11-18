@@ -17,7 +17,10 @@ import { buildPageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-type PageProps = { params: Promise<{ token: string }> };
+type PageProps = {
+  params: Promise<{ token: string }>;
+  searchParams: Promise<{ lead?: string }>;
+};
 
 export async function generateMetadata({
   params,
@@ -45,8 +48,15 @@ async function loadReviewPage(
   };
 }
 
-export default async function ReviewRequestPage({ params }: PageProps) {
+export default async function ReviewRequestPage({
+  params,
+  searchParams,
+}: PageProps) {
   const { token } = await params;
+  const query = await searchParams;
+  const leadRaw = Number(query.lead);
+  const leadRoutingId =
+    Number.isInteger(leadRaw) && leadRaw > 0 ? leadRaw : null;
 
   let loaded: Awaited<ReturnType<typeof loadReviewPage>> = null;
   try {
@@ -76,6 +86,7 @@ export default async function ReviewRequestPage({ params }: PageProps) {
       token={loaded.token}
       companyName={loaded.companyName}
       companySlug={loaded.companySlug}
+      leadRoutingId={leadRoutingId}
     />
   );
 }

@@ -134,6 +134,14 @@ export function CompanyReviewsSection({
                 <span className="text-[12.5px] font-semibold text-faint">
                   {formatReviewDate(r.createdAt)}
                 </span>
+                {r.verifiedMgpCustomer ? (
+                  <span
+                    className="rounded-[6px] border border-[#CBE5D6] bg-success-bg px-1.5 py-0.5 text-[11px] font-bold text-success"
+                    title="This reviewer requested a quote through Michigan Garage Pros"
+                  >
+                    Verified MGP customer
+                  </span>
+                ) : null}
               </div>
               <p className="m-0 text-[14.5px] leading-[1.6] text-body-secondary text-pretty">
                 {r.body}

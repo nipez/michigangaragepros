@@ -9,6 +9,7 @@ export type NotifyPayload = {
     | "lead"
     | "featured"
     | "company-lead"
+    | "lead-review-request"
     | "review"
     | "owner-reply"
     | "listing-edit"
@@ -361,6 +362,8 @@ export function formatReviewNotify(review: {
   authorName: string;
   rating: number;
   body: string;
+  /** True when submitted via an owner-sent lead review-request link. */
+  fromMgpLead?: boolean;
 }) {
   const preview =
     review.body.length > 200
@@ -375,6 +378,7 @@ export function formatReviewNotify(review: {
     `Listing slug: ${review.companySlug}`,
     `Reviewer: ${review.authorName}`,
     `Rating: ${review.rating}/5`,
+    review.fromMgpLead ? "Source: from an MGP lead (verified customer)" : null,
     `Review: ${preview}`,
     "",
     "Moderate in /admin/reviews/ or: npm run db:reviews",
@@ -384,6 +388,54 @@ export function formatReviewNotify(review: {
     kind: "review" as const,
     subject: `Review pending: ${review.companyName} (${review.rating}/5)`,
     text: lines.join("\n"),
+  };
+}
+
+/**
+ * Homeowner-facing review request after a company marks a lead as won.
+ * Sent only to the lead's own email; never CC'd or shared with other parties.
+ */
+export function formatLeadReviewRequestNotify(input: {
+  homeownerName: string;
+  companyName: string;
+  reviewUrl: string;
+}) {
+  const firstName =
+    input.homeownerName.trim().split(/\s+/)[0] || "there";
+
+  const lines = keepLines([
+    `Hi ${firstName},`,
+    "",
+    `${input.companyName} asked us to send you a quick review request.`,
+    "You recently requested a garage door quote through Michigan Garage Pros,",
+    "and they marked your job as complete.",
+    "",
+    "If you have a moment, share how it went — your feedback helps other",
+    "Michigan homeowners choose a pro:",
+    "",
+    input.reviewUrl,
+    "",
+    "This link is only for reviewing this company. Your contact details are",
+    "not shared with anyone else in this email.",
+    "",
+    "— Michigan Garage Pros",
+    "https://michigangaragepros.com",
+  ]);
+
+  const html = [
+    `<p>Hi ${escapeHtml(firstName)},</p>`,
+    `<p><strong>${escapeHtml(input.companyName)}</strong> asked us to send you a quick review request. You recently requested a garage door quote through Michigan Garage Pros, and they marked your job as complete.</p>`,
+    `<p>If you have a moment, share how it went — your feedback helps other Michigan homeowners choose a pro:</p>`,
+    `<p><a href="${escapeHtml(input.reviewUrl)}">${escapeHtml(input.reviewUrl)}</a></p>`,
+    `<p>This link is only for reviewing this company. Your contact details are not shared with anyone else in this email.</p>`,
+    `<p>— Michigan Garage Pros<br/><a href="https://michigangaragepros.com">https://michigangaragepros.com</a></p>`,
+  ].join("\n");
+
+  return {
+    kind: "lead-review-request" as const,
+    subject: `${input.companyName} would appreciate a quick review`,
+    text: lines.join("\n"),
+    html,
   };
 }
 

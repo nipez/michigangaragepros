@@ -18,6 +18,7 @@ type ReviewRow = {
   owner_reply_status: string | null;
   owner_reply_at: string | null;
   owner_reply_moderated_at: string | null;
+  lead_routing_id: number | null;
 };
 
 type FilterTab = "open" | "done" | "all";
@@ -378,6 +379,12 @@ export function AdminReviewsClient({
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     <StatusPill status={review.status} />
+                    {review.lead_routing_id != null ? (
+                      <StatusPill
+                        status="mgp-lead"
+                        label="from an MGP lead"
+                      />
+                    ) : null}
                     {hasReply ? (
                       <StatusPill
                         status={`reply:${review.owner_reply_status ?? "none"}`}
@@ -582,7 +589,7 @@ function StatusPill({
   const color =
     status === "pending" || status === "reply:pending"
       ? "bg-[#EEF5FF] text-michigan-blue"
-      : status === "visible" || status === "reply:visible"
+      : status === "visible" || status === "reply:visible" || status === "mgp-lead"
         ? "bg-success-bg text-success"
         : status === "spam"
           ? "bg-[#FEE4E2] text-[#B42318]"

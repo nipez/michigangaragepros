@@ -27,6 +27,7 @@ type ReviewRow = {
   owner_reply: string | null;
   owner_reply_status: string | null;
   owner_reply_at: string | null;
+  lead_routing_id: number | null;
 };
 
 type SummaryRow = {
@@ -59,6 +60,7 @@ function toPublic(row: ReviewRow): PublicReview {
     body: row.body,
     createdAt: row.created_at,
     ownerReply: publicOwnerReplyFromRow(row),
+    verifiedMgpCustomer: row.lead_routing_id != null,
   };
 }
 
@@ -133,7 +135,8 @@ export async function GET(request: Request) {
       db
         .prepare(
           `SELECT id, author_name, rating, body, created_at,
-                  owner_reply, owner_reply_status, owner_reply_at
+                  owner_reply, owner_reply_status, owner_reply_at,
+                  lead_routing_id
            FROM company_reviews
            WHERE company_slug = ? AND status = 'visible'
            ORDER BY created_at DESC
