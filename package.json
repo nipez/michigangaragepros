@@ -11,6 +11,7 @@
     "test:listing-stats": "npx tsx scripts/test-listing-stats.mjs",
     "test:listing-demand": "npx tsx scripts/test-listing-demand.mjs",
     "test:company-leads": "npx tsx scripts/test-company-leads.mjs",
+    "test:lead-review-request": "npx tsx scripts/test-lead-review-request.mjs",
     "test:review-replies": "npx tsx scripts/test-review-replies.mjs",
     "test:manage-recover": "npx tsx scripts/test-manage-recover.mjs",
     "test:company-media": "npx tsx scripts/test-company-media.mjs",

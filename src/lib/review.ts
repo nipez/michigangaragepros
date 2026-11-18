@@ -22,6 +22,11 @@ export type PublicReview = {
   createdAt: string;
   /** Approved business response only — omitted or null when none/pending. */
   ownerReply?: PublicOwnerReply | null;
+  /**
+   * True when the reviewer submitted via an owner-sent MGP lead review link.
+   * Honest "Verified MGP customer" badge — still went through moderation.
+   */
+  verifiedMgpCustomer?: boolean;
 };
 
 export type ReviewSummary = {

@@ -41,6 +41,8 @@ export type CompanyLead = {
   statusUpdatedAt: string | null;
   createdAt: string;
   emailed: boolean;
+  /** When the owner emailed a review request for this routing; null if never. */
+  reviewRequestedAt: string | null;
 };
 
 export type CompanyLeadTotals = {
@@ -55,6 +57,7 @@ type LeadRoutingRow = {
   emailed: number;
   company_status: string | null;
   status_updated_at: string | null;
+  review_requested_at: string | null;
   name: string;
   phone: string | null;
   email: string | null;
@@ -172,6 +175,7 @@ function mapRow(row: LeadRoutingRow): CompanyLead {
     statusUpdatedAt: row.status_updated_at,
     createdAt: row.created_at,
     emailed: Boolean(row.emailed),
+    reviewRequestedAt: row.review_requested_at,
   };
 }
 
@@ -196,6 +200,7 @@ export async function listCompanyLeads(
               lr.emailed AS emailed,
               COALESCE(lr.company_status, 'new') AS company_status,
               lr.status_updated_at AS status_updated_at,
+              lr.review_requested_at AS review_requested_at,
               l.name AS name,
               l.phone AS phone,
               l.email AS email,
@@ -250,6 +255,7 @@ export async function updateCompanyLeadStatus(
               lr.emailed AS emailed,
               COALESCE(lr.company_status, 'new') AS company_status,
               lr.status_updated_at AS status_updated_at,
+              lr.review_requested_at AS review_requested_at,
               l.name AS name,
               l.phone AS phone,
               l.email AS email,

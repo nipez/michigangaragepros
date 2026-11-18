@@ -9,12 +9,15 @@ type Props = {
   token: string;
   companyName: string;
   companySlug: string;
+  /** Optional lead_routings id from ?lead= on the emailed review link. */
+  leadRoutingId?: number | null;
 };
 
 export function ReviewRequestClient({
   token,
   companyName,
   companySlug,
+  leadRoutingId = null,
 }: Props) {
   const [form, setForm] = useState<ReviewSubmit>({
     ...EMPTY_REVIEW,
@@ -80,6 +83,9 @@ export function ReviewRequestClient({
                       rating: form.rating,
                       body: form.body,
                       website: form.website,
+                      ...(leadRoutingId
+                        ? { leadRoutingId }
+                        : {}),
                     }),
                   });
                   const payload = (await res.json().catch(() => ({}))) as {

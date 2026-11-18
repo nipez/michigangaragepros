@@ -27,6 +27,7 @@ type ReviewRow = {
   owner_reply_status: string | null;
   owner_reply_at: string | null;
   owner_reply_moderated_at: string | null;
+  lead_routing_id: number | null;
 };
 
 export async function GET() {
@@ -42,7 +43,8 @@ export async function GET() {
               r.author_name, r.contact, r.rating, r.body, r.status,
               r.created_at, r.moderated_at,
               r.owner_reply, r.owner_reply_status, r.owner_reply_at,
-              r.owner_reply_moderated_at
+              r.owner_reply_moderated_at,
+              r.lead_routing_id
        FROM company_reviews r
        LEFT JOIN companies c ON c.slug = r.company_slug
        ORDER BY datetime(r.created_at) DESC

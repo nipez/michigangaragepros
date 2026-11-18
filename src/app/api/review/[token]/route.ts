@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCompanyBySlug } from "@/data/companies";
 import { getDb } from "@/lib/db";
+import { resolveLeadRoutingAttribution } from "@/lib/lead-review-request";
 import { formatReviewNotify, notifyOperator } from "@/lib/notify";
 import {
   getCompanyByReviewToken,
@@ -43,9 +44,12 @@ export async function POST(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  let body: Partial<ReviewSubmit>;
+  let body: Partial<ReviewSubmit> & { leadRoutingId?: unknown; lead?: unknown };
   try {
-    body = (await request.json()) as Partial<ReviewSubmit>;
+    body = (await request.json()) as Partial<ReviewSubmit> & {
+      leadRoutingId?: unknown;
+      lead?: unknown;
+    };
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
@@ -72,6 +76,12 @@ export async function POST(request: Request, context: RouteContext) {
       body: body.body?.trim() ?? "",
       website: "",
     };
+
+    const rawLeadId = body.leadRoutingId ?? body.lead;
+    const requestedLeadId =
+      rawLeadId === undefined || rawLeadId === null || rawLeadId === ""
+        ? null
+        : Number(rawLeadId);
 
     const error = validateReview(review);
     if (error) {
@@ -129,11 +139,18 @@ export async function POST(request: Request, context: RouteContext) {
       );
     }
 
+    const leadRoutingId = await resolveLeadRoutingAttribution(
+      db,
+      company.slug,
+      requestedLeadId,
+    );
+
     const result = await db
       .prepare(
         `INSERT INTO company_reviews (
-           company_slug, author_name, contact, rating, body, status, ip_hash
-         ) VALUES (?, ?, ?, ?, ?, 'pending', ?)`,
+           company_slug, author_name, contact, rating, body, status, ip_hash,
+           lead_routing_id
+         ) VALUES (?, ?, ?, ?, ?, 'pending', ?, ?)`,
       )
       .bind(
         company.slug,
@@ -142,6 +159,7 @@ export async function POST(request: Request, context: RouteContext) {
         review.rating,
         review.body,
         ipHash,
+        leadRoutingId,
       )
       .run();
 
@@ -155,6 +173,7 @@ export async function POST(request: Request, context: RouteContext) {
         authorName: review.authorName,
         rating: review.rating,
         body: review.body,
+        fromMgpLead: leadRoutingId != null,
       }),
     );
 
