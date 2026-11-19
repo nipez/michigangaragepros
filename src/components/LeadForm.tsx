@@ -32,6 +32,7 @@ export function LeadForm({
 }: LeadFormProps) {
   const [step, setStep] = useState(initialStep);
   const [done, setDone] = useState(false);
+  const [routedCount, setRoutedCount] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [lead, setLead] = useState<Lead>({ ...emptyLead(), ...initialLead });
@@ -53,12 +54,18 @@ export function LeadForm({
           companySlug: lead.companySlug || undefined,
         }),
       });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        routedCount?: number;
+      } | null;
       if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as {
-          error?: string;
-        } | null;
         throw new Error(data?.error || "Unable to submit request");
       }
+      const count =
+        typeof data?.routedCount === "number" && data.routedCount >= 0
+          ? data.routedCount
+          : null;
+      setRoutedCount(count);
       trackGrowth("quote_submitted", {
         service: lead.service,
         zip: lead.zip,
@@ -108,8 +115,9 @@ export function LeadForm({
           className="mx-auto mb-6 max-w-[40ch] leading-[1.6] text-muted"
           style={{ fontSize: variant === "page" ? 15.5 : 15 }}
         >
-          We&apos;ll match your request with garage-door professionals serving
-          your area. Expect to hear from local pros soon.
+          {routedCount != null && routedCount > 0
+            ? `We shared your request with ${routedCount} local claimed pro${routedCount === 1 ? "" : "s"} serving your area. Expect to hear from them soon.`
+            : "We\u2019ll match your request with garage-door professionals serving your area. Expect to hear from local pros soon."}
         </p>
         {variant === "modal" && onDoneClose ? (
           <button type="button" onClick={onDoneClose} className="btn-navy !py-3 !px-6 !text-[15px] !font-bold">
@@ -244,8 +252,8 @@ export function LeadForm({
           style={{ marginTop: variant === "page" ? 22 : 18 }}
         >
           {companyName.trim()
-            ? `By submitting, you agree we may share your request and contact info with ${companyName.trim()} so they can contact you with a quote. If they can't take it, other local pros who serve your area may also be contacted.`
-            : "By submitting, you agree we may share your request and contact info with up to 3 local garage door pros who serve your area so they can contact you with a quote."}
+            ? `By submitting, you agree we may share your request and contact info with ${companyName.trim()} so they can contact you with a quote. If they can't take it, other local claimed pros who serve your area may also be contacted.`
+            : "By submitting, you agree we may share your request and contact info with up to 3 local claimed garage door pros who serve your area so they can contact you with a quote."}
         </p>
       ) : null}
 
