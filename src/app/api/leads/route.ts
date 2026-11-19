@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { isStepValid, type Lead } from "@/lib/lead";
 import {
+  filterNewRecipients,
+  listExistingRoutingSlugs,
   persistLeadRouting,
   resolveLeadRecipients,
 } from "@/lib/lead-routing";
@@ -74,15 +76,22 @@ export async function POST(request: Request) {
       }),
     );
 
+    let routedCount = 0;
+
     // Best-effort company routing — never fail the lead save.
     if (id != null) {
       try {
         const recipients = await resolveLeadRecipients(db, {
           zip,
           companySlug,
+          service,
         });
-        const routed = [];
-        for (const recipient of recipients) {
+        // Idempotent: one email + inbox row per lead per company, even on retries.
+        const already = await listExistingRoutingSlugs(db, Number(id));
+        const fresh = filterNewRecipients(recipients, already);
+        const routed: Array<(typeof recipients)[number] & { emailed: boolean }> =
+          [];
+        for (const recipient of fresh) {
           const emailed = await notifyCompany(
             recipient.email,
             formatCompanyLeadNotify({
@@ -101,6 +110,8 @@ export async function POST(request: Request) {
           routed.push({ ...recipient, emailed });
         }
         await persistLeadRouting(db, Number(id), routed);
+        // Homeowner done screen: how many claimed pros were matched.
+        routedCount = recipients.length;
       } catch (routeErr) {
         console.error("lead routing failed", routeErr);
       }
@@ -109,6 +120,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       id,
+      routedCount,
     });
   } catch (err) {
     console.error("lead insert failed", err);
