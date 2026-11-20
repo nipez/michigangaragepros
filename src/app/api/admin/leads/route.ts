@@ -16,6 +16,7 @@ type LeadRow = {
   email: string | null;
   timing: string;
   company_slug: string | null;
+  source_page: string | null;
   status: string;
   created_at: string;
   routed_at: string | null;
@@ -44,7 +45,7 @@ export async function GET() {
   const { results } = await db
     .prepare(
       `SELECT id, service, issue, zip, name, phone, email, timing, company_slug,
-              status, created_at, routed_at, routed_to
+              source_page, status, created_at, routed_at, routed_to
        FROM leads
        ORDER BY datetime(created_at) DESC
        LIMIT 200`,

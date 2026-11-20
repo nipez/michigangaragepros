@@ -3,17 +3,48 @@
 import { useEffect, useState } from "react";
 import type { Company } from "@/data/companies";
 import { fairShuffleCompanies } from "@/lib/companyOrder";
+import {
+  buildQuoteHref,
+  type QuoteLinkParams,
+  type QuoteSourcePage,
+} from "@/lib/quote-links";
 import { useCompanyMedia } from "@/hooks/useCompanyMedia";
 import { useCompanyReviewSummaries } from "@/hooks/useCompanyReviewSummaries";
 import { useCompanyTrust } from "@/hooks/useCompanyTrust";
 import { BeFeaturedCard, CompanyCard } from "./CompanyCard";
 
+export type QuoteContext = {
+  city?: string;
+  cityName?: string;
+  service?: string;
+  zip?: string;
+  source?: QuoteSourcePage;
+};
+
 type ShuffledCompanyGridProps = {
   companies: Company[];
   cityName?: string;
+  /** Serializable page context — preferred over quoteHref functions from RSC. */
+  quoteContext?: QuoteContext;
+  /** Static href for every card, or a client-only builder. */
   quoteHref?: string | ((company: Company) => string);
   className?: string;
 };
+
+function hrefForCompany(
+  company: Company,
+  quoteContext: QuoteContext | undefined,
+  quoteHref: string | ((company: Company) => string) | undefined,
+): string | undefined {
+  if (typeof quoteHref === "function") return quoteHref(company);
+  if (typeof quoteHref === "string") return quoteHref;
+  if (!quoteContext) return undefined;
+  const params: QuoteLinkParams = {
+    ...quoteContext,
+    company: company.slug,
+  };
+  return buildQuoteHref(params);
+}
 
 /**
  * Renders company cards with a fresh random order on each visit.
@@ -25,6 +56,7 @@ type ShuffledCompanyGridProps = {
 export function ShuffledCompanyGrid({
   companies,
   cityName,
+  quoteContext,
   quoteHref,
   className = "grid grid-cols-1 gap-4 md:grid-cols-2",
 }: ShuffledCompanyGridProps) {
@@ -62,9 +94,7 @@ export function ShuffledCompanyGrid({
             key={c.slug}
             company={company}
             reviewSummary={summaries[c.slug] ?? null}
-            quoteHref={
-              typeof quoteHref === "function" ? quoteHref(c) : quoteHref
-            }
+            quoteHref={hrefForCompany(c, quoteContext, quoteHref)}
           />
         );
       })}

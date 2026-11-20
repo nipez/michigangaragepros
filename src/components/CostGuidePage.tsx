@@ -10,12 +10,18 @@ import {
   breadcrumbJsonLd,
   faqPageJsonLd,
 } from "@/lib/seo";
+import { buildQuoteHref } from "@/lib/quote-links";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
 import { JsonLd } from "./JsonLd";
+import { MobileCta } from "./MobileCta";
 
 export function CostGuidePage({ guide }: { guide: CostGuideData }) {
+  const quoteHref = buildQuoteHref({
+    service: guide.service.name,
+    source: "cost",
+  });
   const costGuide = getServiceCostGuide(guide.service.slug);
   const cityLinks = getIndexableCityServicePairs()
     .filter((p) => p.service.slug === guide.service.slug)
@@ -40,7 +46,7 @@ export function CostGuidePage({ guide }: { guide: CostGuideData }) {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <Header />
+      <Header quoteHref={quoteHref} />
 
       <section className="hero-gradient">
         <div className="container-site py-14 pb-16">
@@ -67,16 +73,16 @@ export function CostGuidePage({ guide }: { guide: CostGuideData }) {
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
-              href={`/${guide.service.slug}/`}
+              href={quoteHref}
               className="on-dark-solid inline-block rounded-xl bg-bright-blue px-[26px] py-3.5 text-[15.5px] font-extrabold text-white hover:bg-cta-hover"
             >
-              Browse {guide.service.shortName} Pros →
+              Get a Free Quote →
             </Link>
             <Link
-              href="/get-a-quote/"
+              href={`/${guide.service.slug}/`}
               className="on-dark-link inline-block rounded-xl border-[1.5px] border-white/35 px-[26px] py-3.5 text-[15.5px] font-bold text-white hover:bg-white/8"
             >
-              Get a Free Quote
+              Browse {guide.service.shortName} Pros
             </Link>
           </div>
         </div>
@@ -173,13 +179,14 @@ export function CostGuidePage({ guide }: { guide: CostGuideData }) {
         <CtaBand
           title={`Ready for a Real ${guide.service.localTitle} Quote?`}
           subtitle="Ranges above are planning estimates — local pros give written prices for your door."
-          primaryHref={`/${guide.service.slug}/`}
-          primaryLabel={`Browse ${guide.service.shortName} Pros`}
-          secondaryHref="/get-a-quote/"
-          secondaryLabel="Get a Free Quote"
+          primaryHref={quoteHref}
+          primaryLabel="Get a Free Quote →"
+          secondaryHref={`/${guide.service.slug}/`}
+          secondaryLabel={`Browse ${guide.service.shortName} Pros`}
         />
       </section>
 
+      <MobileCta href={quoteHref} label="Get a Free Quote" />
       <CompactFooter />
     </>
   );

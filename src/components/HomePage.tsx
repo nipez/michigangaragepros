@@ -364,7 +364,10 @@ export function HomePage({ topCompanies, homepageCities }: HomePageProps) {
       </section>
 
       <Footer />
-      <MobileCta onClick={() => openQuote()} />
+      <MobileCta
+        label="Find a Garage Door Pro"
+        onClick={() => openQuote()}
+      />
       <LeadModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}

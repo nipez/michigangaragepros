@@ -5,9 +5,12 @@ export type Lead = {
   name: string;
   phone: string;
   email: string;
+  /** Urgency: how soon help is needed (e.g. Today / Emergency). */
   timing: string;
   /** Optional company profile slug when quote started from a listing */
   companySlug?: string;
+  /** Funnel source page type (city, company, cost, …) — no PII. */
+  sourcePage?: string;
 };
 
 export type LeadState = {

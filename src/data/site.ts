@@ -22,7 +22,12 @@ export const ISSUE_OPTIONS = [
   "Other",
 ] as const;
 
-export const TIMING_OPTIONS = ["ASAP", "Today", "This week", "Flexible"] as const;
+/** How soon the homeowner needs help — stored on leads.timing as urgency. */
+export const TIMING_OPTIONS = [
+  "Today / Emergency",
+  "This week",
+  "Flexible",
+] as const;
 
 export const STEP_TITLES = [
   "",
@@ -30,7 +35,7 @@ export const STEP_TITLES = [
   "What's happening?",
   "Where are you located?",
   "How can a pro reach you?",
-  "When do you need help?",
+  "How soon do you need help?",
 ] as const;
 
 export const STEP_SUBS = [
@@ -39,7 +44,7 @@ export const STEP_SUBS = [
   "This helps pros come prepared.",
   "We'll match you with companies serving your ZIP.",
   "Local pros will use this to send your quote.",
-  "Almost done.",
+  "Pros prioritize emergency and same-day requests.",
 ] as const;
 
 export const PRO_BENEFITS = [

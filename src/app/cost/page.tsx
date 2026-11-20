@@ -4,8 +4,10 @@ import { CompactFooter } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { CtaBand } from "@/components/CtaBand";
 import { JsonLd } from "@/components/JsonLd";
+import { MobileCta } from "@/components/MobileCta";
 import { getAllCostGuides } from "@/data/costGuides";
 import { SITE_URL } from "@/data/site";
+import { buildQuoteHref } from "@/lib/quote-links";
 import {
   breadcrumbJsonLd,
   buildPageMetadata,
@@ -21,6 +23,7 @@ export const metadata: Metadata = buildPageMetadata({
 
 export default function CostHubPage() {
   const guides = getAllCostGuides();
+  const quoteHref = buildQuoteHref({ source: "cost" });
 
   const jsonLd = [
     {
@@ -51,7 +54,7 @@ export default function CostHubPage() {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <Header />
+      <Header quoteHref={quoteHref} />
 
       <section className="hero-gradient">
         <div className="container-site py-14 pb-16">
@@ -65,10 +68,24 @@ export default function CostHubPage() {
           <h1 className="mb-3.5 max-w-[20ch] text-[clamp(32px,3.8vw,48px)] font-extrabold leading-[1.1] tracking-[-1px] text-balance">
             Garage Door Cost Guides for Michigan
           </h1>
-          <p className="mb-0 max-w-[62ch] text-lg leading-[1.55] text-hero-muted text-pretty">
+          <p className="mb-[30px] max-w-[62ch] text-lg leading-[1.55] text-hero-muted text-pretty">
             Planning ranges for common garage door jobs — not quotes. Use these
             guides to budget, then compare written estimates from local pros.
           </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href={quoteHref}
+              className="on-dark-solid inline-block rounded-xl bg-bright-blue px-[26px] py-3.5 text-[15.5px] font-extrabold text-white hover:bg-cta-hover"
+            >
+              Get a Free Quote →
+            </Link>
+            <Link
+              href="/pros/"
+              className="on-dark-link inline-block rounded-xl border-[1.5px] border-white/35 px-[26px] py-3.5 text-[15.5px] font-bold text-white hover:bg-white/8"
+            >
+              Find a Pro
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -104,12 +121,13 @@ export default function CostHubPage() {
         <CtaBand
           title="Ready to compare local quotes?"
           subtitle="Browse Michigan garage door companies near your ZIP, or request a free quote."
-          primaryHref="/pros/"
-          primaryLabel="Find a Pro →"
-          secondaryHref="/get-a-quote/"
-          secondaryLabel="Get a Free Quote"
+          primaryHref={quoteHref}
+          primaryLabel="Get a Free Quote →"
+          secondaryHref="/pros/"
+          secondaryLabel="Find a Pro"
         />
       </section>
+      <MobileCta href={quoteHref} />
       <CompactFooter />
     </>
   );

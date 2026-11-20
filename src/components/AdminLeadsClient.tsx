@@ -25,6 +25,7 @@ type LeadRow = {
   email: string | null;
   timing: string;
   company_slug: string | null;
+  source_page: string | null;
   status: string;
   created_at: string;
   routed_at: string | null;
@@ -188,6 +189,12 @@ export function AdminLeadsClient({
         </div>
         <div className="flex flex-wrap gap-2.5">
           <Link
+            href="/admin/funnel/"
+            className="btn-outline !py-2.5 !px-4 inline-flex items-center"
+          >
+            Quote funnel
+          </Link>
+          <Link
             href="/admin/claims/"
             className="btn-outline !py-2.5 !px-4 inline-flex items-center"
           >
@@ -254,7 +261,8 @@ export function AdminLeadsClient({
                     #{lead.id} · {lead.name}
                   </div>
                   <div className="mt-1 text-sm text-muted">
-                    {lead.created_at} · ZIP {lead.zip} · {lead.timing}
+                    {lead.created_at} · ZIP {lead.zip} · Urgency: {lead.timing}
+                    {lead.source_page ? ` · src ${lead.source_page}` : ""}
                   </div>
                 </div>
                 <StatusPill status={lead.status} />
@@ -265,6 +273,9 @@ export function AdminLeadsClient({
                 </div>
                 <div>
                   <span className="text-faint">Issue:</span> {lead.issue}
+                </div>
+                <div>
+                  <span className="text-faint">Urgency:</span> {lead.timing}
                 </div>
                 <div>
                   <span className="text-faint">Phone:</span>{" "}

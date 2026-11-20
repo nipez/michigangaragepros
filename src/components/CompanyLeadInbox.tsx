@@ -226,7 +226,7 @@ export function CompanyLeadInbox({
                     {lead.createdAt}
                     {lead.city ? ` · ${lead.city}` : ""}
                     {lead.zip ? ` · ZIP ${lead.zip}` : ""}
-                    {lead.timing ? ` · ${lead.timing}` : ""}
+                    {lead.timing ? ` · Urgency: ${lead.timing}` : ""}
                   </div>
                 </div>
                 <span
@@ -240,6 +240,11 @@ export function CompanyLeadInbox({
                 <div>
                   <span className="text-faint">Service:</span> {lead.service}
                 </div>
+                {lead.timing ? (
+                  <div>
+                    <span className="text-faint">Urgency:</span> {lead.timing}
+                  </div>
+                ) : null}
                 {lead.issue ? (
                   <div>
                     <span className="text-faint">Message:</span> {lead.issue}

@@ -10,6 +10,7 @@ import {
 import { SITE_URL } from "@/data/site";
 import { useCompanyLiveListing } from "@/hooks/useCompanyLiveListing";
 import { recordListingEvent } from "@/lib/listing-stats-client";
+import { buildQuoteHref } from "@/lib/quote-links";
 import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
 import { websiteSnapshotUrl } from "@/lib/website-snapshot";
 import { CompanyClaimBadge } from "./CompanyClaimBadge";
@@ -20,6 +21,7 @@ import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { BoltIcon, LogoMark } from "./Icons";
 import { JsonLd } from "./JsonLd";
+import { MobileCta } from "./MobileCta";
 
 function localBusinessJsonLd(company: Company) {
   const cityName = company.city.replace(/, MI$/i, "").trim();
@@ -87,10 +89,17 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
     recordListingEvent(company.slug, "contact_click");
   };
 
+  const quoteHref = buildQuoteHref({
+    company: company.slug,
+    city: company.citySlug,
+    cityName: cityLabel,
+    source: "company",
+  });
+
   return (
     <>
       <JsonLd data={graph} />
-      <Header active="pros" />
+      <Header active="pros" quoteHref={quoteHref} />
 
       <section className="border-b border-border bg-white">
         <div className="container-site py-10">
@@ -183,7 +192,7 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
                 </span>
               )}
               <Link
-                href={`/get-a-quote/?company=${encodeURIComponent(company.slug)}`}
+                href={quoteHref}
                 className="btn-primary !rounded-[11px] !px-[22px] !py-[13px] !text-[15px] !font-extrabold"
               >
                 Request a Quote →
@@ -302,7 +311,7 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
               Tell us what you need — {company.name} will follow up directly.
             </p>
             <Link
-              href={`/get-a-quote/?company=${encodeURIComponent(company.slug)}`}
+              href={quoteHref}
               className="block rounded-[11px] bg-bright-blue py-3.5 text-center text-[15px] font-extrabold text-white hover:bg-michigan-blue hover:text-white"
             >
               Start Your Request →
@@ -429,6 +438,7 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
         </div>
       </div>
 
+      <MobileCta href={quoteHref} label={`Request a Quote from ${company.name}`} />
       <CompactFooter />
     </>
   );

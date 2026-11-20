@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getHomepageCities } from "@/data/cities";
 import { findLocalPros } from "@/lib/locationSearch";
+import { buildQuoteHref } from "@/lib/quote-links";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { PinIcon } from "./Icons";
@@ -26,9 +27,17 @@ export function ProsSearchPage({ query, service }: ProsSearchPageProps) {
       ? result.zip
       : query;
 
+  const quoteHref = buildQuoteHref({
+    zip: result?.zip || (hasQuery ? query : undefined),
+    service: service || undefined,
+    city: city?.slug,
+    cityName: city?.name,
+    source: "pros",
+  });
+
   return (
     <>
-      <Header active="pros" />
+      <Header active="pros" quoteHref={quoteHref} />
 
       <section className="hero-gradient">
         <div className="container-site py-14 pb-16">
@@ -123,25 +132,19 @@ export function ProsSearchPage({ query, service }: ProsSearchPageProps) {
               <ShuffledCompanyGrid
                 companies={companies}
                 cityName={city?.name}
-                quoteHref={
-                  result?.zip
-                    ? `/get-a-quote/?zip=${encodeURIComponent(result.zip)}${
-                        service
-                          ? `&service=${encodeURIComponent(service)}`
-                          : ""
-                      }`
-                    : service
-                      ? `/get-a-quote/?service=${encodeURIComponent(service)}`
-                      : "/get-a-quote/"
-                }
+                quoteContext={{
+                  zip: result?.zip || undefined,
+                  service: service || undefined,
+                  city: city?.slug,
+                  cityName: city?.name,
+                  source: "pros",
+                }}
               />
             ) : (
               <div className="rounded-2xl border border-border bg-white p-8 text-[15.5px] leading-[1.6] text-muted">
                 We couldn&apos;t find companies for that location yet.{" "}
                 <Link
-                  href={`/get-a-quote/?zip=${encodeURIComponent(query)}${
-                    service ? `&service=${encodeURIComponent(service)}` : ""
-                  }`}
+                  href={quoteHref}
                   className="font-bold text-michigan-blue"
                 >
                   Request a free quote
@@ -164,9 +167,7 @@ export function ProsSearchPage({ query, service }: ProsSearchPageProps) {
                 </div>
               </div>
               <Link
-                href={`/get-a-quote/?zip=${encodeURIComponent(result?.zip || query)}${
-                  service ? `&service=${encodeURIComponent(service)}` : ""
-                }`}
+                href={quoteHref}
                 className="btn-primary !px-5 !py-3"
               >
                 Get a Free Quote →

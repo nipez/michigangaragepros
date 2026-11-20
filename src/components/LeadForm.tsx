@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import {
   ISSUE_OPTIONS,
@@ -11,6 +11,8 @@ import {
 } from "@/data/site";
 import { emptyLead, isStepValid, type Lead } from "@/lib/lead";
 import { trackGrowth } from "@/lib/analytics";
+import { recordQuoteFunnelEvent } from "@/lib/quote-funnel-client";
+import type { QuoteSourcePage } from "@/lib/quote-links";
 
 type LeadFormProps = {
   initialLead?: Partial<Lead>;
@@ -20,6 +22,8 @@ type LeadFormProps = {
   onExitHref?: string;
   /** When set, consent copy names this company as the primary recipient. */
   companyName?: string;
+  /** Funnel source page type for first-party counters. */
+  sourcePage?: QuoteSourcePage | string;
 };
 
 export function LeadForm({
@@ -29,6 +33,7 @@ export function LeadForm({
   onDoneClose,
   onExitHref = "/",
   companyName = "",
+  sourcePage = "other",
 }: LeadFormProps) {
   const [step, setStep] = useState(initialStep);
   const [done, setDone] = useState(false);
@@ -36,10 +41,21 @@ export function LeadForm({
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [lead, setLead] = useState<Lead>({ ...emptyLead(), ...initialLead });
+  const startedRef = useRef(false);
 
   const valid = isStepValid(step, lead);
   const setField = <K extends keyof Lead>(key: K, value: Lead[K]) => {
     setLead((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const markStarted = () => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    trackGrowth("quote_started", {
+      service: lead.service || "unknown",
+      source: sourcePage,
+    });
+    recordQuoteFunnelEvent("start", sourcePage);
   };
 
   const submitLead = async () => {
@@ -52,6 +68,7 @@ export function LeadForm({
         body: JSON.stringify({
           ...lead,
           companySlug: lead.companySlug || undefined,
+          sourcePage: lead.sourcePage || sourcePage || undefined,
         }),
       });
       const data = (await res.json().catch(() => null)) as {
@@ -66,11 +83,14 @@ export function LeadForm({
           ? data.routedCount
           : null;
       setRoutedCount(count);
+      markStarted();
       trackGrowth("quote_submitted", {
         service: lead.service,
         zip: lead.zip,
         timing: lead.timing,
+        source: sourcePage,
       });
+      // submit counter is bumped server-side in POST /api/leads/ (reliable, once)
       setDone(true);
     } catch (err) {
       setSubmitError(
@@ -83,8 +103,8 @@ export function LeadForm({
 
   const next = () => {
     if (!valid || submitting) return;
-    if (step === 1) {
-      trackGrowth("quote_started", { service: lead.service || "unknown" });
+    if (step === 1 || (initialStep > 1 && step === initialStep)) {
+      markStarted();
     }
     if (step === 5) void submitLead();
     else setStep((s) => s + 1);
