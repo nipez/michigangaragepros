@@ -318,3 +318,18 @@ export function citySlugForZip(zip: string): string | undefined {
   if (ZIP_TO_CITY_SLUG[normalized]) return ZIP_TO_CITY_SLUG[normalized];
   return ZIP3_TO_CITY_SLUG[normalized.slice(0, 3)];
 }
+
+/**
+ * Pick a representative ZIP for a directory city slug (first mapped match).
+ * Used to prefill the quote form when a CTA only knows the city.
+ */
+export function representativeZipForCitySlug(
+  citySlug: string,
+): string | undefined {
+  const slug = citySlug.trim().toLowerCase();
+  if (!slug) return undefined;
+  for (const [zip, mapped] of Object.entries(ZIP_TO_CITY_SLUG)) {
+    if (mapped === slug) return zip;
+  }
+  return undefined;
+}

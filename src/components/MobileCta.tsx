@@ -5,9 +5,11 @@ import Link from "next/link";
 export function MobileCta({
   onClick,
   href = "/get-a-quote/",
+  label = "Get a Free Quote",
 }: {
   onClick?: () => void;
   href?: string;
+  label?: string;
 }) {
   return (
     <div
@@ -21,14 +23,14 @@ export function MobileCta({
           onClick={onClick}
           className="w-full rounded-xl border-none bg-bright-blue py-[15px] text-base font-extrabold text-white"
         >
-          Find a Garage Door Pro
+          {label}
         </button>
       ) : (
         <Link
           href={href}
           className="block w-full rounded-xl bg-bright-blue py-[15px] text-center text-base font-extrabold text-white hover:text-white"
         >
-          Find a Garage Door Pro
+          {label}
         </Link>
       )}
     </div>

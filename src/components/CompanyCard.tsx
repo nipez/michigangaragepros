@@ -35,7 +35,8 @@ export function CompanyCard({
   reviewSummary = null,
 }: CompanyCardProps) {
   const resolvedQuoteHref =
-    quoteHref ?? `/get-a-quote/?company=${encodeURIComponent(company.slug)}`;
+    quoteHref ??
+    `/get-a-quote/?company=${encodeURIComponent(company.slug)}&src=company`;
   const logoUrl = company.logoUrl;
   const hasTrust = Boolean(company.trust && trustHasAny(company.trust));
   const quote = onQuoteClick ? (
@@ -173,7 +174,8 @@ export function CompanyRow({
   quoteHref?: string;
 }) {
   const resolvedQuoteHref =
-    quoteHref ?? `/get-a-quote/?company=${encodeURIComponent(company.slug)}`;
+    quoteHref ??
+    `/get-a-quote/?company=${encodeURIComponent(company.slug)}&src=company`;
   return (
     <div
       className={`flex flex-wrap items-center justify-between gap-5 rounded-2xl bg-white p-6 ${

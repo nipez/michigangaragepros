@@ -13,17 +13,19 @@ import {
   notifyCompany,
   notifyOperator,
 } from "@/lib/notify";
+import { normalizeQuoteSourcePage } from "@/lib/quote-links";
+import { bumpQuoteFunnel } from "@/lib/quote-funnel";
 
 export const runtime = "nodejs";
 
-type LeadBody = Lead & { companySlug?: string };
+type LeadBody = Lead & { companySlug?: string; sourcePage?: string };
 
 function validateLead(lead: LeadBody): string | null {
   if (!isStepValid(1, lead)) return "Service is required";
   if (!isStepValid(2, lead)) return "Issue is required";
   if (!isStepValid(3, lead)) return "Valid ZIP is required";
   if (!isStepValid(4, lead)) return "Name and phone or email are required";
-  if (!isStepValid(5, lead)) return "Timing is required";
+  if (!isStepValid(5, lead)) return "Urgency is required";
   return null;
 }
 
@@ -48,18 +50,36 @@ export async function POST(request: Request) {
   const email = body.email.trim() || null;
   const timing = body.timing.trim();
   const companySlug = body.companySlug?.trim() || null;
+  const sourcePage = normalizeQuoteSourcePage(body.sourcePage);
 
   try {
     const db = await getDb();
     const result = await db
       .prepare(
-        `INSERT INTO leads (service, issue, zip, name, phone, email, timing, company_slug)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO leads (service, issue, zip, name, phone, email, timing, company_slug, source_page)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
-      .bind(service, issue, zip, name, phone, email, timing, companySlug)
+      .bind(
+        service,
+        issue,
+        zip,
+        name,
+        phone,
+        email,
+        timing,
+        companySlug,
+        sourcePage,
+      )
       .run();
 
     const id = result.meta.last_row_id;
+
+    // Server-side submit counter (complements client beacon; bot-tolerant client may miss).
+    try {
+      await bumpQuoteFunnel(db, "submit", sourcePage);
+    } catch (funnelErr) {
+      console.error("quote funnel submit bump failed", funnelErr);
+    }
 
     // Operator notify stays on every lead (additive company notify below).
     await notifyOperator(
@@ -73,6 +93,7 @@ export async function POST(request: Request) {
         email,
         timing,
         companySlug,
+        sourcePage,
       }),
     );
 
@@ -105,6 +126,7 @@ export async function POST(request: Request) {
               email,
               timing,
               reason: recipient.reason,
+              sourcePage,
             }),
           );
           routed.push({ ...recipient, emailed });

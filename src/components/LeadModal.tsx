@@ -1,13 +1,17 @@
 "use client";
 
+import { useEffect } from "react";
 import { LeadForm } from "./LeadForm";
 import type { Lead } from "@/lib/lead";
+import { recordQuoteFunnelEvent } from "@/lib/quote-funnel-client";
+import type { QuoteSourcePage } from "@/lib/quote-links";
 
 type LeadModalProps = {
   open: boolean;
   onClose: () => void;
   initialLead?: Partial<Lead>;
   initialStep?: number;
+  sourcePage?: QuoteSourcePage;
 };
 
 export function LeadModal({
@@ -15,7 +19,13 @@ export function LeadModal({
   onClose,
   initialLead,
   initialStep = 1,
+  sourcePage = "home",
 }: LeadModalProps) {
+  useEffect(() => {
+    if (!open) return;
+    recordQuoteFunnelEvent("view", sourcePage);
+  }, [open, sourcePage]);
+
   if (!open) return null;
 
   return (
@@ -40,9 +50,10 @@ export function LeadModal({
         <LeadForm
           key={`${initialStep}-${initialLead?.service ?? ""}-${initialLead?.zip ?? ""}`}
           variant="modal"
-          initialLead={initialLead}
+          initialLead={{ ...initialLead, sourcePage }}
           initialStep={initialStep}
           onDoneClose={onClose}
+          sourcePage={sourcePage}
         />
       </div>
     </div>

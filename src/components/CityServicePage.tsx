@@ -25,10 +25,12 @@ import {
   faqPageJsonLd,
   localBusinessItemListJsonLd,
 } from "@/lib/seo";
+import { buildQuoteHref } from "@/lib/quote-links";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
 import { JsonLd } from "./JsonLd";
+import { MobileCta } from "./MobileCta";
 import { ShuffledCompanyGrid } from "./ShuffledCompanyGrid";
 
 export function CityServicePage({
@@ -38,6 +40,12 @@ export function CityServicePage({
   city: City;
   service: Service;
 }) {
+  const quoteHref = buildQuoteHref({
+    city: city.slug,
+    cityName: city.name,
+    service: service.name,
+    source: "city_service",
+  });
   const companies = getProsForCityService(city.slug, service);
   const indexable = isCityServiceIndexable(city.slug, service);
   const path = `/cities/${city.slug}/${service.slug}/`;
@@ -83,7 +91,7 @@ export function CityServicePage({
   return (
     <>
       <JsonLd data={jsonLd} />
-      <Header active="cities" />
+      <Header active="cities" quoteHref={quoteHref} />
 
       <section className="hero-gradient">
         <div className="container-site py-14 pb-16">
@@ -114,10 +122,10 @@ export function CityServicePage({
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
-              href={`/pros/?q=${encodeURIComponent(city.name)}&service=${encodeURIComponent(service.name)}`}
+              href={quoteHref}
               className="on-dark-solid inline-block rounded-xl bg-bright-blue px-[26px] py-3.5 text-[15.5px] font-extrabold text-white hover:bg-cta-hover"
             >
-              Find {service.shortName} Pros Near {city.name} →
+              Get a Free {service.shortName} Quote →
             </Link>
             <Link
               href="#local-pros"
@@ -154,7 +162,16 @@ export function CityServicePage({
           </span>
         </div>
         {companies.length > 0 ? (
-          <ShuffledCompanyGrid companies={companies} cityName={city.name} />
+          <ShuffledCompanyGrid
+            companies={companies}
+            cityName={city.name}
+            quoteContext={{
+              city: city.slug,
+              cityName: city.name,
+              service: service.name,
+              source: "city_service",
+            }}
+          />
         ) : (
           <div className="rounded-2xl border border-border bg-white p-8 text-[15.5px] leading-[1.6] text-muted">
             We don&apos;t have {service.localTitle.toLowerCase()} specialists
@@ -171,7 +188,7 @@ export function CityServicePage({
               browse statewide {service.name.toLowerCase()}
             </Link>
             , or{" "}
-            <Link href="/get-a-quote/" className="font-bold text-michigan-blue">
+            <Link href={quoteHref} className="font-bold text-michigan-blue">
               request a free quote
             </Link>
             .
@@ -318,13 +335,17 @@ export function CityServicePage({
         <CtaBand
           title={`Need ${service.localTitle} in ${city.name}?`}
           subtitle="Tell us what you need — we'll match you with local pros serving your neighborhood."
-          primaryHref={`/pros/?q=${encodeURIComponent(city.name)}&service=${encodeURIComponent(service.name)}`}
-          primaryLabel="Browse Local Pros"
-          secondaryHref={`/get-a-quote/?service=${encodeURIComponent(service.name)}`}
-          secondaryLabel="Get a Free Quote"
+          primaryHref={quoteHref}
+          primaryLabel="Get a Free Quote →"
+          secondaryHref={`/pros/?q=${encodeURIComponent(city.name)}&service=${encodeURIComponent(service.name)}`}
+          secondaryLabel="Browse Local Pros"
         />
       </section>
 
+      <MobileCta
+        href={quoteHref}
+        label={`Get a Free ${service.shortName} Quote`}
+      />
       <CompactFooter />
     </>
   );

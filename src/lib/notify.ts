@@ -223,103 +223,10 @@ export function formatClaimNotify(claim: {
   };
 }
 
-export function formatLeadNotify(lead: {
-  id: number | string;
-  service: string;
-  issue: string;
-  zip: string;
-  name: string;
-  phone?: string | null;
-  email?: string | null;
-  timing: string;
-  companySlug?: string | null;
-}) {
-  const lines = keepLines([
-    "New homeowner lead",
-    "",
-    `ID: ${lead.id}`,
-    `Service: ${lead.service}`,
-    `Issue: ${lead.issue}`,
-    `ZIP: ${lead.zip}`,
-    `Name: ${lead.name}`,
-    lead.phone ? `Phone: ${lead.phone}` : null,
-    lead.email ? `Email: ${lead.email}` : null,
-    `Timing: ${lead.timing}`,
-    lead.companySlug ? `Company slug: ${lead.companySlug}` : null,
-    "",
-    "Review in /admin/leads/ or: npm run db:leads",
-  ]);
-
-  return {
-    kind: "lead" as const,
-    subject: `Lead: ${lead.service} near ${lead.zip}`,
-    text: lines.join("\n"),
-  };
-}
-
-export function formatCompanyLeadNotify(lead: {
-  id: number | string;
-  companyName: string;
-  service: string;
-  issue: string;
-  zip: string;
-  name: string;
-  phone?: string | null;
-  email?: string | null;
-  timing: string;
-  reason: "direct" | "area" | "retained";
-}) {
-  const why =
-    lead.reason === "direct" || lead.reason === "retained"
-      ? "A homeowner requested a quote from your listing on Michigan Garage Pros."
-      : "A homeowner near your service area requested a quote on Michigan Garage Pros.";
-
-  const lines = keepLines([
-    `Hi ${lead.companyName},`,
-    "",
-    why,
-    "",
-    `Service: ${lead.service}`,
-    `Issue: ${lead.issue}`,
-    `ZIP: ${lead.zip}`,
-    `Timing: ${lead.timing}`,
-    "",
-    "Homeowner contact:",
-    `  Name: ${lead.name}`,
-    lead.phone ? `  Phone: ${lead.phone}` : null,
-    lead.email ? `  Email: ${lead.email}` : null,
-    "",
-    "Please reach out promptly — homeowners often request multiple quotes.",
-    "",
-    "— Michigan Garage Pros",
-    "https://michigangaragepros.com",
-  ]);
-
-  const contactRows = keepLines([
-    `<strong>Name:</strong> ${escapeHtml(lead.name)}`,
-    lead.phone ? `<strong>Phone:</strong> ${escapeHtml(lead.phone)}` : null,
-    lead.email ? `<strong>Email:</strong> ${escapeHtml(lead.email)}` : null,
-  ]);
-
-  const html = [
-    `<p>Hi ${escapeHtml(lead.companyName)},</p>`,
-    `<p>${escapeHtml(why)}</p>`,
-    `<p><strong>Service:</strong> ${escapeHtml(lead.service)}<br/>`,
-    `<strong>Issue:</strong> ${escapeHtml(lead.issue)}<br/>`,
-    `<strong>ZIP:</strong> ${escapeHtml(lead.zip)}<br/>`,
-    `<strong>Timing:</strong> ${escapeHtml(lead.timing)}</p>`,
-    `<p><strong>Homeowner contact:</strong><br/>${contactRows.join("<br/>")}</p>`,
-    `<p>Please reach out promptly — homeowners often request multiple quotes.</p>`,
-    `<p>— Michigan Garage Pros<br/><a href="https://michigangaragepros.com">https://michigangaragepros.com</a></p>`,
-  ].join("\n");
-
-  return {
-    kind: "company-lead" as const,
-    subject: `New quote lead: ${lead.service} near ${lead.zip}`,
-    text: lines.join("\n"),
-    html,
-  };
-}
+export {
+  formatCompanyLeadNotify,
+  formatLeadNotify,
+} from "@/lib/notify-lead";
 
 export function formatFeaturedNotify(interest: {
   id: number | string;
