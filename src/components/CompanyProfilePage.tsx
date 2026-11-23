@@ -14,6 +14,7 @@ import { buildQuoteHref } from "@/lib/quote-links";
 import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
 import { websiteSnapshotUrl } from "@/lib/website-snapshot";
 import { CompanyClaimBadge } from "./CompanyClaimBadge";
+import { CompanyResponseBadge } from "./CompanyResponseBadge";
 import { CompanyTrustBadges } from "./CompanyTrustBadges";
 import { CompanyClaimCard } from "./CompanyClaimCard";
 import { CompanyReviewsSection } from "./CompanyReviewsSection";
@@ -146,6 +147,7 @@ export function CompanyProfilePage({ company: seed }: { company: Company }) {
                     <span className="featured-badge">Featured Pro</span>
                   )}
                   <CompanyClaimBadge companySlug={company.slug} />
+                  <CompanyResponseBadge companySlug={company.slug} />
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-[15px]">
                   <span className="text-muted">{company.city}</span>

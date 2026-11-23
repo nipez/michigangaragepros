@@ -39,6 +39,10 @@ import {
   type ListingPerformance,
 } from "@/lib/listing-stats";
 import {
+  getCompanyResponsiveness,
+  type CompanyResponsivenessMetrics,
+} from "@/lib/responsiveness";
+import {
   listCompanyApprovedReviews,
   type ManageReview,
 } from "@/lib/review-replies";
@@ -83,6 +87,7 @@ type LoadedManage = {
   featured: boolean;
   billing: ManageBillingProps;
   performance: ListingPerformance | null;
+  responsiveness: CompanyResponsivenessMetrics | null;
   fields: ListingFields;
   pendingEdit: { id: number; createdAt: string } | null;
   reviewUrl: string | null;
@@ -178,10 +183,19 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     performance = null;
   }
 
+  let responsiveness: CompanyResponsivenessMetrics | null = null;
+  try {
+    responsiveness = await getCompanyResponsiveness(db, company.slug);
+  } catch (err) {
+    // Responsiveness is additive (migration 0029) — never block the form.
+    console.error("manage responsiveness load failed", err);
+    responsiveness = null;
+  }
+
   let leads: CompanyLead[] = [];
   let leadTotals: CompanyLeadTotals = emptyCompanyLeadTotals();
   try {
-    leads = await listCompanyLeads(db, company.slug);
+    leads = await listCompanyLeads(db, company.slug, { markViewed: true });
     leadTotals = summarizeCompanyLeads(leads);
   } catch (err) {
     // Inbox is additive — never block the manage form if migration is pending.
@@ -269,6 +283,7 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     featured: Boolean(meta?.featured),
     billing,
     performance,
+    responsiveness,
     fields,
     pendingEdit: pending
       ? { id: pending.id, createdAt: pending.created_at }
@@ -308,6 +323,7 @@ export default async function ManageListingPage({ params }: PageProps) {
       featured={loaded.featured}
       billing={loaded.billing}
       performance={loaded.performance}
+      responsiveness={loaded.responsiveness}
       initialFields={loaded.fields}
       pendingEdit={loaded.pendingEdit}
       initialReviewUrl={loaded.reviewUrl}

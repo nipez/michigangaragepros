@@ -222,6 +222,19 @@ function cand(partial) {
     stripeSubscriptionStatus: partial.stripeSubscriptionStatus ?? null,
     featuredPlan: partial.featuredPlan ?? null,
     featuredCity: partial.featuredCity ?? null,
+    responsiveness: partial.responsiveness ?? null,
+  };
+}
+
+/** Qualifying responsiveness metrics for tiebreak tests. */
+function resp(rate, medianHours) {
+  return {
+    windowDays: 90,
+    sampleSize: 10,
+    actedCount: 10,
+    medianHoursToAction: medianHours,
+    actedWithin24hRate: rate,
+    qualifiesForPublic: true,
   };
 }
 
@@ -414,6 +427,57 @@ assert.deepEqual(
 assert.deepEqual(
   filterNewRecipients(recipients, new Set()).map((r) => r.companySlug),
   ["alpha-doors", "beta-garage", "gamma-llc"],
+);
+
+// --- Responsiveness tiebreak (after Featured / home / service; never demotes Featured) ---
+const respPool = [
+  cand({
+    companySlug: "slow-organic",
+    companyName: "Slow Organic",
+    homeCityMatch: true,
+    serviceMatch: true,
+    responsiveness: resp(0.4, 20),
+  }),
+  cand({
+    companySlug: "fast-organic",
+    companyName: "Fast Organic",
+    homeCityMatch: true,
+    serviceMatch: true,
+    responsiveness: resp(0.9, 2),
+  }),
+  cand({
+    companySlug: "featured-slow",
+    companyName: "Featured Slow",
+    homeCityMatch: false,
+    serviceMatch: true,
+    stripeSubscriptionStatus: "active",
+    featuredPlan: "statewide",
+    featuredCity: "Detroit",
+    featured: true,
+    responsiveness: resp(0.2, 30),
+  }),
+  cand({
+    companySlug: "no-signal",
+    companyName: "No Signal",
+    homeCityMatch: true,
+    serviceMatch: true,
+    responsiveness: null,
+  }),
+];
+const respRanked = rankAreaRouteCandidates(respPool, {
+  leadCitySlug: "detroit",
+  leadCity: detroit,
+  cap: 4,
+});
+assert.equal(
+  respRanked[0].companySlug,
+  "featured-slow",
+  "Featured still ranks above more-responsive organics",
+);
+assert.deepEqual(
+  respRanked.slice(1).map((r) => r.companySlug),
+  ["fast-organic", "slow-organic", "no-signal"],
+  "among organics: higher responsiveness before lower; no-signal last",
 );
 
 console.log("test-lead-routing: ok");

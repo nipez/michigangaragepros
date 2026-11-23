@@ -12,6 +12,11 @@ import {
   normalizeSubscriptionStatus,
 } from "@/lib/featured-billing";
 import { bumpListingStatSafe } from "@/lib/listing-stats";
+import {
+  compareResponsivenessTiebreak,
+  loadResponsivenessBySlugs,
+  type CompanyResponsivenessMetrics,
+} from "@/lib/responsiveness";
 
 /** Max claimed companies notified for an open (no company_slug) lead. */
 export const AREA_ROUTE_CAP = 3;
@@ -42,6 +47,11 @@ export type AreaRouteCandidate = {
   stripeSubscriptionStatus: string | null;
   featuredPlan: FeaturedPlanId | null;
   featuredCity: string | null;
+  /**
+   * Optional responsiveness metrics for tiebreak after Featured / home /
+   * service. Missing or low-sample ⇒ neutral (does not beat measured peers).
+   */
+  responsiveness?: CompanyResponsivenessMetrics | null;
 };
 
 type ClaimedCompanyQueryRow = {
@@ -185,9 +195,11 @@ export function isFeaturedLeadPriority(
 
 /**
  * Deterministic ranking among area candidates.
- * Featured (healthy sub + plan covers) → home-city → service match → name.
+ * Featured (healthy sub + plan covers) → home-city → service match →
+ * responsiveness tiebreak → name.
  * Soft service filter: prefer service matches when any exist; otherwise keep all.
  * Cap of AREA_ROUTE_CAP (default 3). Never includes blank emails (caller filters).
+ * Never demotes Featured below non-Featured.
  */
 export function rankAreaRouteCandidates(
   candidates: AreaRouteCandidate[],
@@ -235,6 +247,12 @@ export function rankAreaRouteCandidates(
     const aSvc = a.serviceMatch ? 1 : 0;
     const bSvc = b.serviceMatch ? 1 : 0;
     if (aSvc !== bSvc) return bSvc - aSvc;
+
+    const resp = compareResponsivenessTiebreak(
+      a.responsiveness,
+      b.responsiveness,
+    );
+    if (resp !== 0) return resp;
 
     return a.companyName.localeCompare(b.companyName, "en", {
       sensitivity: "base",
@@ -385,9 +403,10 @@ function rowToCandidate(
  * then companies.city_slug or company_service_areas.area match).
  *
  * Ranking: Featured with a healthy subscription whose plan covers the city
- * first, then home-city matches, then service relevance, then name (fair).
- * Soft service filter prefers companies listing the requested service.
- * When same-city coverage is thin, expands to nearby / same-region cities.
+ * first, then home-city matches, then service relevance, then responsiveness
+ * (measured peers only), then name (fair). Soft service filter prefers
+ * companies listing the requested service. When same-city coverage is thin,
+ * expands to nearby / same-region cities.
  *
  * Limitation: service areas are city/metro names, not ZIPs. Matching is only as
  * good as ZIP_TO_CITY_SLUG / ZIP3_TO_CITY_SLUG plus seeded service area strings.
@@ -543,6 +562,22 @@ async function queryAreaCandidates(
     const candidate = rowToCandidate(row, input.leadService);
     if (candidate) out.push(candidate);
   }
+
+  // Attach responsiveness for ranking tiebreak (best-effort; fail-open).
+  if (out.length > 0) {
+    try {
+      const bySlug = await loadResponsivenessBySlugs(
+        db,
+        out.map((c) => c.companySlug),
+      );
+      for (const c of out) {
+        c.responsiveness = bySlug[c.companySlug] ?? null;
+      }
+    } catch (err) {
+      console.error("lead-routing responsiveness load failed", err);
+    }
+  }
+
   return out;
 }
 
