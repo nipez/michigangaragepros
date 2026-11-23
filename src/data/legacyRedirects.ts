@@ -17,6 +17,28 @@ export const REMOVED_COMPANY_TO_CITY: ReadonlyArray<{
 ];
 
 /**
+ * Long-form / descriptive region path segments → canonical REGIONS.slug.
+ * Google and humans often guess "southeast-michigan" while routes use "southeast".
+ * Applied to both /regions/{alias}/ and /region/{alias}/.
+ */
+export const REGION_LONG_FORM_ALIASES: ReadonlyArray<{
+  alias: string;
+  regionSlug: string;
+}> = [
+  { alias: "southeast-michigan", regionSlug: "southeast" },
+  { alias: "metro-detroit", regionSlug: "southeast" },
+  { alias: "west-michigan", regionSlug: "west" },
+  { alias: "central-michigan", regionSlug: "central" },
+  { alias: "mid-michigan", regionSlug: "central" },
+  { alias: "southwest-michigan", regionSlug: "southwest" },
+  { alias: "northern-michigan", regionSlug: "north" },
+  { alias: "north-michigan", regionSlug: "north" },
+  { alias: "upper-peninsula-michigan", regionSlug: "upper-peninsula" },
+  { alias: "up", regionSlug: "upper-peninsula" },
+  { alias: "u-p", regionSlug: "upper-peninsula" },
+];
+
+/**
  * Top-level App Router segments that must never be treated as bare city slugs.
  * Keep in sync with directories under src/app/.
  */

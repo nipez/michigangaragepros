@@ -4,6 +4,7 @@ import { CITIES } from "./src/data/cities";
 import { COMPANIES } from "./src/data/companies";
 import { PRIORITY_CITY_SLUGS } from "./src/data/growth";
 import {
+  REGION_LONG_FORM_ALIASES,
   REMOVED_COMPANY_TO_CITY,
   RESERVED_TOP_LEVEL_SEGMENTS,
 } from "./src/data/legacyRedirects";
@@ -52,6 +53,28 @@ async function legacyRedirects() {
     redirects.push({
       source: `/region/${region.slug}`,
       destination: `/regions/${region.slug}/`,
+      statusCode: 301,
+    });
+  }
+
+  // No /regions/ index — send browsers and crawlers to the cities hub.
+  redirects.push({
+    source: "/regions",
+    destination: "/cities/",
+    statusCode: 301,
+  });
+
+  // Long-form region aliases → canonical short REGIONS.slug
+  // (both /regions/{alias}/ and legacy /region/{alias}/).
+  for (const { alias, regionSlug } of REGION_LONG_FORM_ALIASES) {
+    redirects.push({
+      source: `/regions/${alias}`,
+      destination: `/regions/${regionSlug}/`,
+      statusCode: 301,
+    });
+    redirects.push({
+      source: `/region/${alias}`,
+      destination: `/regions/${regionSlug}/`,
       statusCode: 301,
     });
   }
