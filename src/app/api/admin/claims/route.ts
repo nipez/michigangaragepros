@@ -27,6 +27,10 @@ import {
   ensureReviewToken,
   reviewRequestUrl,
 } from "@/lib/review-request";
+import {
+  formatResponsivenessAdminSummary,
+  loadResponsivenessBySlugs,
+} from "@/lib/responsiveness";
 
 export const runtime = "nodejs";
 
@@ -164,6 +168,30 @@ export async function GET() {
     completenessBySlug = {};
   }
 
+  let responsivenessBySlug: Record<
+    string,
+    {
+      sampleSize: number;
+      actedCount: number;
+      medianHoursToAction: number | null;
+      actedWithin24hRate: number;
+      qualifiesForPublic: boolean;
+      summary: string;
+      publicLabel: string | null;
+    }
+  > = {};
+  try {
+    const metricsBySlug = await loadResponsivenessBySlugs(db, approvedSlugs);
+    for (const slug of approvedSlugs) {
+      const metrics = metricsBySlug[slug];
+      if (!metrics) continue;
+      responsivenessBySlug[slug] = formatResponsivenessAdminSummary(metrics);
+    }
+  } catch (err) {
+    console.error("admin claims responsiveness load failed", err);
+    responsivenessBySlug = {};
+  }
+
   const claims = rows.map((row) => {
     const slug = (row.company_slug ?? "").trim();
     const demand = slug ? demandBySlug.get(slug) : undefined;
@@ -179,6 +207,10 @@ export async function GET() {
       completeness:
         row.status === "approved" && slug
           ? (completenessBySlug[slug] ?? null)
+          : null,
+      responsiveness:
+        row.status === "approved" && slug
+          ? (responsivenessBySlug[slug] ?? null)
           : null,
     };
   });

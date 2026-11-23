@@ -41,6 +41,16 @@ type ClaimRow = {
     summary: string;
     missing: string[];
   } | null;
+  /** Lead responsiveness for approved/claimed companies. */
+  responsiveness: {
+    sampleSize: number;
+    actedCount: number;
+    medianHoursToAction: number | null;
+    actedWithin24hRate: number;
+    qualifiesForPublic: boolean;
+    summary: string;
+    publicLabel: string | null;
+  } | null;
 };
 
 type FilterTab = "open" | "done" | "all";
@@ -87,6 +97,7 @@ export function AdminClaimsClient({
           trust_summary: c.trust_summary ?? null,
           trust_updated_at: c.trust_updated_at ?? null,
           completeness: c.completeness ?? null,
+          responsiveness: c.responsiveness ?? null,
         })),
       );
       setAuthed(true);
@@ -550,6 +561,25 @@ export function AdminClaimsClient({
                               Next: {claim.completeness.missing.join(" · ")}
                             </span>
                           ) : null}
+                        </span>
+                      ) : (
+                        <span className="text-muted">Unavailable</span>
+                      )}
+                    </div>
+                    <div className="mb-1.5 mt-2">
+                      <span className="text-faint">Responsiveness:</span>{" "}
+                      {claim.responsiveness ? (
+                        <span className="font-semibold text-navy">
+                          {claim.responsiveness.summary}
+                          {claim.responsiveness.publicLabel ? (
+                            <span className="mt-1 block font-medium text-muted">
+                              Public: {claim.responsiveness.publicLabel}
+                            </span>
+                          ) : (
+                            <span className="mt-1 block font-medium text-muted">
+                              No public badge yet
+                            </span>
+                          )}
                         </span>
                       ) : (
                         <span className="text-muted">Unavailable</span>

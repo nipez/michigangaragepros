@@ -113,6 +113,8 @@ type RoutingLeadRow = {
   emailed: number;
   company_status: string | null;
   status_updated_at: string | null;
+  first_viewed_at: string | null;
+  first_acted_at: string | null;
   review_requested_at: string | null;
   name: string;
   phone: string | null;
@@ -146,6 +148,8 @@ function mapLeadRow(
     reason: row.reason,
     companyStatus,
     statusUpdatedAt: row.status_updated_at,
+    firstViewedAt: row.first_viewed_at,
+    firstActedAt: row.first_acted_at,
     createdAt: row.created_at,
     emailed: Boolean(row.emailed),
     reviewRequestedAt: row.review_requested_at,
@@ -169,6 +173,8 @@ async function loadOwnedRouting(
                 lr.emailed AS emailed,
                 COALESCE(lr.company_status, 'new') AS company_status,
                 lr.status_updated_at AS status_updated_at,
+                lr.first_viewed_at AS first_viewed_at,
+                lr.first_acted_at AS first_acted_at,
                 lr.review_requested_at AS review_requested_at,
                 l.name AS name,
                 l.phone AS phone,

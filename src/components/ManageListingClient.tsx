@@ -25,12 +25,14 @@ import {
   type ListingFields,
 } from "@/lib/listing-manage";
 import type { ListingPerformance } from "@/lib/listing-stats";
+import type { CompanyResponsivenessMetrics } from "@/lib/responsiveness";
 import type { ManageReview } from "@/lib/review-replies";
 import { CompanyLeadInbox } from "./CompanyLeadInbox";
 import { CompanyReviewReplies } from "./CompanyReviewReplies";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { ListingPerformancePanel } from "./ListingPerformancePanel";
+import { ResponsivenessPanel } from "./ResponsivenessPanel";
 
 export type ManageBillingState = {
   stripeConfigured: boolean;
@@ -50,6 +52,7 @@ type Props = {
   featured: boolean;
   billing: ManageBillingState;
   performance: ListingPerformance | null;
+  responsiveness: CompanyResponsivenessMetrics | null;
   initialFields: ListingFields;
   pendingEdit: { id: number; createdAt: string } | null;
   initialReviewUrl: string | null;
@@ -73,6 +76,7 @@ export function ManageListingClient({
   featured,
   billing,
   performance,
+  responsiveness,
   initialFields,
   pendingEdit,
   initialReviewUrl,
@@ -552,6 +556,12 @@ export function ManageListingClient({
                 variant="manage"
                 showUpsell
               />
+            </div>
+          ) : null}
+
+          {responsiveness ? (
+            <div id="responsiveness" className="mt-5 scroll-mt-24">
+              <ResponsivenessPanel metrics={responsiveness} variant="manage" />
             </div>
           ) : null}
 

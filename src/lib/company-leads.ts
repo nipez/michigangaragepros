@@ -39,6 +39,10 @@ export type CompanyLead = {
   reason: string;
   companyStatus: CompanyLeadStatus;
   statusUpdatedAt: string | null;
+  /** First time this company opened the lead in the manage inbox. */
+  firstViewedAt: string | null;
+  /** First time this company left status "new" (contacted/quoted/won/lost). */
+  firstActedAt: string | null;
   createdAt: string;
   emailed: boolean;
   /** When the owner emailed a review request for this routing; null if never. */
@@ -57,6 +61,8 @@ type LeadRoutingRow = {
   emailed: number;
   company_status: string | null;
   status_updated_at: string | null;
+  first_viewed_at: string | null;
+  first_acted_at: string | null;
   review_requested_at: string | null;
   name: string;
   phone: string | null;
@@ -173,33 +179,22 @@ function mapRow(row: LeadRoutingRow): CompanyLead {
     reason: row.reason,
     companyStatus: normalizeStatus(row.company_status),
     statusUpdatedAt: row.status_updated_at,
+    firstViewedAt: row.first_viewed_at,
+    firstActedAt: row.first_acted_at,
     createdAt: row.created_at,
     emailed: Boolean(row.emailed),
     reviewRequestedAt: row.review_requested_at,
   };
 }
 
-/**
- * Leads actually routed to this company (lead_routings.company_slug).
- * Consent/routing already happened in lead-routing; we never invent rows.
- */
-export async function listCompanyLeads(
-  db: D1Database,
-  companySlug: string,
-  options?: { limit?: number },
-): Promise<CompanyLead[]> {
-  const slug = companySlug.trim();
-  if (!slug) return [];
-  const limit = Math.min(Math.max(options?.limit ?? 100, 1), 200);
-
-  const { results } = await db
-    .prepare(
-      `SELECT lr.id AS routing_id,
+const LEAD_SELECT_SQL = `SELECT lr.id AS routing_id,
               lr.lead_id AS lead_id,
               lr.reason AS reason,
               lr.emailed AS emailed,
               COALESCE(lr.company_status, 'new') AS company_status,
               lr.status_updated_at AS status_updated_at,
+              lr.first_viewed_at AS first_viewed_at,
+              lr.first_acted_at AS first_acted_at,
               lr.review_requested_at AS review_requested_at,
               l.name AS name,
               l.phone AS phone,
@@ -210,7 +205,57 @@ export async function listCompanyLeads(
               l.timing AS timing,
               l.created_at AS created_at
        FROM lead_routings lr
-       INNER JOIN leads l ON l.id = lr.lead_id
+       INNER JOIN leads l ON l.id = lr.lead_id`;
+
+/**
+ * Stamp first_viewed_at on unviewed routings for this company.
+ * Idempotent: only fills NULL. Fail-open — never throws to callers.
+ */
+export async function markCompanyLeadsViewed(
+  db: D1Database,
+  companySlug: string,
+): Promise<number> {
+  const slug = companySlug.trim();
+  if (!slug) return 0;
+  try {
+    const result = await db
+      .prepare(
+        `UPDATE lead_routings
+         SET first_viewed_at = datetime('now')
+         WHERE company_slug = ?
+           AND first_viewed_at IS NULL`,
+      )
+      .bind(slug)
+      .run();
+    return Number(result.meta.changes ?? 0);
+  } catch (err) {
+    // Column may be missing until migration 0029 is applied.
+    console.error("markCompanyLeadsViewed failed", err);
+    return 0;
+  }
+}
+
+/**
+ * Leads actually routed to this company (lead_routings.company_slug).
+ * Consent/routing already happened in lead-routing; we never invent rows.
+ * When markViewed is true (manage inbox), stamps first_viewed_at once.
+ */
+export async function listCompanyLeads(
+  db: D1Database,
+  companySlug: string,
+  options?: { limit?: number; markViewed?: boolean },
+): Promise<CompanyLead[]> {
+  const slug = companySlug.trim();
+  if (!slug) return [];
+  const limit = Math.min(Math.max(options?.limit ?? 100, 1), 200);
+
+  if (options?.markViewed) {
+    await markCompanyLeadsViewed(db, slug);
+  }
+
+  const { results } = await db
+    .prepare(
+      `${LEAD_SELECT_SQL}
        WHERE lr.company_slug = ?
        ORDER BY datetime(l.created_at) DESC
        LIMIT ?`,
@@ -235,12 +280,22 @@ export async function updateCompanyLeadStatus(
   if (!slug || !Number.isInteger(routingId) || routingId <= 0) return null;
   if (!isCompanyLeadStatus(status)) return null;
 
+  // First action = leaving "new". Also fill first_viewed_at if still null
+  // (acting without a prior list view still counts as having seen the lead).
+  const setsFirstAction = status !== "new";
   const result = await db
     .prepare(
-      `UPDATE lead_routings
-       SET company_status = ?,
-           status_updated_at = datetime('now')
-       WHERE id = ? AND company_slug = ?`,
+      setsFirstAction
+        ? `UPDATE lead_routings
+           SET company_status = ?,
+               status_updated_at = datetime('now'),
+               first_acted_at = COALESCE(first_acted_at, datetime('now')),
+               first_viewed_at = COALESCE(first_viewed_at, datetime('now'))
+           WHERE id = ? AND company_slug = ?`
+        : `UPDATE lead_routings
+           SET company_status = ?,
+               status_updated_at = datetime('now')
+           WHERE id = ? AND company_slug = ?`,
     )
     .bind(status, routingId, slug)
     .run();
@@ -249,23 +304,7 @@ export async function updateCompanyLeadStatus(
 
   const row = await db
     .prepare(
-      `SELECT lr.id AS routing_id,
-              lr.lead_id AS lead_id,
-              lr.reason AS reason,
-              lr.emailed AS emailed,
-              COALESCE(lr.company_status, 'new') AS company_status,
-              lr.status_updated_at AS status_updated_at,
-              lr.review_requested_at AS review_requested_at,
-              l.name AS name,
-              l.phone AS phone,
-              l.email AS email,
-              l.zip AS zip,
-              l.service AS service,
-              l.issue AS issue,
-              l.timing AS timing,
-              l.created_at AS created_at
-       FROM lead_routings lr
-       INNER JOIN leads l ON l.id = lr.lead_id
+      `${LEAD_SELECT_SQL}
        WHERE lr.id = ? AND lr.company_slug = ?
        LIMIT 1`,
     )

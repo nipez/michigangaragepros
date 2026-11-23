@@ -21,7 +21,7 @@ export async function GET(_request: Request, context: RouteContext) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    const leads = await listCompanyLeads(db, company.slug);
+    const leads = await listCompanyLeads(db, company.slug, { markViewed: true });
     return NextResponse.json(
       {
         slug: company.slug,
