@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
 import { getDb, getEnv } from "@/lib/db";
+import { loadLeadFallbackStats } from "@/lib/lead-fallback";
 
 export const runtime = "nodejs";
 
@@ -21,6 +22,8 @@ type LeadRow = {
   created_at: string;
   routed_at: string | null;
   routed_to: string | null;
+  needs_admin_attention: number;
+  fallback_exhausted_at: string | null;
 };
 
 type RoutingRow = {
@@ -33,6 +36,9 @@ type RoutingRow = {
   created_at: string;
   company_status: string;
   status_updated_at: string | null;
+  first_viewed_at: string | null;
+  first_acted_at: string | null;
+  nudge_sent_at: string | null;
 };
 
 export async function GET() {
@@ -45,9 +51,13 @@ export async function GET() {
   const { results } = await db
     .prepare(
       `SELECT id, service, issue, zip, name, phone, email, timing, company_slug,
-              source_page, status, created_at, routed_at, routed_to
+              source_page, status, created_at, routed_at, routed_to,
+              COALESCE(needs_admin_attention, 0) AS needs_admin_attention,
+              fallback_exhausted_at
        FROM leads
-       ORDER BY datetime(created_at) DESC
+       ORDER BY
+         CASE WHEN COALESCE(needs_admin_attention, 0) = 1 AND status = 'new' THEN 0 ELSE 1 END,
+         datetime(created_at) DESC
        LIMIT 200`,
     )
     .all<LeadRow>();
@@ -62,7 +72,7 @@ export async function GET() {
       .prepare(
         `SELECT id, lead_id, company_slug, email, reason, emailed, created_at,
                 COALESCE(company_status, 'new') AS company_status,
-                status_updated_at
+                status_updated_at, first_viewed_at, first_acted_at, nudge_sent_at
          FROM lead_routings
          ORDER BY datetime(created_at) DESC
          LIMIT 500`,
@@ -79,11 +89,19 @@ export async function GET() {
     }
   }
 
+  let fallbackStats = null;
+  try {
+    fallbackStats = await loadLeadFallbackStats(db, 30);
+  } catch (err) {
+    console.error("admin leads fallback stats failed", err);
+  }
+
   return NextResponse.json({
     leads: leads.map((lead) => ({
       ...lead,
       routings: routingsByLead.get(lead.id) ?? [],
     })),
+    fallbackStats,
   });
 }
 

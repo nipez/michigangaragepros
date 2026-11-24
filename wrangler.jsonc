@@ -16,10 +16,12 @@
   "observability": {
     "enabled": true
   },
-  // Monday 14:00 UTC ≈ 9:00 AM Eastern Standard / 10:00 AM Eastern Daylight.
-  // Weekly performance digests for claimed companies (see src/lib/weekly-digest.ts).
+  // Monday 14:00 UTC ≈ 9:00 AM Eastern Standard / 10:00 AM Eastern Daylight —
+  // weekly performance digests (src/lib/weekly-digest.ts).
+  // Hourly — unanswered lead fallback to next eligible claimed pro
+  // (src/lib/lead-fallback.ts; default 24h silence window).
   "triggers": {
-    "crons": ["0 14 * * 1"]
+    "crons": ["0 14 * * 1", "0 * * * *"]
   },
   // Non-secret notify defaults. Set secrets with:
   //   npx wrangler secret put RESEND_API_KEY

@@ -10,6 +10,7 @@
 import assert from "node:assert/strict";
 import {
   AREA_ROUTE_CAP,
+  LEAD_ROUTE_TOTAL_CAP,
   expandLeadCityMatchTargets,
   featuredPlanCoversLeadCity,
   filterNewRecipients,
@@ -28,6 +29,8 @@ const detroit = {
 
 // --- Constants ---
 assert.equal(AREA_ROUTE_CAP, 3);
+assert.equal(LEAD_ROUTE_TOTAL_CAP, 4);
+assert.ok(LEAD_ROUTE_TOTAL_CAP >= AREA_ROUTE_CAP);
 
 // --- Service soft-match ---
 assert.equal(
@@ -311,6 +314,19 @@ assert.deepEqual(
 assert.ok(
   !ranked.some((r) => r.companySlug === "unclaimed-target"),
   "excludeSlug removed",
+);
+
+const multiExcluded = rankAreaRouteCandidates(pool, {
+  leadCitySlug: "detroit",
+  leadCity: detroit,
+  cap: 3,
+  excludeSlugs: new Set(["featured-active", "alpha-organic"]),
+});
+assert.ok(
+  !multiExcluded.some((r) =>
+    ["featured-active", "alpha-organic"].includes(r.companySlug),
+  ),
+  "excludeSlugs set removes multiple already-routed companies",
 );
 assert.ok(
   !ranked.some((r) => r.companySlug === "no-email"),
