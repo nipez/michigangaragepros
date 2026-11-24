@@ -1730,6 +1730,153 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: "commercial-garage-door-repair-michigan",
+    title:
+      "Commercial Garage Door & Overhead Door Repair in Michigan: A Business Owner's Guide",
+    description:
+      "Michigan business and property-manager guide to commercial garage doors and overhead doors: door types, common failures, freeze-thaw and salt issues, maintenance cycles, rough cost framing, contractor questions, and when to repair vs replace.",
+    date: "2026-11-24",
+    readMinutes: 14,
+    category: "Guides",
+    relatedServiceSlugs: [
+      "garage-door-repair",
+      "broken-springs",
+      "garage-door-openers",
+      "garage-door-installation",
+      "maintenance",
+      "emergency-service",
+    ],
+    sections: [
+      {
+        paragraphs: [
+          "A stuck commercial garage door or overhead door is not a inconvenience — it can idle trucks, freeze a loading dock, or leave a warehouse opening insecure overnight. Michigan shops, warehouses, dealerships, fire stations, and multi-tenant buildings run doors harder than residential units, often through freeze-thaw winters, road salt, and snow piled against dock seals.",
+          "This guide is for business owners, facility managers, and property managers who need practical commercial door repair and service guidance — not another residential homeowner checklist. It covers door types, common failures, Michigan climate wear, preventive maintenance and cycle counts, emergency response, rough planning costs consistent with our shared [/cost/](/cost/) guides, what to ask a commercial contractor, and when repair still beats replacement. For residential-only decisions, use [repair vs replace](/blog/repair-vs-replace-garage-door-michigan/), [emergency repair](/blog/emergency-garage-door-repair-michigan/), and [how to choose a garage door company](/blog/how-to-choose-garage-door-company-michigan/) instead of duplicating those pages here.",
+          "Michigan Garage Pros is a directory: we help you compare local [repair](/garage-door-repair/), [installation](/garage-door-installation/), [maintenance](/maintenance/), and [emergency](/emergency-service/) companies; we do not sell or service commercial doors ourselves.",
+        ],
+      },
+      {
+        heading: "Commercial door types you will see in Michigan",
+        paragraphs: [
+          "Sectional steel doors are the workhorse for many Michigan warehouses, light industrial bays, and dealership service doors. They travel on tracks like residential sectionals but use heavier panels, commercial hardware, and operators sized for higher cycle counts. Parts availability is usually strong, which helps when a panel or spring needs a same-week fix.",
+          "Rolling steel (coiling) doors wind onto a barrel above the opening. They suit security, fire-rated openings, and spaces where a sectional track would steal headroom. Failures often involve curtain damage, barrel/spring assemblies, guides, and motor operators — not residential-style torsion bars alone.",
+          "High-speed doors (fabric, rubber, or rigid) protect conditioned spaces and keep traffic moving at docks and clean areas. They need frequent sensor, seal, and drive attention; a misaligned photo eye or torn panel can stop a line faster than a classic steel door jam.",
+          "Fire doors and fire shutters close on alarm or fusible-link release and must reset, test, and maintain to code and insurer expectations. Treat annual testing and tagged service as compliance work, not optional tune-ups.",
+          "Dock doors are the outdoor-facing openings behind levelers, seals, and shelters. Impact from trailers, torn dock seals, and ice at the threshold are everyday Michigan issues. A “door problem” on a dock is often a seal, leveler, or operator issue as much as a panel issue — ask the tech to inspect the full dock package, not only the curtain or sections.",
+        ],
+      },
+      {
+        heading: "Common commercial failures (and what they usually mean)",
+        paragraphs: [
+          "High-cycle springs wear out faster than residential springs because warehouses may open a door dozens or hundreds of times per day. Loud bangs, a door that will not lift, or an operator that strains mid-travel often point to spring end-of-life. Commercial sites frequently specify higher-cycle spring packages; skimping on cycle rating is a false economy. For residential spring cost framing only, see [spring repair cost in Michigan](/blog/garage-door-spring-repair-cost-michigan/) — commercial pairs and drums typically price higher.",
+          "Cables, drums, and tracks take abuse from impact, unbalanced doors, and ice. Frayed cables, a crooked curtain or section stack, or grinding in the guides mean stop using the door until a technician inspects it — forcing a commercial operator can multiply damage.",
+          "Operators and trolleys (or jackshaft / sidemount commercial operators) fail from worn gears, failed logic boards, bad limit settings, or doors that are out of balance. Photo eyes and safety edges that are dirty, iced, or kicked out of alignment cause nuisance reverses that look like “opener problems.” Clean lenses and check alignment before you condemn the motor — then schedule [opener](/garage-door-openers/) service if the door still will not run reliably.",
+          "Dock seals, shelters, and bottom weather seals tear from trailer impact and freeze-thaw. A torn seal dumps heat in winter and invites birds, pests, and water. Impact damage from forklifts and trailers can bend guides, dent sections, or rack a rolling curtain — get photos for insurance before major teardown.",
+        ],
+      },
+      {
+        heading: "Michigan-specific commercial door issues",
+        paragraphs: [
+          "Freeze-thaw cycles bond seals to slabs and dock pads, then tear them when someone forces the operator. Clear ice gently before cycling the door, and treat repeated ice bonding as a seal or drainage problem — not just a motor problem. Winter residential troubleshooting patterns still apply at a higher stakes level; see [garage door won't open in winter](/blog/garage-door-wont-open-winter-michigan/) for cold-weather habits that transfer to light commercial bays.",
+          "Road salt and corrosion attack tracks, bottom brackets, fasteners, and operator hardware along Metro Detroit corridors and salted highway routes into West Michigan. Lakeshore humidity near Lake Michigan adds another corrosion load. Specify coated hardware where possible and rinse salt film during seasonal [maintenance](/maintenance/) visits.",
+          "Snow load and plow banks can block travel paths, jam bottom seals, and bury photo eyes. Plow plans should keep clear arcs in front of dock doors and exterior service bays. Snow piled against a door also stresses panels and seals overnight.",
+          "Heating loss through dock doors shows up on energy bills and on employee complaints. Torn seals, open dock doors left ajar, and poorly insulated sectional or high-speed doors all leak conditioned air. Pair door repair with seal and shelter inspection when winter heating is the complaint — not only a new motor.",
+        ],
+      },
+      {
+        heading: "Preventive maintenance and cycle counts",
+        paragraphs: [
+          "Commercial doors are rated by design cycles. A door that runs 50–200 times per day will consume springs, rollers, and operator components far faster than a residential door that opens twice a day. Ask your contractor what cycle rating is installed and what remaining life they estimate from spring wire diameter, drum condition, and operator amp draw — not a vague “it looks fine.”",
+          "A practical schedule for many Michigan facilities: quarterly visual checks by on-site staff (photo eyes, seals, unusual noise, uneven travel), and professional tune-ups at least twice a year — ideally before peak winter and again in spring after salt season. High-speed doors and busy dock lines often need more frequent manufacturer-recommended service. Multi-door sites should put every opening on a shared calendar so one failed bay does not surprise you during inventory season.",
+          "Between pro visits: keep photo eyes clean and aligned, clear snow and debris from thresholds, listen for new grinding or scraping, and stop using any door that travels crooked or shows frayed cables. Staff should know how to use disconnects safely for a controlled manual close when an opening must be secured — without “helping” a strained operator.",
+          "Budget for wear parts (springs, cables, rollers, seals) as operating expense, not only emergency capital. Planned spring replacement on a high-cycle door is almost always cheaper than an after-hours failure that strands trailers. Pair this section with the [winter maintenance checklist](/blog/winter-garage-door-maintenance-checklist-michigan/) for cold-season habits, then escalate commercial-specific operator and dock work to a pro who stocks commercial parts.",
+        ],
+      },
+      {
+        heading: "Emergency and after-hours service (security first)",
+        paragraphs: [
+          "A commercial door stuck open is a security and weather event. Prioritize securing the opening — temporary barriers, overnight staffing, or a controlled manual close if the door can be moved safely — then call for [emergency service](/emergency-service/). A door stuck closed can block egress or shipping; say whether life-safety egress is affected when you call so dispatch can prioritize correctly.",
+          "Ask commercial providers what “after-hours” means in writing: night and weekend response windows, trip fees, and whether they stock common commercial springs, operator boards, and rolling-door parts on the truck. Metro markets such as [Detroit](/cities/detroit/emergency-service/), [Warren](/cities/warren/emergency-service/), [Troy](/cities/troy/emergency-service/), [Sterling Heights](/cities/sterling-heights/emergency-service/), and [Grand Rapids](/cities/grand-rapids/emergency-service/) typically have more same-day options than thinner towns.",
+          "For residential-style emergency framing and homeowner steps, see [emergency garage door repair in Michigan](/blog/emergency-garage-door-repair-michigan/). Commercial sites should add site access instructions, dock numbers, and after-hours contacts to every service agreement so the tech is not stuck at a locked gate.",
+        ],
+      },
+      {
+        heading: "Rough cost framing for commercial work (planning only)",
+        paragraphs: [
+          "Michigan Garage Pros publishes shared residential planning ranges on the [/cost/](/cost/) hub — for example [repair](/cost/garage-door-repair/), [springs](/cost/broken-springs/), [openers](/cost/garage-door-openers/), [installation](/cost/garage-door-installation/), [maintenance](/cost/maintenance/), and [emergency](/cost/emergency-service/). Those tables are homeowner planning bands, not commercial invoices.",
+          "As conservative framing only: commercial diagnosis and repair visits usually land above the residential service-call bands on those guides because of larger doors, commercial operators, lift equipment, and site time. High-cycle spring packages, rolling-steel curtain work, dock seal/shelter repairs, and after-hours response commonly price higher than the residential spring and emergency bands. Full commercial door replacement spans a wide range by size, insulation, fire rating, operator type, and removal — get itemized quotes rather than trusting a single phone number.",
+          "Ask every bid to separate trip/diagnosis, parts, labor, lift or crane needs, disposal, and after-hours premiums. Multi-door service agreements can lower per-visit cost if the contractor routes your site on a schedule. Treat any “today only” commercial price without a written scope as a red flag — same discipline as [choosing a garage door company](/blog/how-to-choose-garage-door-company-michigan/).",
+        ],
+      },
+      {
+        heading: "What to ask a commercial door contractor",
+        paragraphs: [
+          "1) Do you carry liability insurance appropriate for commercial sites, and can you provide a certificate naming our company? 2) Do you stock commercial springs, operator parts, and rolling-door components locally, or is everything special-order? 3) What is your standard and after-hours response time for our ZIP? 4) Will you put preventive maintenance and response times in a written service agreement?",
+          "5) Are your techs familiar with our door types (sectional, rolling steel, high-speed, fire door, dock package)? 6) How do you handle photo documentation for insurance after impact? 7) What warranty covers parts vs labor on commercial operators and springs?",
+          "Compare at least two proposals with the same scope. Prefer contractors who already route near your facility — [Southeast Michigan](/regions/southeast/) hubs such as [Sterling Heights](/cities/sterling-heights/), [Warren](/cities/warren/), [Novi](/cities/novi/), and [Troy](/cities/troy/), or [West Michigan](/regions/west/) coverage around [Grand Rapids](/cities/grand-rapids/) — over a distant company that only quotes phone estimates.",
+        ],
+      },
+      {
+        heading: "Repair vs replace for commercial doors",
+        paragraphs: [
+          "Repair usually wins for isolated spring, cable, roller, photo-eye, operator board, or dock-seal failures on a structurally sound door. If the door still tracks true, panels or curtains are serviceable, and cycle life remains, hardware repair is the default — especially when downtime must be measured in hours, not weeks for a custom curtain or fire-rated assembly.",
+          "Replacement leans forward when sections or curtains are repeatedly damaged, guides are bent beyond economical repair, insulation and seals cannot keep the space workable, fire-rating or wind requirements have changed, or stacked repair invoices approach the cost of a correctly specified new door and operator. For the residential decision framework (different product, same logic of end-of-life vs one failure), see [repair vs replace](/blog/repair-vs-replace-garage-door-michigan/) — then ask your commercial bidder for a written repair-vs-replace recommendation with photos.",
+          "When replacing, size springs and operators to actual cycle counts and door weight, not a residential leftover. Bundle dock seals/shelters if heating loss was part of the complaint. Confirm lead times for commercial and fire-rated products before you promise operations a date.",
+        ],
+      },
+      {
+        heading: "Compare commercial-capable pros near you",
+        paragraphs: [
+          "Browse statewide [garage door repair](/garage-door-repair/), [broken springs](/broken-springs/), [openers](/garage-door-openers/), [installation](/garage-door-installation/), [maintenance](/maintenance/), and [emergency service](/emergency-service/) listings, then open city pages where we have enough local pros to compare — including [Sterling Heights repair](/cities/sterling-heights/garage-door-repair/), [Warren](/cities/warren/garage-door-repair/), [Novi](/cities/novi/garage-door-repair/), [Troy](/cities/troy/garage-door-repair/), and [Grand Rapids](/cities/grand-rapids/garage-door-repair/). Region hubs for [Southeast](/regions/southeast/) and [West Michigan](/regions/west/) help you scan coverage before you filter by service.",
+          "Use the shared [/cost/](/cost/) guides for residential planning bands, then expect commercial scopes to quote higher with itemized parts and labor. When you are ready for bids, [request a free quote](/get-a-quote/) with your ZIP, door type (sectional, rolling steel, high-speed, fire, or dock), approximate size, cycle frequency, photos of the opening and operator, and whether you need after-hours response or a multi-door maintenance agreement.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question:
+          "What is the difference between a commercial garage door and a residential door?",
+        answer:
+          "Commercial and overhead doors are built for higher cycle counts, larger openings, heavier hardware, and commercial operators. Many facilities also use rolling steel, high-speed, fire-rated, or dock-door packages that residential homes rarely need.",
+      },
+      {
+        question:
+          "How often should a commercial garage door be maintained in Michigan?",
+        answer:
+          "Busy doors often need professional service at least twice a year, with more frequent checks for high-speed and high-cycle dock lines. Add seasonal attention before winter freeze-thaw and after salt season, plus staff visual checks for seals, photo eyes, and unusual noise.",
+      },
+      {
+        question:
+          "Why do commercial door springs fail more often than home garage springs?",
+        answer:
+          "Cycle count. A warehouse door may run dozens or hundreds of times per day, so springs reach end-of-life faster. Specifying higher-cycle springs and replacing them on a schedule usually costs less than repeated after-hours failures.",
+      },
+      {
+        question:
+          "How much does commercial garage door repair cost in Michigan?",
+        answer:
+          "It varies widely by door type, parts, lift needs, and urgency. Use the site’s residential /cost/ guides as a low baseline for planning language, then expect commercial work — especially high-cycle springs, rolling steel, dock packages, and after-hours calls — to quote higher. Always get a written commercial estimate.",
+      },
+      {
+        question:
+          "Should I repair or replace a damaged commercial overhead door?",
+        answer:
+          "Repair isolated hardware, seals, and operator failures on a sound door. Lean toward replacement when the curtain or sections are repeatedly damaged, guides are bent, energy loss persists, or stacked repairs approach the cost of a correctly specified new door and operator.",
+      },
+      {
+        question:
+          "What should a Michigan business ask before hiring a commercial door company?",
+        answer:
+          "Ask for insurance certificates, commercial parts inventory, documented response times, written maintenance agreements, experience with your door type, insurance photo documentation, and clear parts vs labor warranties — then compare at least two itemized bids.",
+      },
+      {
+        question:
+          "Who should I call for commercial garage door service in Metro Detroit or West Michigan?",
+        answer:
+          "Start with statewide repair and emergency listings, then compare city hubs with enough local pros — such as Sterling Heights, Warren, Novi, Troy, and Grand Rapids — or the Southeast and West Michigan region pages. Mention commercial door type and after-hours needs when you request quotes.",
+      },
+    ],
+  },
 ];
 
 
