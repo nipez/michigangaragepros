@@ -1,4 +1,5 @@
 import type { D1Database } from "@cloudflare/workers-types";
+import { loadLeadFallbackStats } from "@/lib/lead-fallback";
 import { addUtcDays, utcDay } from "@/lib/listing-stats";
 import {
   normalizeQuoteSourcePage,
@@ -24,12 +25,22 @@ export type QuoteFunnelSourceRow = QuoteFunnelTotals & {
   startToSubmitRate: number | null;
 };
 
+export type LeadRoutingStats = {
+  windowDays: number;
+  fallbackRoutings: number;
+  leadsWithFallback: number;
+  needsAdminAttention: number;
+  openNeedsAdminAttention: number;
+};
+
 export type QuoteFunnelReport = {
   windowDays: number;
   startDay: string;
   endDay: string;
   totals: QuoteFunnelTotals;
   bySource: QuoteFunnelSourceRow[];
+  /** Unanswered-lead fallback counts (same windowDays when available). */
+  leadRouting?: LeadRoutingStats | null;
 };
 
 const EMPTY: QuoteFunnelTotals = { views: 0, starts: 0, submits: 0 };
@@ -146,11 +157,19 @@ export async function loadQuoteFunnelReport(
 
   const { totals, bySource } = summarizeQuoteFunnelRows(results ?? []);
 
+  let leadRouting: LeadRoutingStats | null = null;
+  try {
+    leadRouting = await loadLeadFallbackStats(db, windowDays);
+  } catch (err) {
+    console.error("quote funnel lead-routing stats failed", err);
+  }
+
   return {
     windowDays,
     startDay,
     endDay,
     totals,
     bySource,
+    leadRouting,
   };
 }

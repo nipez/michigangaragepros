@@ -241,6 +241,23 @@ export function AdminFunnelClient({
             />
           </div>
 
+          {report?.leadRouting ? (
+            <div className="mb-6 grid gap-3 sm:grid-cols-3">
+              <StatCard
+                label={`Fallback routings (${report.leadRouting.leadsWithFallback} leads)`}
+                value={report.leadRouting.fallbackRoutings}
+              />
+              <StatCard
+                label="Needs admin (open)"
+                value={report.leadRouting.openNeedsAdminAttention}
+              />
+              <StatCard
+                label="Needs admin (all)"
+                value={report.leadRouting.needsAdminAttention}
+              />
+            </div>
+          ) : null}
+
           <div className="overflow-x-auto rounded-2xl border border-border bg-white">
             <table className="w-full min-w-[520px] border-collapse text-left text-[14px]">
               <thead>

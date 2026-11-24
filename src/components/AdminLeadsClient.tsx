@@ -13,6 +13,17 @@ type LeadRouting = {
   created_at: string;
   company_status?: string;
   status_updated_at?: string | null;
+  first_viewed_at?: string | null;
+  first_acted_at?: string | null;
+  nudge_sent_at?: string | null;
+};
+
+type FallbackStats = {
+  windowDays: number;
+  fallbackRoutings: number;
+  leadsWithFallback: number;
+  needsAdminAttention: number;
+  openNeedsAdminAttention: number;
 };
 
 type LeadRow = {
@@ -30,6 +41,8 @@ type LeadRow = {
   created_at: string;
   routed_at: string | null;
   routed_to: string | null;
+  needs_admin_attention?: number;
+  fallback_exhausted_at?: string | null;
   routings?: LeadRouting[];
 };
 
@@ -41,9 +54,20 @@ export function AdminLeadsClient({
   const [authed, setAuthed] = useState(initiallyAuthed);
   const [token, setToken] = useState("");
   const [leads, setLeads] = useState<LeadRow[]>([]);
+  const [fallbackStats, setFallbackStats] = useState<FallbackStats | null>(
+    null,
+  );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(initiallyAuthed);
   const [loginBusy, setLoginBusy] = useState(false);
+
+  const applyLeadsPayload = (data: {
+    leads?: LeadRow[];
+    fallbackStats?: FallbackStats | null;
+  }) => {
+    setLeads(data.leads ?? []);
+    setFallbackStats(data.fallbackStats ?? null);
+  };
 
   const loadLeads = async () => {
     setLoading(true);
@@ -53,11 +77,15 @@ export function AdminLeadsClient({
       if (res.status === 401) {
         setAuthed(false);
         setLeads([]);
+        setFallbackStats(null);
         return;
       }
       if (!res.ok) throw new Error("Unable to load leads");
-      const data = (await res.json()) as { leads: LeadRow[] };
-      setLeads(data.leads ?? []);
+      const data = (await res.json()) as {
+        leads: LeadRow[];
+        fallbackStats?: FallbackStats | null;
+      };
+      applyLeadsPayload(data);
       setAuthed(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to load leads");
@@ -76,12 +104,16 @@ export function AdminLeadsClient({
         if (res.status === 401) {
           setAuthed(false);
           setLeads([]);
+          setFallbackStats(null);
           return;
         }
         if (!res.ok) throw new Error("Unable to load leads");
-        const data = (await res.json()) as { leads: LeadRow[] };
+        const data = (await res.json()) as {
+          leads: LeadRow[];
+          fallbackStats?: FallbackStats | null;
+        };
         if (cancelled) return;
-        setLeads(data.leads ?? []);
+        applyLeadsPayload(data);
         setAuthed(true);
       } catch (err) {
         if (!cancelled) {
@@ -123,6 +155,7 @@ export function AdminLeadsClient({
     await fetch("/api/admin/session", { method: "DELETE" });
     setAuthed(false);
     setLeads([]);
+    setFallbackStats(null);
   };
 
   const setStatus = async (id: number, status: string) => {
@@ -235,6 +268,45 @@ export function AdminLeadsClient({
         </div>
       </div>
 
+      {fallbackStats ? (
+        <div className="mb-6 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl border border-border bg-white px-5 py-4">
+            <div className="text-[12px] font-extrabold uppercase tracking-[0.5px] text-faint">
+              Fallback routings ({fallbackStats.windowDays}d)
+            </div>
+            <div className="mt-1 text-[28px] font-extrabold tracking-[-0.5px] text-navy">
+              {fallbackStats.fallbackRoutings}
+            </div>
+            <div className="mt-0.5 text-[13px] text-muted">
+              {fallbackStats.leadsWithFallback} lead
+              {fallbackStats.leadsWithFallback === 1 ? "" : "s"}
+            </div>
+          </div>
+          <div className="rounded-2xl border border-border bg-white px-5 py-4">
+            <div className="text-[12px] font-extrabold uppercase tracking-[0.5px] text-faint">
+              Needs admin attention
+            </div>
+            <div className="mt-1 text-[28px] font-extrabold tracking-[-0.5px] text-navy">
+              {fallbackStats.openNeedsAdminAttention}
+            </div>
+            <div className="mt-0.5 text-[13px] text-muted">
+              open · {fallbackStats.needsAdminAttention} all-time flagged
+            </div>
+          </div>
+          <div className="rounded-2xl border border-border bg-white px-5 py-4">
+            <div className="text-[12px] font-extrabold uppercase tracking-[0.5px] text-faint">
+              Shown
+            </div>
+            <div className="mt-1 text-[28px] font-extrabold tracking-[-0.5px] text-navy">
+              {leads.length}
+            </div>
+            <div className="mt-0.5 text-[13px] text-muted">
+              flagged open leads sort first
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {error ? (
         <p className="mb-4 text-sm font-semibold text-[#B42318]">{error}</p>
       ) : null}
@@ -265,7 +337,14 @@ export function AdminLeadsClient({
                     {lead.source_page ? ` · src ${lead.source_page}` : ""}
                   </div>
                 </div>
-                <StatusPill status={lead.status} />
+                <div className="flex flex-wrap items-center gap-2">
+                  {lead.needs_admin_attention ? (
+                    <span className="rounded-full bg-[#FFF1F0] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.4px] text-[#B42318]">
+                      Needs attention
+                    </span>
+                  ) : null}
+                  <StatusPill status={lead.status} />
+                </div>
               </div>
               <div className="mb-4 grid gap-1.5 text-sm text-body-secondary md:grid-cols-2">
                 <div>
@@ -358,6 +437,12 @@ function RoutingSummary({ lead }: { lead: LeadRow }) {
               {" "}
               ({r.reason}
               {r.company_status ? ` · ${r.company_status}` : ""}
+              {r.first_acted_at
+                ? " · acted"
+                : r.first_viewed_at
+                  ? " · viewed"
+                  : ""}
+              {r.nudge_sent_at ? " · nudged" : ""}
               {r.emailed ? "" : ", send failed"})
             </span>
           </span>

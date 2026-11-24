@@ -175,6 +175,32 @@ After deploy, apply the migration:
 npm run db:migrate:remote
 ```
 
+### Unanswered lead fallback
+
+Hourly Cron Trigger `0 * * * *` (same `custom-worker.ts` scheduled handler, branched by `controller.cron`) finds open leads where every routed claimed pro has neither viewed nor acted for ~24 hours (`UNANSWERED_LEAD_FALLBACK_HOURS` in `src/lib/lead-fallback.ts`), then:
+
+1. Sends a one-time reminder nudge to the original unresponsive pro(s) (`lead_routings.nudge_sent_at`)
+2. Routes to the next best eligible claimed local pro (same Featured-first / service / metro matching as initial area routing), skipping companies already on the lead, up to `LEAD_ROUTE_TOTAL_CAP` (4) total — stamped `reason = 'fallback'`
+3. If nobody eligible remains (or the cap is full with still no engagement), sets `leads.needs_admin_attention` for the admin inbox (no homeowner email)
+
+Idempotent via `UNIQUE(lead_id, company_slug)`, one-time nudge, and one-time admin flag. Missing `RESEND_API_KEY` logs and continues (routing rows still insert with `emailed = 0`). Schema: migration `0030_unanswered_lead_fallback.sql`.
+
+Admin:
+
+```bash
+# Counts
+# GET /api/admin/lead-fallback?days=30
+
+# Dry-run (default) or live cron-equivalent pass
+# POST /api/admin/lead-fallback  {"dryRun":true}
+```
+
+After deploy:
+
+```bash
+npm run db:migrate:remote
+```
+
 ### Public URL
 
 Worker → **Settings → Domains & Routes**: enable **workers.dev**, and optionally add `michigangaragepros.com`.
@@ -217,6 +243,7 @@ npm run preview
 | `GET/PUT /api/manage/<token>/trust` | Claimed company self-reported trust credentials (live) |
 | `GET/PUT /api/manage/<token>/digest` | Weekly digest opt-out (`?action=unsubscribe` HTML link) |
 | `GET/POST /api/admin/weekly-digest` | Admin preview / dry-run (or single live send with slug) |
+| `GET/POST /api/admin/lead-fallback` | Unanswered-lead fallback stats / dry-run (or live cron pass) |
 | `GET /api/media/<key>` | Public read proxy for company media objects in private R2 |
 | `GET /api/companies/media` | Public logo/photo URLs by `slug` or batch `slugs` |
 | `GET /api/companies/trust` | Public trust credentials by `slug` or batch `slugs` |

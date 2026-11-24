@@ -9,6 +9,7 @@ export type NotifyPayload = {
     | "lead"
     | "featured"
     | "company-lead"
+    | "company-lead-nudge"
     | "lead-review-request"
     | "review"
     | "owner-reply"

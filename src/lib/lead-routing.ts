@@ -21,7 +21,14 @@ import {
 /** Max claimed companies notified for an open (no company_slug) lead. */
 export const AREA_ROUTE_CAP = 3;
 
-export type LeadRouteReason = "direct" | "area" | "retained";
+/**
+ * Hard ceiling across primary + fallback routings for one lead.
+ * Initial area matching uses AREA_ROUTE_CAP; unanswered fallback may add
+ * more until this total (skipping companies already on the lead).
+ */
+export const LEAD_ROUTE_TOTAL_CAP = 4;
+
+export type LeadRouteReason = "direct" | "area" | "retained" | "fallback";
 
 export type LeadRouteRecipient = {
   companyId: number | null;
@@ -208,10 +215,20 @@ export function rankAreaRouteCandidates(
     leadCity?: City | null;
     cap?: number;
     excludeSlug?: string | null;
+    /** Prefer over excludeSlug when excluding many already-routed companies. */
+    excludeSlugs?: ReadonlySet<string> | readonly string[] | null;
   },
 ): AreaRouteCandidate[] {
   const cap = options.cap ?? AREA_ROUTE_CAP;
+  const excludeSlugs = new Set<string>();
+  if (options.excludeSlugs) {
+    for (const s of options.excludeSlugs) {
+      const trimmed = s.trim();
+      if (trimmed) excludeSlugs.add(trimmed);
+    }
+  }
   const excludeSlug = options.excludeSlug?.trim() || null;
+  if (excludeSlug) excludeSlugs.add(excludeSlug);
   const leadCitySlug = options.leadCitySlug.trim();
   const leadCity =
     options.leadCity ?? getCityBySlug(leadCitySlug) ?? null;
@@ -221,7 +238,7 @@ export function rankAreaRouteCandidates(
   const seenSlugs = new Set<string>();
 
   for (const c of candidates) {
-    if (excludeSlug && c.companySlug === excludeSlug) continue;
+    if (excludeSlugs.has(c.companySlug)) continue;
     const email = c.email.trim();
     if (!email) continue;
     const emailKey = email.toLowerCase();
@@ -419,12 +436,17 @@ export async function findAreaRouteRecipients(
   options?: {
     cap?: number;
     excludeSlug?: string | null;
+    excludeSlugs?: ReadonlySet<string> | readonly string[] | null;
     service?: string | null;
+    /** Override reason stamped on returned recipients (default "area"). */
+    reason?: LeadRouteReason;
   },
 ): Promise<LeadRouteRecipient[]> {
   const cap = options?.cap ?? AREA_ROUTE_CAP;
   const excludeSlug = options?.excludeSlug?.trim() || null;
+  const excludeSlugs = options?.excludeSlugs ?? null;
   const service = options?.service?.trim() || null;
+  const reason = options?.reason ?? "area";
   const normalized =
     normalizeZip(zip) ?? zip.trim().replace(/\D/g, "").slice(0, 5);
   if (!normalized || normalized.length < 3) return [];
@@ -450,6 +472,7 @@ export async function findAreaRouteRecipients(
     leadCity,
     cap,
     excludeSlug,
+    excludeSlugs,
   });
 
   // Metro / nearby fallback when same-city claimed coverage is thin.
@@ -470,6 +493,7 @@ export async function findAreaRouteRecipients(
       leadCity,
       cap,
       excludeSlug,
+      excludeSlugs,
     });
   }
 
@@ -478,7 +502,7 @@ export async function findAreaRouteRecipients(
     companySlug: c.companySlug,
     companyName: c.companyName,
     email: c.email,
-    reason: "area" as const,
+    reason,
   }));
 }
 
