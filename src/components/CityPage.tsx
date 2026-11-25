@@ -28,6 +28,7 @@ import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
 import { JsonLd } from "./JsonLd";
+import { LinkedText } from "./LinkedText";
 import { MobileCta } from "./MobileCta";
 import { ShuffledCompanyGrid } from "./ShuffledCompanyGrid";
 
@@ -163,6 +164,30 @@ export function CityPage({ city }: { city: City }) {
         )}
       </section>
 
+      {seo?.localSections && seo.localSections.length > 0 && indexable ? (
+        <section className="container-site pt-[72px]">
+          <div className="grid gap-10">
+            {seo.localSections.map((section) => (
+              <div key={section.heading} className="max-w-[72ch]">
+                <h2 className="mb-3 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
+                  {section.heading}
+                </h2>
+                <div className="grid gap-3">
+                  {section.paragraphs.map((paragraph) => (
+                    <p
+                      key={paragraph.slice(0, 48)}
+                      className="m-0 text-[15.5px] leading-[1.65] text-muted text-pretty"
+                    >
+                      <LinkedText text={paragraph} />
+                    </p>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       {costTable && indexable && (
         <section className="container-site pt-[72px]">
           <h2 className="mb-3 text-[clamp(26px,2.8vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
@@ -295,7 +320,7 @@ export function CityPage({ city }: { city: City }) {
                 {f.question}
               </summary>
               <p className="mt-2.5 mb-0 text-[14.5px] leading-[1.6] text-muted text-pretty">
-                {f.answer}
+                <LinkedText text={f.answer} />
               </p>
             </details>
           ))}

@@ -133,10 +133,14 @@ function costFaq(
   };
 }
 
+/** Strong hubs may publish up to 8 curated FAQs; generated FAQs stay at 5. */
+const CURATED_FAQ_LIMIT = 8;
+const GENERATED_FAQ_LIMIT = 5;
+
 export function buildCityFaqs(city: City, proCount: number): LocalFaq[] {
   const curated = getCitySeo(city.slug)?.faqs;
   if (curated && curated.length >= 3) {
-    return curated.slice(0, 5);
+    return curated.slice(0, CURATED_FAQ_LIMIT);
   }
 
   const nearby = nearbyPhrase(city);
@@ -177,12 +181,12 @@ export function buildCityFaqs(city: City, proCount: number): LocalFaq[] {
 
   if (curated?.length) {
     for (const f of curated) {
-      if (faqs.length >= 5) break;
+      if (faqs.length >= GENERATED_FAQ_LIMIT) break;
       if (!faqs.some((x) => x.question === f.question)) faqs.push(f);
     }
   }
 
-  return faqs.slice(0, 5);
+  return faqs.slice(0, GENERATED_FAQ_LIMIT);
 }
 
 export function buildCityServiceFaqs(
