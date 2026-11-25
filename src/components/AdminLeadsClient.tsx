@@ -531,6 +531,10 @@ function CheckinPill({ lead }: { lead: LeadRow }) {
     );
   }
   const response = (lead.checkin_response ?? "").trim().toLowerCase();
+  // Migration grandfather sentinel — hide (not "sent", not funnel noise).
+  if (response === "skipped") {
+    return null;
+  }
   if (response === "yes") {
     const slug = lead.checkin_helped_company_slug?.trim();
     return (

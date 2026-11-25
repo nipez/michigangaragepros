@@ -8,11 +8,15 @@
 import assert from "node:assert/strict";
 import {
   HOMEOWNER_CHECKIN_CRON,
+  HOMEOWNER_CHECKIN_GRANDFATHER_RESPONSE,
   HOMEOWNER_CHECKIN_HOURS,
+  HOMEOWNER_CHECKIN_MAX_AGE_HOURS,
   checkinActionUrl,
   decideHomeownerCheckinSend,
   formatCheckinStatus,
   formatHomeownerCheckinNotify,
+  isCheckinEligibleLeadStatus,
+  isGrandfatheredCheckinResponse,
   isLikelyTestOrSpamLead,
   leadNeedsHomeownerCheckin,
 } from "../src/lib/homeowner-checkin.ts";
@@ -24,8 +28,17 @@ import {
 } from "../src/lib/homeowner-checkin-sign.ts";
 
 assert.equal(HOMEOWNER_CHECKIN_HOURS, 60);
+assert.equal(HOMEOWNER_CHECKIN_MAX_AGE_HOURS, 168);
 assert.equal(HOMEOWNER_CHECKIN_CRON, "0 * * * *");
+assert.equal(HOMEOWNER_CHECKIN_GRANDFATHER_RESPONSE, "skipped");
 assert.equal(CHECKIN_TOKEN_TTL_SECONDS, 7 * 24 * 60 * 60);
+
+assert.equal(isCheckinEligibleLeadStatus("new"), true);
+assert.equal(isCheckinEligibleLeadStatus("contacted"), true);
+assert.equal(isCheckinEligibleLeadStatus("closed"), false);
+assert.equal(isCheckinEligibleLeadStatus("won"), false);
+assert.equal(isGrandfatheredCheckinResponse("skipped"), true);
+assert.equal(isGrandfatheredCheckinResponse("yes"), false);
 
 // --- Spam / test skip ---
 assert.equal(
@@ -55,16 +68,19 @@ assert.equal(
 
 // --- Eligibility / idempotency ---
 const now = Date.parse("2026-03-10T15:00:00Z");
-const oldEnough = "2026-03-08T00:00:00Z"; // > 60h earlier
+const oldEnough = "2026-03-08T00:00:00Z"; // ~63h earlier (inside 60–168h)
 const tooFresh = "2026-03-10T01:00:00Z"; // 14h earlier
+const tooOld = "2026-03-01T00:00:00Z"; // ~9.6 days earlier (> 168h)
 
 assert.equal(
   leadNeedsHomeownerCheckin({
     email: "home@realmail.com",
     name: "Sam Rivera",
+    status: "new",
     createdAt: oldEnough,
     nowMs: now,
     windowHours: 60,
+    maxAgeHours: 168,
   }),
   true,
 );
@@ -73,9 +89,25 @@ assert.equal(
   leadNeedsHomeownerCheckin({
     email: "home@realmail.com",
     name: "Sam Rivera",
+    status: "contacted",
+    createdAt: oldEnough,
+    nowMs: now,
+    windowHours: 60,
+    maxAgeHours: 168,
+  }),
+  true,
+  "contacted still open for check-in",
+);
+
+assert.equal(
+  leadNeedsHomeownerCheckin({
+    email: "home@realmail.com",
+    name: "Sam Rivera",
+    status: "new",
     createdAt: tooFresh,
     nowMs: now,
     windowHours: 60,
+    maxAgeHours: 168,
   }),
   false,
   "still inside follow-up window",
@@ -85,6 +117,35 @@ assert.equal(
   leadNeedsHomeownerCheckin({
     email: "home@realmail.com",
     name: "Sam Rivera",
+    status: "new",
+    createdAt: tooOld,
+    nowMs: now,
+    windowHours: 60,
+    maxAgeHours: 168,
+  }),
+  false,
+  "past max lookback — do not email historical leads",
+);
+
+assert.equal(
+  leadNeedsHomeownerCheckin({
+    email: "home@realmail.com",
+    name: "Sam Rivera",
+    status: "closed",
+    createdAt: oldEnough,
+    nowMs: now,
+    windowHours: 60,
+    maxAgeHours: 168,
+  }),
+  false,
+  "closed leads are not open",
+);
+
+assert.equal(
+  leadNeedsHomeownerCheckin({
+    email: "home@realmail.com",
+    name: "Sam Rivera",
+    status: "new",
     createdAt: oldEnough,
     nowMs: now,
     checkinSentAt: "2026-03-09T12:00:00Z",
@@ -97,6 +158,7 @@ assert.equal(
   leadNeedsHomeownerCheckin({
     email: "home@realmail.com",
     name: "Sam Rivera",
+    status: "new",
     createdAt: oldEnough,
     nowMs: now,
     checkinResponse: "not_yet",
@@ -109,6 +171,20 @@ assert.equal(
   leadNeedsHomeownerCheckin({
     email: "home@realmail.com",
     name: "Sam Rivera",
+    status: "new",
+    createdAt: oldEnough,
+    nowMs: now,
+    checkinResponse: HOMEOWNER_CHECKIN_GRANDFATHER_RESPONSE,
+  }),
+  false,
+  "grandfathered / migration-skipped",
+);
+
+assert.equal(
+  leadNeedsHomeownerCheckin({
+    email: "home@realmail.com",
+    name: "Sam Rivera",
+    status: "new",
     createdAt: oldEnough,
     nowMs: now,
     checkinOptOut: true,
@@ -121,6 +197,7 @@ assert.equal(
   leadNeedsHomeownerCheckin({
     email: null,
     name: "Sam Rivera",
+    status: "new",
     createdAt: oldEnough,
     nowMs: now,
   }),
@@ -132,6 +209,7 @@ assert.equal(
   leadNeedsHomeownerCheckin({
     email: "spam@example.com",
     name: "Sam Rivera",
+    status: "new",
     createdAt: oldEnough,
     nowMs: now,
   }),
@@ -204,6 +282,61 @@ assert.equal(
   "skipped-already-sent",
 );
 
+assert.equal(
+  decideHomeownerCheckinSend({
+    email: "home@realmail.com",
+    name: "Sam Rivera",
+    status: "new",
+    checkinSentAt: null,
+    checkinResponse: null,
+    checkinOptOut: false,
+    createdAt: tooOld,
+    windowHours: 60,
+    maxAgeHours: 168,
+    nowMs: now,
+    resendConfigured: true,
+    signingConfigured: true,
+  }),
+  "skipped-too-old",
+);
+
+assert.equal(
+  decideHomeownerCheckinSend({
+    email: "home@realmail.com",
+    name: "Sam Rivera",
+    status: "closed",
+    checkinSentAt: null,
+    checkinResponse: null,
+    checkinOptOut: false,
+    createdAt: oldEnough,
+    windowHours: 60,
+    maxAgeHours: 168,
+    nowMs: now,
+    resendConfigured: true,
+    signingConfigured: true,
+  }),
+  "skipped-closed",
+);
+
+assert.equal(
+  decideHomeownerCheckinSend({
+    email: "home@realmail.com",
+    name: "Sam Rivera",
+    status: "new",
+    checkinSentAt: null,
+    checkinResponse: HOMEOWNER_CHECKIN_GRANDFATHER_RESPONSE,
+    checkinOptOut: false,
+    createdAt: oldEnough,
+    windowHours: 60,
+    maxAgeHours: 168,
+    nowMs: now,
+    resendConfigured: true,
+    signingConfigured: true,
+  }),
+  "skipped-already-responded",
+  "grandfathered rows are not emailed",
+);
+
 // --- Status labels ---
 assert.deepEqual(
   formatCheckinStatus({}),
@@ -228,6 +361,19 @@ assert.deepEqual(
 assert.deepEqual(
   formatCheckinStatus({ checkin_opt_out: 1 }),
   { key: "opt_out", label: "Opted out" },
+);
+// Grandfathered: not "sent" (no checkin_sent_at) — admin pill stays hidden.
+const grandfathered = formatCheckinStatus({
+  checkin_response: HOMEOWNER_CHECKIN_GRANDFATHER_RESPONSE,
+  checkin_responded_at: "2026-03-10T00:00:00Z",
+});
+assert.equal(grandfathered.key, "skipped");
+assert.notEqual(grandfathered.key, "sent");
+assert.equal(
+  formatCheckinStatus({
+    checkin_response: HOMEOWNER_CHECKIN_GRANDFATHER_RESPONSE,
+  }).key === "sent",
+  false,
 );
 
 // --- Email copy ---

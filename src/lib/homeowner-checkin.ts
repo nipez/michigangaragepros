@@ -35,10 +35,26 @@ import {
 export const HOMEOWNER_CHECKIN_HOURS = 60;
 
 /**
+ * Max age for a check-in send. Leads older than this are never emailed
+ * (copy says "You recently requested"). 7 days.
+ */
+export const HOMEOWNER_CHECKIN_MAX_AGE_HOURS = 168;
+
+/**
+ * Migration 0031 stamps pre-existing leads with this response so the first
+ * cron never picks them. Not a homeowner answer — excluded from funnel /
+ * admin "sent" pills (no checkin_sent_at, not yes/not_yet).
+ */
+export const HOMEOWNER_CHECKIN_GRANDFATHER_RESPONSE = "skipped";
+
+/**
  * Reuses the hourly cron expression already registered for unanswered
  * fallback — both jobs run on the same trigger in custom-worker.ts.
  */
 export const HOMEOWNER_CHECKIN_CRON = "0 * * * *";
+
+/** Operator lead statuses that may still receive a check-in. */
+export const HOMEOWNER_CHECKIN_ELIGIBLE_STATUSES = ["new", "contacted"] as const;
 
 export type CheckinResponse = "yes" | "not_yet";
 
@@ -77,6 +93,8 @@ export type CheckinSendOutcome =
   | "skipped-already-sent"
   | "skipped-already-responded"
   | "skipped-under-window"
+  | "skipped-too-old"
+  | "skipped-closed"
   | "skipped-no-resend"
   | "skipped-no-signing"
   | "dry-run-would-send"
@@ -100,6 +118,7 @@ export type CheckinRunOptions = {
   nowIso?: string;
   limit?: number;
   hours?: number;
+  maxAgeHours?: number;
 };
 
 type CheckinEnv = {
@@ -150,35 +169,65 @@ export function isLikelyTestOrSpamLead(input: {
   return false;
 }
 
+/** Operator lead.status that may receive a check-in (not closed). */
+export function isCheckinEligibleLeadStatus(
+  status: string | null | undefined,
+): boolean {
+  const normalized = (status ?? "").trim().toLowerCase();
+  return (HOMEOWNER_CHECKIN_ELIGIBLE_STATUSES as readonly string[]).includes(
+    normalized,
+  );
+}
+
+/** Migration / backfill sentinel — never treat as a homeowner answer. */
+export function isGrandfatheredCheckinResponse(
+  response: string | null | undefined,
+): boolean {
+  return (
+    (response ?? "").trim().toLowerCase() ===
+    HOMEOWNER_CHECKIN_GRANDFATHER_RESPONSE
+  );
+}
+
 /**
  * Pure eligibility for sending a check-in email.
- * Requires valid email, consent (not opted out), not already sent/responded,
- * not spam/test, and past the follow-up window.
+ * Requires valid email, open lead status, consent (not opted out),
+ * not already sent/responded/grandfathered, not spam/test, and created
+ * between windowHours and maxAgeHours ago.
  */
 export function leadNeedsHomeownerCheckin(input: {
   email?: string | null;
   name?: string | null;
+  status?: string | null;
   checkinSentAt?: string | null;
   checkinResponse?: string | null;
   checkinOptOut?: number | boolean | null;
   createdAt: string;
   windowHours?: number;
+  maxAgeHours?: number;
   nowMs?: number;
 }): boolean {
   if (!isValidHomeownerEmail(input.email)) return false;
+  if (input.status !== undefined && !isCheckinEligibleLeadStatus(input.status)) {
+    return false;
+  }
   if (input.checkinOptOut === 1 || input.checkinOptOut === true) return false;
   if (input.checkinSentAt?.trim()) return false;
   if (input.checkinResponse?.trim()) return false;
   if (isLikelyTestOrSpamLead(input)) return false;
 
   const windowHours = input.windowHours ?? HOMEOWNER_CHECKIN_HOURS;
+  const maxAgeHours = input.maxAgeHours ?? HOMEOWNER_CHECKIN_MAX_AGE_HOURS;
   const nowMs = input.nowMs ?? Date.now();
   const createdRaw = input.createdAt.trim();
   const createdMs = Date.parse(
     createdRaw.includes("T") ? createdRaw : `${createdRaw}Z`,
   );
   if (!Number.isFinite(createdMs)) return false;
-  return nowMs - createdMs >= windowHours * 60 * 60 * 1000;
+  const ageMs = nowMs - createdMs;
+  if (ageMs < windowHours * 60 * 60 * 1000) return false;
+  if (ageMs > maxAgeHours * 60 * 60 * 1000) return false;
+  return true;
 }
 
 /** Admin / UI label for check-in status. */
@@ -188,7 +237,7 @@ export function formatCheckinStatus(lead: {
   checkin_helped_company_slug?: string | null;
   checkin_opt_out?: number | null;
 }): {
-  key: "not_sent" | "sent" | "yes" | "not_yet" | "opt_out";
+  key: "not_sent" | "sent" | "yes" | "not_yet" | "opt_out" | "skipped";
   label: string;
 } {
   if (lead.checkin_opt_out) {
@@ -204,6 +253,10 @@ export function formatCheckinStatus(lead: {
   }
   if (response === "not_yet") {
     return { key: "not_yet", label: "Not yet" };
+  }
+  // Grandfathered / migration-skipped: hide from inbox (not "sent").
+  if (isGrandfatheredCheckinResponse(response)) {
+    return { key: "skipped", label: "Skipped (legacy)" };
   }
   if (lead.checkin_sent_at?.trim()) {
     return { key: "sent", label: "Sent · no response" };
@@ -338,16 +391,26 @@ async function sendHomeownerEmail(
 }
 
 /**
- * Candidates past the check-in window with email, not yet emailed/opted out.
+ * Candidates in the check-in window (min age … max age) with email,
+ * open status, not yet emailed/responded/opted out/grandfathered.
  */
 export async function listHomeownerCheckinCandidates(
   db: D1Database,
-  options?: { hours?: number; limit?: number; nowIso?: string },
+  options?: {
+    hours?: number;
+    maxAgeHours?: number;
+    limit?: number;
+    nowIso?: string;
+  },
 ): Promise<CheckinLeadRow[]> {
   const hours = options?.hours ?? HOMEOWNER_CHECKIN_HOURS;
+  const maxAgeHours = options?.maxAgeHours ?? HOMEOWNER_CHECKIN_MAX_AGE_HOURS;
   const limit = Math.min(Math.max(options?.limit ?? 50, 1), 200);
   const now = parseNow(options?.nowIso);
-  const cutoff = isoHoursAgo(hours, now);
+  // created_at <= minCutoff ⇒ at least `hours` old
+  const minCutoff = isoHoursAgo(hours, now);
+  // created_at >= maxCutoff ⇒ at most `maxAgeHours` old
+  const maxCutoff = isoHoursAgo(maxAgeHours, now);
 
   const { results } = await db
     .prepare(
@@ -360,13 +423,15 @@ export async function listHomeownerCheckinCandidates(
        WHERE checkin_sent_at IS NULL
          AND checkin_response IS NULL
          AND COALESCE(checkin_opt_out, 0) = 0
+         AND LOWER(TRIM(COALESCE(status, ''))) IN ('new', 'contacted')
          AND email IS NOT NULL
          AND TRIM(email) != ''
          AND datetime(created_at) <= datetime(?)
+         AND datetime(created_at) >= datetime(?)
        ORDER BY datetime(created_at) ASC
        LIMIT ?`,
     )
-    .bind(cutoff, limit)
+    .bind(minCutoff, maxCutoff, limit)
     .all<CheckinLeadRow>();
 
   return results ?? [];
@@ -422,17 +487,20 @@ export async function processHomeownerCheckinLead(
   const now = parseNow(options.nowIso);
   const nowIso = now.toISOString().replace(/\.\d{3}Z$/, "Z");
   const windowHours = options.hours ?? HOMEOWNER_CHECKIN_HOURS;
+  const maxAgeHours = options.maxAgeHours ?? HOMEOWNER_CHECKIN_MAX_AGE_HOURS;
 
   try {
     if (
       !leadNeedsHomeownerCheckin({
         email: lead.email,
         name: lead.name,
+        status: lead.status,
         checkinSentAt: lead.checkin_sent_at,
         checkinResponse: lead.checkin_response,
         checkinOptOut: lead.checkin_opt_out,
         createdAt: lead.created_at,
         windowHours,
+        maxAgeHours,
         nowMs: now.getTime(),
       })
     ) {
@@ -445,11 +513,25 @@ export async function processHomeownerCheckinLead(
       if (lead.checkin_opt_out) {
         return { leadId: lead.id, outcome: "skipped-opt-out" };
       }
+      if (!isCheckinEligibleLeadStatus(lead.status)) {
+        return { leadId: lead.id, outcome: "skipped-closed" };
+      }
       if (isLikelyTestOrSpamLead(lead)) {
         return { leadId: lead.id, outcome: "skipped-spam" };
       }
       if (!isValidHomeownerEmail(lead.email)) {
         return { leadId: lead.id, outcome: "skipped-no-email" };
+      }
+      const createdMs = Date.parse(
+        lead.created_at.includes("T")
+          ? lead.created_at
+          : `${lead.created_at}Z`,
+      );
+      if (
+        Number.isFinite(createdMs) &&
+        now.getTime() - createdMs > maxAgeHours * 60 * 60 * 1000
+      ) {
+        return { leadId: lead.id, outcome: "skipped-too-old" };
       }
       return { leadId: lead.id, outcome: "skipped-under-window" };
     }
@@ -534,6 +616,7 @@ export async function runHomeownerCheckins(
   try {
     candidates = await listHomeownerCheckinCandidates(env.DB, {
       hours: options.hours,
+      maxAgeHours: options.maxAgeHours,
       limit: options.limit,
       nowIso: options.nowIso,
     });
@@ -1075,32 +1158,51 @@ export async function loadHomeownerCheckinStats(
 export function decideHomeownerCheckinSend(input: {
   email: string | null;
   name: string;
+  status?: string | null;
   checkinSentAt: string | null;
   checkinResponse: string | null;
   checkinOptOut: boolean;
   createdAt: string;
   windowHours: number;
+  maxAgeHours?: number;
   nowMs: number;
   resendConfigured: boolean;
   signingConfigured: boolean;
 }): CheckinSendOutcome {
+  const maxAgeHours = input.maxAgeHours ?? HOMEOWNER_CHECKIN_MAX_AGE_HOURS;
   if (
     !leadNeedsHomeownerCheckin({
       email: input.email,
       name: input.name,
+      status: input.status ?? "new",
       checkinSentAt: input.checkinSentAt,
       checkinResponse: input.checkinResponse,
       checkinOptOut: input.checkinOptOut,
       createdAt: input.createdAt,
       windowHours: input.windowHours,
+      maxAgeHours,
       nowMs: input.nowMs,
     })
   ) {
     if (input.checkinSentAt) return "skipped-already-sent";
     if (input.checkinResponse) return "skipped-already-responded";
     if (input.checkinOptOut) return "skipped-opt-out";
+    if (!isCheckinEligibleLeadStatus(input.status ?? "new")) {
+      return "skipped-closed";
+    }
     if (isLikelyTestOrSpamLead(input)) return "skipped-spam";
     if (!isValidHomeownerEmail(input.email)) return "skipped-no-email";
+    const createdMs = Date.parse(
+      input.createdAt.includes("T")
+        ? input.createdAt
+        : `${input.createdAt}Z`,
+    );
+    if (
+      Number.isFinite(createdMs) &&
+      input.nowMs - createdMs > maxAgeHours * 60 * 60 * 1000
+    ) {
+      return "skipped-too-old";
+    }
     return "skipped-under-window";
   }
   if (!input.signingConfigured) return "skipped-no-signing";
