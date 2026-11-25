@@ -185,7 +185,7 @@ export const BLOG_POSTS: BlogPost[] = [
     sections: [
       {
         paragraphs: [
-          "Cold snaps are hard on garage doors. Weather seals freeze to the floor, batteries weaken, and sensors get blocked by snow. Before you assume the opener is dead, run through a few safe checks — use our [fall garage door maintenance checklist](/blog/fall-garage-door-maintenance-checklist-michigan/) before the season starts, and keep the [winter garage door maintenance checklist](/blog/winter-garage-door-maintenance-checklist-michigan/) handy once freeze-thaw is in full swing.",
+          "Cold snaps are hard on garage doors. Weather seals freeze to the floor, batteries weaken, and sensors get blocked by snow. Before you assume the opener is dead, run through a few safe checks — use our [fall garage door maintenance checklist](/blog/fall-garage-door-maintenance-checklist-michigan/) before the season starts, keep the [winter garage door maintenance checklist](/blog/winter-garage-door-maintenance-checklist-michigan/) handy once freeze-thaw is in full swing, and read [cold-weather garage door failures](/blog/cold-weather-garage-door-failures-michigan/) when springs, openers, or seals have already failed.",
         ],
       },
       {
@@ -815,67 +815,71 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "winter-garage-door-maintenance-checklist-michigan",
-    title: "Winter Garage Door Maintenance Checklist for Michigan",
+    title: "Winter Garage Door Maintenance Checklist for Michigan Homeowners",
     description:
-      "A mid-winter Michigan checklist for garage doors — ice, seals, sensors, batteries, and safe balance checks — plus when to call a pro instead of forcing the opener.",
-    date: "2026-09-10",
-    readMinutes: 9,
+      "Michigan winter garage door checklist: weatherstripping, lubrication, balance test, bottom seal, and keeping the threshold clear of ice and salt — plus when to call a pro.",
+    date: "2026-11-25",
+    readMinutes: 11,
     category: "Maintenance",
+    relatedServiceSlugs: [
+      "maintenance",
+      "garage-door-repair",
+      "broken-springs",
+      "garage-door-openers",
+      "emergency-service",
+    ],
     sections: [
       {
         paragraphs: [
-          "Fall tune-ups prevent problems; winter checklists keep a door usable through polar vortex weeks. Michigan freeze-thaw, lake-effect snow, and road salt create a predictable failure pattern: seals stick, sensors blind, batteries die, and worn springs snap on the coldest mornings.",
-          "Work through the safe items below. For preseason prep, use the [fall garage door maintenance checklist](/blog/fall-garage-door-maintenance-checklist-michigan/). If the door already will not move, see [garage door won't open in a Michigan winter](/blog/garage-door-wont-open-winter-michigan/).",
-          "Treat this as a monthly mid-winter walkaround, not a one-time January chore. After each major storm or polar vortex, sensors and seals deserve a two-minute check before you assume the opener failed.",
+          "Michigan winters punish neglected garage doors. Freeze-thaw cycles freeze weather seals to the slab, road salt grinds into rollers, and tired springs snap on the coldest mornings. This checklist is for homeowners who want a safe, repeatable walkaround — not a full professional tune-up — before and during peak cold.",
+          "Use it monthly from late fall through March, and again after every major storm or polar vortex. For preseason prep, start with the [fall garage door maintenance checklist](/blog/fall-garage-door-maintenance-checklist-michigan/). If the door already will not move, read [cold-weather garage door failures](/blog/cold-weather-garage-door-failures-michigan/) and [garage door won't open in a Michigan winter](/blog/garage-door-wont-open-winter-michigan/) before you force the opener.",
+          "Michigan Garage Pros is a directory: we help you compare local [maintenance](/maintenance/) and [repair](/garage-door-repair/) companies; we do not service doors ourselves.",
         ],
       },
       {
-        heading: "1. Break ice on the weather seal — gently",
+        heading: "1. Weatherstripping and side/top seals",
         paragraphs: [
-          "If the bottom rubber is frozen to the slab, do not run the opener to rip it free — that is how seals tear and openers strain. Crack ice along the seal with care, clear snow from the threshold, and check for tears that let drafts and salt into an attached garage.",
-          "A flattened or split seal is worth replacing mid-season if warm spells allow a short service visit. Waiting until March often means weeks of drafts and more ice bonding every night. For seal types, DIY vs pro, and planning ranges, see [garage door weatherstripping and bottom seals for Michigan winters](/blog/garage-door-weatherstripping-bottom-seal-michigan/).",
+          "Walk the perimeter with the door closed. Daylight under the bottom rail, drafts into an attached mudroom, or stop molding that has pulled away from the jamb all mean cold air and salt slush can enter. Flexible vinyl or rubber that has hardened, cracked, or flattened will not seat after the next freeze.",
+          "Wipe dirt off seals so ice has less to grab. Replace damaged stop molding or perimeter weatherstripping on a mild day when adhesive and vinyl stay workable. Deeper detail on profiles, DIY vs pro, and planning ranges: [garage door weatherstripping and bottom seals for Michigan winters](/blog/garage-door-weatherstripping-bottom-seal-michigan/) and the [/cost/maintenance/](/cost/maintenance/) guide.",
         ],
       },
       {
-        heading: "2. Keep photo eyes clear after every storm",
+        heading: "2. Bottom seal and threshold — clear ice and salt",
         paragraphs: [
-          "Wipe lenses and confirm both indicator lights stay steady. Snow piles, ice chunks, and bright low winter sun can make the door reverse or refuse to close. Realign brackets only if you can do so without bending tracks.",
-          "If the door reverses with clean sensors, do not crank force settings higher to “muscle through” ice. That hides binding or spring problems and creates a safety risk — see [door reverses before closing](/blog/garage-door-reverses-before-closing/).",
+          "If the bottom rubber is frozen to the slab, do not run the opener to rip it free — that tears seals and strains motors. Crack ice along the seal gently, shovel or brush snow away from the threshold, and rinse or sweep salt piles that pack against the rail after plow banks melt.",
+          "A flattened or split bottom seal is worth replacing mid-season when a warm spell allows a short visit. Waiting until March often means weeks of drafts and more ice bonding every night. Threshold seals that lift the contact plane above low spots on older slabs can help on uneven Michigan floors — ask a pro whether your opening needs one.",
+          "Photo eyes sit near the floor. Ice chunks and salt crust that pack against the bottom seal often blind sensors too. Clear both at once before you assume the opener failed.",
         ],
       },
       {
-        heading: "3. Treat batteries as winter wear parts",
+        heading: "3. Lubrication (hinges and rollers — not the tracks)",
         paragraphs: [
-          "Cold kills remote, keypad, and opener backup batteries. Swap weak cells before a storm if the wall button works but remotes fail. If your opener supports battery backup, verify the status light — details in [opener battery backup and power outages](/blog/garage-door-opener-battery-backup-michigan/).",
-          "Keep a spare 3V remote battery in a warm drawer inside the house. Michigan homeowners lose more mornings to dead remotes than to failed motors.",
+          "Dry winter air and salt grit make hinges and steel roller stems squeak or bind. Apply a garage-door-safe lubricant sparingly to hinge pivots and steel roller stems per the door manufacturer. Wipe excess so grit does not cake into a grinding paste.",
+          "Do not grease the tracks themselves — lubricant on tracks collects dirt and can cause rollers to slide instead of roll. Nylon rollers often need little or no oil on the wheels; focus on the stems if the manufacturer allows it. Never spray lubricant on springs in a way that invites DIY spring adjustment — torsion springs stay hands-off.",
+          "New grinding after a thaw-refreeze cycle can mean rollers binding with salt. More noise diagnosis: [noisy, grinding, or squeaking garage doors](/blog/garage-door-noisy-grinding-squeaking/). Cable and spring work stays with technicians.",
         ],
       },
       {
-        heading: "4. Listen for strain and test balance carefully",
+        heading: "4. Safe balance test",
         paragraphs: [
-          "An opener that sounds labored in deep cold may be fighting a binding door or a tired spring — not just “cold grease.” With the opener disconnected, a healthy door should hold roughly halfway. If it feels extremely heavy or drops hard, stop and schedule [broken spring repair](/broken-springs/); do not increase force settings to compensate.",
-          "New grinding or scraping after a thaw-refreeze cycle can mean rollers binding with salt and grit. Safe lubrication tips live in our [noisy door guide](/blog/garage-door-noisy-grinding-squeaking/); cable and spring work stays with pros.",
+          "With the opener disconnected (pull the emergency release), lift the door halfway by hand. A healthy, balanced door should hold roughly mid-travel. If it feels extremely heavy, shoots up, or drops hard, stop — that usually means spring trouble. Do not increase opener force settings to “muscle through” a heavy door.",
+          "Re-engage the trolley carefully afterward and test with the wall button. If the opener strains, the door is crooked, or you heard a bang earlier, schedule [broken spring repair](/broken-springs/) rather than another DIY cycle. Planning ranges: [/cost/broken-springs/](/cost/broken-springs/).",
         ],
       },
       {
-        heading: "5. Spot salt and hardware wear mid-season",
+        heading: "5. Sensors, batteries, and hardware glance",
         paragraphs: [
-          "Look from a safe distance for frayed cables, rollers that no longer turn, and hinges white with corrosion. Mid-winter lubrication on steel roller stems and hinges (per manufacturer guidance) can quiet squeaks; leave cable and spring work to technicians.",
-          "More on catching wear early: [rollers, cables, and hinges](/blog/garage-door-rollers-cables-hinges-wear/). A mid-winter hardware tune-up is cheaper than a door that will not close during a February ice storm.",
+          "Wipe photo-eye lenses and confirm both indicator lights stay steady after storms. Bright low winter sun and plow piles cause nuisance reverses — see [door reverses before closing](/blog/garage-door-reverses-before-closing/) if cleaning does not help.",
+          "Cold kills remote, keypad, and backup batteries. If the wall button works but remotes fail, swap cells first. Verify opener battery-backup status lights before ice storms — [opener battery backup guidance](/blog/garage-door-opener-battery-backup-michigan/).",
+          "From a safe distance, look for frayed cables, rollers that no longer turn, and white corrosion on hinges. Catching wear early is cheaper than a door that will not close during a February ice storm — [rollers, cables, and hinges](/blog/garage-door-rollers-cables-hinges-wear/).",
         ],
       },
       {
-        heading: "6. Plan for outages and stuck-open nights",
+        heading: "6. When to call a Michigan pro",
         paragraphs: [
-          "Know how to use the emergency release and how to re-engage the trolley afterward. If the door is stuck open overnight, treat it as a security issue: move cars if you can, secure the house entry from the garage, and look for [emergency service](/emergency-service/) rather than waiting for a weekday special.",
-          "If the outage is the problem rather than ice, confirm battery backup status and wall-button power before calling it an opener failure.",
-        ],
-      },
-      {
-        heading: "7. Know when to stop DIY",
-        paragraphs: [
-          "Call for [garage door repair](/garage-door-repair/) if you heard a bang, the door is crooked, cables look damaged, or cleaning sensors and seals changed nothing. Compare [Detroit repair](/cities/detroit/garage-door-repair/), [Grand Rapids](/cities/grand-rapids/garage-door-repair/), [Ann Arbor maintenance](/cities/ann-arbor/maintenance/), and [Traverse City](/cities/traverse-city/maintenance/), or [request a quote](/get-a-quote/) with your ZIP and what changed after the last cold snap.",
-          "When you call or quote, mention outdoor temperature, whether you heard a bang, and whether the wall button differs from remotes — those details help techs bring springs, batteries, or sensor parts on the first visit.",
+          "Stop DIY and call for [garage door repair](/garage-door-repair/) or [emergency service](/emergency-service/) if you heard a bang, the door is crooked, cables look damaged, or cleaning seals and sensors changed nothing. Stuck-open overnight is a security issue — move cars if you can and secure the house entry from the garage.",
+          "Compare local coverage on city hubs with enough directory pros — [Grand Rapids](/cities/grand-rapids/), [Warren](/cities/warren/), [Sterling Heights](/cities/sterling-heights/), [Troy](/cities/troy/), [Novi](/cities/novi/), and [Detroit](/cities/detroit/) — or jump to [Grand Rapids maintenance](/cities/grand-rapids/maintenance/), [Warren repair](/cities/warren/garage-door-repair/), and [Sterling Heights springs](/cities/sterling-heights/broken-springs/). Then [request a free quote](/get-a-quote/) with your ZIP, outdoor temperature, and what changed after the last cold snap.",
+          "Use shared planning bands on [/cost/garage-door-repair/](/cost/garage-door-repair/), [/cost/maintenance/](/cost/maintenance/), and [/cost/emergency-service/](/cost/emergency-service/) before you book — they are estimates, not invoices.",
         ],
       },
     ],
@@ -883,17 +887,32 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         question: "Should I lubricate my garage door in winter?",
         answer:
-          "Light garage-door lubricant on hinges and steel roller stems can help in dry cold. Do not grease the tracks themselves, and never adjust torsion springs DIY.",
+          "Yes — light garage-door lubricant on hinges and steel roller stems can help in dry cold. Do not grease the tracks themselves, and never adjust or wind torsion springs DIY.",
+      },
+      {
+        question: "How do I keep ice and salt off the garage door threshold?",
+        answer:
+          "Shovel or brush snow away from the bottom seal after storms, gently break ice before running the opener, and sweep salt piles that pack against the rail. A healthy bottom seal and optional threshold seal reduce bonding on uneven slabs.",
+      },
+      {
+        question: "How do I safely test garage door balance in winter?",
+        answer:
+          "Disconnect the opener and lift the door halfway by hand. It should hold roughly mid-travel. If it is extremely heavy or drops hard, stop and call a spring pro — do not raise opener force settings.",
+      },
+      {
+        question: "When should I replace weatherstripping or the bottom seal?",
+        answer:
+          "Replace when you see daylight under the closed door, drafts, cracked or flattened rubber, or a seal that freezes solid overnight. Mild days are easier for adhesive and vinyl work than deep freezes.",
       },
       {
         question: "Why does my garage door reverse only in winter?",
         answer:
-          "Snow-blocked sensors, ice on the weather seal, and binding rollers are common causes. Clean sensors first; if it continues, have a tech check balance and travel limits.",
+          "Snow-blocked sensors, ice on the weather seal, and binding rollers are common causes. Clean sensors and clear the threshold first; if it continues, have a tech check balance and travel limits.",
       },
       {
-        question: "Is winter a bad time to replace a garage door in Michigan?",
+        question: "Is winter a bad time for garage door maintenance in Michigan?",
         answer:
-          "Installs still happen year-round, but extreme cold can delay non-emergency projects. Emergency spring and opener repairs should not wait if the door is unsafe.",
+          "Safe walkaround checks and emergency repairs should not wait. Non-emergency installs can pause in extreme cold, but seals, batteries, and balance issues are worth fixing before the next polar vortex.",
       },
     ],
   },
@@ -1874,6 +1893,108 @@ export const BLOG_POSTS: BlogPost[] = [
           "Who should I call for commercial garage door service in Metro Detroit or West Michigan?",
         answer:
           "Start with statewide repair and emergency listings, then compare city hubs with enough local pros — such as Sterling Heights, Warren, Novi, Troy, and Grand Rapids — or the Southeast and West Michigan region pages. Mention commercial door type and after-hours needs when you request quotes.",
+      },
+    ],
+  },
+  {
+    slug: "cold-weather-garage-door-failures-michigan",
+    title: "Cold-Weather Garage Door Failures in Michigan: Springs, Openers & Frozen Seals",
+    description:
+      "Why Michigan garage doors fail in the cold — springs snapping, openers struggling, frozen seals — what to do safely, and when to call a local pro.",
+    date: "2026-11-25",
+    readMinutes: 12,
+    category: "Repair",
+    relatedServiceSlugs: [
+      "garage-door-repair",
+      "broken-springs",
+      "garage-door-openers",
+      "emergency-service",
+      "maintenance",
+    ],
+    sections: [
+      {
+        paragraphs: [
+          "A polar vortex morning in Michigan is when garage doors announce every deferred repair. Torsion springs that were quiet in October snap with a bang, openers strain against ice-bonded seals, and remotes die while the wall button still works. This guide explains the most common cold-weather failure modes, what you can safely check, and when to stop and call a pro — without inventing statewide “average failure rates” or fake review scores.",
+          "It complements our quick [garage door won't open in winter](/blog/garage-door-wont-open-winter-michigan/) checklist and the deeper [winter maintenance checklist](/blog/winter-garage-door-maintenance-checklist-michigan/). Use those for walkaround habits; use this page when something has already failed or is about to.",
+          "Michigan Garage Pros is a directory of local companies — not a contractor. We help you compare [repair](/garage-door-repair/), [springs](/broken-springs/), [openers](/garage-door-openers/), and [emergency](/emergency-service/) listings, then [request a free quote](/get-a-quote/).",
+        ],
+      },
+      {
+        heading: "Springs that snap in the cold",
+        paragraphs: [
+          "Garage door springs carry nearly the full weight of the door. Cold metal contracts, grease thickens, and a door that binds on ice asks the springs for more force on every cycle. Worn torsion springs often fail on the first hard cold snap of the season — sometimes with a loud bang, a crooked door, and an opener that hums without lifting.",
+          "Warning signs before a break: a door that feels heavier than usual with the opener disconnected, gaps between coils on a torsion spring (view from a safe distance), or an opener that struggles mid-travel. After a bang, stay clear of the door and cables. Do not try to wind, clamp, or “help” a torsion spring — that work belongs to trained technicians.",
+          "Planning language for residential spring work lives on [/cost/broken-springs/](/cost/broken-springs/) (matched pairs often plan in the mid-hundreds before heavy-door or after-hours premiums). For signs and safety context, see [7 signs your garage door spring is failing](/blog/broken-garage-door-spring-signs/) and [spring repair cost in Michigan](/blog/garage-door-spring-repair-cost-michigan/).",
+        ],
+      },
+      {
+        heading: "Openers that struggle in deep cold",
+        paragraphs: [
+          "Openers fail in winter for mechanical and electrical reasons that look alike from the driveway. A balanced door with a frozen seal makes the motor work harder; a tired gear or logic board fails on its own; weak remote batteries mimic a dead opener while the wall button still works; photo eyes buried in snow reverse or refuse to close.",
+          "Safe order of checks: confirm outlet/GFCI power, try the wall button, clear ice from the bottom seal without forcing travel, wipe photo eyes, and replace remote batteries if only remotes fail. If the opener strains, the door is crooked, or you already heard a bang, disconnect and stop — forcing travel multiplies damage.",
+          "Battery backup helps during ice-storm outages only when the door itself can move safely. See [opener battery backup for Michigan outages](/blog/garage-door-opener-battery-backup-michigan/) and opener planning bands on [/cost/garage-door-openers/](/cost/garage-door-openers/). Drive-type tradeoffs (chain vs belt vs wall-mount) for Michigan winters: [opener buyer guide](/blog/chain-vs-belt-vs-wall-mount-garage-door-opener-michigan/).",
+        ],
+      },
+      {
+        heading: "Frozen seals, ice, and salt at the threshold",
+        paragraphs: [
+          "Bottom weather seals freeze to wet or uneven slabs overnight. Running the opener to tear free rips rubber and can trip the opener’s force limits or burn out a gear. Gently break ice along the seal, clear snow and salt from the threshold, then try the wall button once.",
+          "Flattened, cracked, or hard seals bond more often and leak drafts into attached garages. Side and top weatherstripping that has pulled away from the jamb adds the same cold-air path. Seal types, DIY limits, and planning ranges: [weatherstripping and bottom seals](/blog/garage-door-weatherstripping-bottom-seal-michigan/). Keep the threshold clear as part of the [winter maintenance checklist](/blog/winter-garage-door-maintenance-checklist-michigan/).",
+          "Road salt accelerates corrosion on bottom brackets, rollers, and fasteners along Metro Detroit corridors and salted West Michigan routes. A mid-winter rinse or wipe of accessible hardware (not springs) and a pro look at white corrosion can prevent a January cable or roller failure.",
+        ],
+      },
+      {
+        heading: "What to do safely (and what not to do)",
+        paragraphs: [
+          "Do: keep people and pets away from a damaged or crooked door; clear ice and sensors before blaming the motor; note whether you heard a bang; take photos of the opener head, springs (from a distance), and the bottom seal; know how to use the emergency release and how to re-engage the trolley.",
+          "Do not: wind or loosen torsion springs; raise opener force settings to push through ice; stand under a door that hangs crooked; pay for a “today only” repair without a written scope. If the door is stuck open overnight, treat it as a security event — move cars if you can and secure the house entry from the garage while you arrange [emergency service](/emergency-service/).",
+          "Emergency and after-hours planning bands: [/cost/emergency-service/](/cost/emergency-service/). General repair framing: [/cost/garage-door-repair/](/cost/garage-door-repair/).",
+        ],
+      },
+      {
+        heading: "When to call a pro",
+        paragraphs: [
+          "Call the same day if you heard a bang, the door will not lift, cables look frayed, the door is off-track, or the opener strains after ice and sensors are cleared. Same-day also makes sense when the door is stuck open for security or the only vehicle is trapped before a storm.",
+          "Schedule non-emergency service soon if seals are torn, remotes keep dying after battery swaps, the balance test fails, or the door is noisy after every thaw. A short professional visit before the next cold snap is usually cheaper than an after-hours spring call.",
+          "Compare directory coverage on [Grand Rapids](/cities/grand-rapids/), [Warren](/cities/warren/), [Sterling Heights](/cities/sterling-heights/), [Troy](/cities/troy/), [Novi](/cities/novi/), and [Detroit](/cities/detroit/) — including [Grand Rapids emergency](/cities/grand-rapids/emergency-service/), [Warren springs](/cities/warren/broken-springs/), [Troy openers](/cities/troy/garage-door-openers/), and [Sterling Heights repair](/cities/sterling-heights/garage-door-repair/). Then [request a free quote](/get-a-quote/) with your ZIP, temperature, and symptoms.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Why do garage door springs break more often in cold weather?",
+        answer:
+          "Cold contracts metal, thickens lubricant, and increases load when seals or rollers bind on ice. Worn springs that were near end-of-life often fail on the first hard freeze. Never wind torsion springs yourself — call a pro after a bang or a door that will not lift.",
+      },
+      {
+        question: "My opener hums but the door will not move — is it the motor?",
+        answer:
+          "Not always. Frozen seals, a locked door, a disconnected trolley, or a broken spring can make a healthy opener hum without lifting. Clear ice and try the wall button; stop if the door is crooked or you heard a bang.",
+      },
+      {
+        question: "How do I unstick a garage door frozen to the ground?",
+        answer:
+          "Gently break ice along the bottom seal and clear snow from the threshold before running the opener. Forcing travel tears seals and can damage the opener. Replace flattened seals when weather allows.",
+      },
+      {
+        question: "When is a cold-weather garage door problem an emergency?",
+        answer:
+          "Treat stuck-open doors, snapped springs, frayed cables, and off-track doors as urgent for safety and security. Ask about after-hours rates up front and say whether the home is unsecured overnight.",
+      },
+      {
+        question: "How much does cold-weather garage door repair cost in Michigan?",
+        answer:
+          "Use the site’s /cost/ guides for planning only — repair, springs, openers, and emergency bands vary by parts, door weight, and urgency. After-hours and heavy insulated doors usually price higher. Get a written local estimate.",
+      },
+      {
+        question: "Can maintenance prevent winter garage door failures?",
+        answer:
+          "It reduces risk. Healthy seals, clear sensors, fresh batteries, light lubrication, and a balance check catch many problems before a polar vortex. Follow the winter maintenance checklist and schedule spring or opener work when the balance test fails.",
+      },
+      {
+        question: "Where can I find cold-weather garage door help near me in Michigan?",
+        answer:
+          "Browse city hubs such as Grand Rapids, Warren, Sterling Heights, Troy, Novi, and Detroit, open the matching repair or emergency service pages, or submit one Get a Free Quote request with your ZIP and symptoms.",
       },
     ],
   },
