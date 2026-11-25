@@ -16,6 +16,11 @@ interface CloudflareEnv {
   NOTIFY_FROM_EMAIL?: string;
   /** Token for /admin/leads/, /admin/funnel/, /admin/claims/, /admin/featured/, /admin/reviews/, /admin/listing-edits/ — set via `wrangler secret put ADMIN_TOKEN` */
   ADMIN_TOKEN?: string;
+  /**
+   * Optional HMAC secret for homeowner check-in one-click links.
+   * Falls back to ADMIN_TOKEN when unset. `wrangler secret put CHECKIN_SIGNING_SECRET`
+   */
+  CHECKIN_SIGNING_SECRET?: string;
   /** Stripe secret key (sk_test_… / sk_live_… or rk_…) — `wrangler secret put STRIPE_SECRET_KEY` */
   STRIPE_SECRET_KEY?: string;
   /** Stripe webhook signing secret (whsec_…) — `wrangler secret put STRIPE_WEBHOOK_SECRET` */

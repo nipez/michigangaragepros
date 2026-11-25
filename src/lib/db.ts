@@ -2,6 +2,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export type AppEnv = CloudflareEnv & {
   ADMIN_TOKEN?: string;
+  CHECKIN_SIGNING_SECRET?: string;
 };
 
 export async function getEnv(): Promise<AppEnv> {
@@ -11,6 +12,9 @@ export async function getEnv(): Promise<AppEnv> {
   } catch {
     return {
       ADMIN_TOKEN: process.env.ADMIN_TOKEN,
+      CHECKIN_SIGNING_SECRET: process.env.CHECKIN_SIGNING_SECRET,
+      RESEND_API_KEY: process.env.RESEND_API_KEY,
+      NOTIFY_FROM_EMAIL: process.env.NOTIFY_FROM_EMAIL,
       STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
       STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:

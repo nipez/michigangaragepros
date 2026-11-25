@@ -26,6 +26,15 @@ type FallbackStats = {
   openNeedsAdminAttention: number;
 };
 
+type CheckinStats = {
+  windowDays: number;
+  sent: number;
+  yes: number;
+  notYet: number;
+  noResponse: number;
+  optedOut: number;
+};
+
 type LeadRow = {
   id: number;
   service: string;
@@ -43,6 +52,11 @@ type LeadRow = {
   routed_to: string | null;
   needs_admin_attention?: number;
   fallback_exhausted_at?: string | null;
+  checkin_sent_at?: string | null;
+  checkin_response?: string | null;
+  checkin_responded_at?: string | null;
+  checkin_helped_company_slug?: string | null;
+  checkin_opt_out?: number;
   routings?: LeadRouting[];
 };
 
@@ -57,6 +71,7 @@ export function AdminLeadsClient({
   const [fallbackStats, setFallbackStats] = useState<FallbackStats | null>(
     null,
   );
+  const [checkinStats, setCheckinStats] = useState<CheckinStats | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(initiallyAuthed);
   const [loginBusy, setLoginBusy] = useState(false);
@@ -64,9 +79,11 @@ export function AdminLeadsClient({
   const applyLeadsPayload = (data: {
     leads?: LeadRow[];
     fallbackStats?: FallbackStats | null;
+    checkinStats?: CheckinStats | null;
   }) => {
     setLeads(data.leads ?? []);
     setFallbackStats(data.fallbackStats ?? null);
+    setCheckinStats(data.checkinStats ?? null);
   };
 
   const loadLeads = async () => {
@@ -78,12 +95,14 @@ export function AdminLeadsClient({
         setAuthed(false);
         setLeads([]);
         setFallbackStats(null);
+        setCheckinStats(null);
         return;
       }
       if (!res.ok) throw new Error("Unable to load leads");
       const data = (await res.json()) as {
         leads: LeadRow[];
         fallbackStats?: FallbackStats | null;
+        checkinStats?: CheckinStats | null;
       };
       applyLeadsPayload(data);
       setAuthed(true);
@@ -105,12 +124,14 @@ export function AdminLeadsClient({
           setAuthed(false);
           setLeads([]);
           setFallbackStats(null);
+          setCheckinStats(null);
           return;
         }
         if (!res.ok) throw new Error("Unable to load leads");
         const data = (await res.json()) as {
           leads: LeadRow[];
           fallbackStats?: FallbackStats | null;
+          checkinStats?: CheckinStats | null;
         };
         if (cancelled) return;
         applyLeadsPayload(data);
@@ -156,6 +177,7 @@ export function AdminLeadsClient({
     setAuthed(false);
     setLeads([]);
     setFallbackStats(null);
+    setCheckinStats(null);
   };
 
   const setStatus = async (id: number, status: string) => {
@@ -268,42 +290,65 @@ export function AdminLeadsClient({
         </div>
       </div>
 
-      {fallbackStats ? (
-        <div className="mb-6 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-border bg-white px-5 py-4">
-            <div className="text-[12px] font-extrabold uppercase tracking-[0.5px] text-faint">
-              Fallback routings ({fallbackStats.windowDays}d)
+      {fallbackStats || checkinStats ? (
+        <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {fallbackStats ? (
+            <>
+              <div className="rounded-2xl border border-border bg-white px-5 py-4">
+                <div className="text-[12px] font-extrabold uppercase tracking-[0.5px] text-faint">
+                  Fallback routings ({fallbackStats.windowDays}d)
+                </div>
+                <div className="mt-1 text-[28px] font-extrabold tracking-[-0.5px] text-navy">
+                  {fallbackStats.fallbackRoutings}
+                </div>
+                <div className="mt-0.5 text-[13px] text-muted">
+                  {fallbackStats.leadsWithFallback} lead
+                  {fallbackStats.leadsWithFallback === 1 ? "" : "s"}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-border bg-white px-5 py-4">
+                <div className="text-[12px] font-extrabold uppercase tracking-[0.5px] text-faint">
+                  Needs admin attention
+                </div>
+                <div className="mt-1 text-[28px] font-extrabold tracking-[-0.5px] text-navy">
+                  {fallbackStats.openNeedsAdminAttention}
+                </div>
+                <div className="mt-0.5 text-[13px] text-muted">
+                  open · {fallbackStats.needsAdminAttention} all-time flagged
+                </div>
+              </div>
+            </>
+          ) : null}
+          {checkinStats ? (
+            <div className="rounded-2xl border border-border bg-white px-5 py-4 sm:col-span-2">
+              <div className="text-[12px] font-extrabold uppercase tracking-[0.5px] text-faint">
+                Homeowner check-in ({checkinStats.windowDays}d)
+              </div>
+              <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-body-secondary">
+                <span>
+                  <strong className="text-navy">{checkinStats.sent}</strong>{" "}
+                  sent
+                </span>
+                <span>
+                  <strong className="text-navy">{checkinStats.yes}</strong> yes
+                </span>
+                <span>
+                  <strong className="text-navy">{checkinStats.notYet}</strong>{" "}
+                  not yet
+                </span>
+                <span>
+                  <strong className="text-navy">
+                    {checkinStats.noResponse}
+                  </strong>{" "}
+                  no response
+                </span>
+                <span>
+                  <strong className="text-navy">{checkinStats.optedOut}</strong>{" "}
+                  opted out
+                </span>
+              </div>
             </div>
-            <div className="mt-1 text-[28px] font-extrabold tracking-[-0.5px] text-navy">
-              {fallbackStats.fallbackRoutings}
-            </div>
-            <div className="mt-0.5 text-[13px] text-muted">
-              {fallbackStats.leadsWithFallback} lead
-              {fallbackStats.leadsWithFallback === 1 ? "" : "s"}
-            </div>
-          </div>
-          <div className="rounded-2xl border border-border bg-white px-5 py-4">
-            <div className="text-[12px] font-extrabold uppercase tracking-[0.5px] text-faint">
-              Needs admin attention
-            </div>
-            <div className="mt-1 text-[28px] font-extrabold tracking-[-0.5px] text-navy">
-              {fallbackStats.openNeedsAdminAttention}
-            </div>
-            <div className="mt-0.5 text-[13px] text-muted">
-              open · {fallbackStats.needsAdminAttention} all-time flagged
-            </div>
-          </div>
-          <div className="rounded-2xl border border-border bg-white px-5 py-4">
-            <div className="text-[12px] font-extrabold uppercase tracking-[0.5px] text-faint">
-              Shown
-            </div>
-            <div className="mt-1 text-[28px] font-extrabold tracking-[-0.5px] text-navy">
-              {leads.length}
-            </div>
-            <div className="mt-0.5 text-[13px] text-muted">
-              flagged open leads sort first
-            </div>
-          </div>
+          ) : null}
         </div>
       ) : null}
 
@@ -343,6 +388,7 @@ export function AdminLeadsClient({
                       Needs attention
                     </span>
                   ) : null}
+                  <CheckinPill lead={lead} />
                   <StatusPill status={lead.status} />
                 </div>
               </div>
@@ -474,6 +520,44 @@ function RoutingSummary({ lead }: { lead: LeadRow }) {
   }
 
   return <span className="text-muted">Not routed</span>;
+}
+
+function CheckinPill({ lead }: { lead: LeadRow }) {
+  if (lead.checkin_opt_out) {
+    return (
+      <span className="rounded-full bg-tag-bg px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.4px] text-muted">
+        Check-in opted out
+      </span>
+    );
+  }
+  const response = (lead.checkin_response ?? "").trim().toLowerCase();
+  // Migration grandfather sentinel — hide (not "sent", not funnel noise).
+  if (response === "skipped") {
+    return null;
+  }
+  if (response === "yes") {
+    const slug = lead.checkin_helped_company_slug?.trim();
+    return (
+      <span className="rounded-full bg-success-bg px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.4px] text-success">
+        Check-in yes{slug ? ` · ${slug}` : ""}
+      </span>
+    );
+  }
+  if (response === "not_yet") {
+    return (
+      <span className="rounded-full bg-[#FFF7E8] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.4px] text-[#B54708]">
+        Check-in not yet
+      </span>
+    );
+  }
+  if (lead.checkin_sent_at?.trim()) {
+    return (
+      <span className="rounded-full bg-[#EEF5FF] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.4px] text-michigan-blue">
+        Check-in sent
+      </span>
+    );
+  }
+  return null;
 }
 
 function StatusPill({ status }: { status: string }) {
