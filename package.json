@@ -29,6 +29,7 @@
     "test:listing-completeness": "npx tsx scripts/test-listing-completeness.mjs",
     "test:indexnow": "node scripts/test-indexnow.mjs",
     "test:city-service-links": "npx tsx scripts/test-city-service-links.mjs",
+    "test:strong-city-hubs": "npx tsx scripts/test-strong-city-hubs.mjs",
     "test:seo-crawl": "npx tsx scripts/test-seo-crawl.mjs",
     "seo:generate": "npx tsx scripts/generate-seo-files.mjs",
     "indexnow": "node scripts/indexnow-submit.mjs",

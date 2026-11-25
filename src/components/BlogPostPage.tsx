@@ -14,6 +14,7 @@ import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { CtaBand } from "./CtaBand";
 import { JsonLd } from "./JsonLd";
+import { LinkedText } from "./LinkedText";
 
 /** Priority hubs first, then other indexable cities — only indexable city×service paths. */
 const BLOG_LINK_CITY_PRIORITY = [
@@ -82,29 +83,6 @@ function isNumberedHeading(heading?: string) {
   return Boolean(heading && /^\d+\./.test(heading.trim()));
 }
 
-/** Renders markdown-style [label](/path/) links inside blog paragraphs. */
-function LinkedText({ text }: { text: string }) {
-  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
-  return (
-    <>
-      {parts.map((part, i) => {
-        const match = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
-        if (match) {
-          return (
-            <Link
-              key={`${match[2]}-${i}`}
-              href={match[2]}
-              className="font-semibold text-michigan-blue hover:underline"
-            >
-              {match[1]}
-            </Link>
-          );
-        }
-        return <span key={`t-${i}`}>{part}</span>;
-      })}
-    </>
-  );
-}
 
 export function BlogPostPage({ post }: { post: BlogPost }) {
   const image = getBlogImage(post);

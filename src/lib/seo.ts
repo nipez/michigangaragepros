@@ -126,6 +126,11 @@ export function organizationJsonLd() {
   };
 }
 
+/** Strip markdown-style [label](/path/) links for JSON-LD plain text. */
+export function plainTextFromLinkedMarkdown(text: string): string {
+  return text.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+}
+
 export function faqPageJsonLd(
   faqs: { question: string; answer: string }[],
 ) {
@@ -136,7 +141,7 @@ export function faqPageJsonLd(
       name: f.question,
       acceptedAnswer: {
         "@type": "Answer",
-        text: f.answer,
+        text: plainTextFromLinkedMarkdown(f.answer),
       },
     })),
   };
