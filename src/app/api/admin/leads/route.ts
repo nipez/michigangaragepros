@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
 import { getDb, getEnv } from "@/lib/db";
+import { loadHomeownerCheckinStats } from "@/lib/homeowner-checkin";
 import { loadLeadFallbackStats } from "@/lib/lead-fallback";
 
 export const runtime = "nodejs";
@@ -24,6 +25,11 @@ type LeadRow = {
   routed_to: string | null;
   needs_admin_attention: number;
   fallback_exhausted_at: string | null;
+  checkin_sent_at: string | null;
+  checkin_response: string | null;
+  checkin_responded_at: string | null;
+  checkin_helped_company_slug: string | null;
+  checkin_opt_out: number;
 };
 
 type RoutingRow = {
@@ -53,7 +59,10 @@ export async function GET() {
       `SELECT id, service, issue, zip, name, phone, email, timing, company_slug,
               source_page, status, created_at, routed_at, routed_to,
               COALESCE(needs_admin_attention, 0) AS needs_admin_attention,
-              fallback_exhausted_at
+              fallback_exhausted_at,
+              checkin_sent_at, checkin_response, checkin_responded_at,
+              checkin_helped_company_slug,
+              COALESCE(checkin_opt_out, 0) AS checkin_opt_out
        FROM leads
        ORDER BY
          CASE WHEN COALESCE(needs_admin_attention, 0) = 1 AND status = 'new' THEN 0 ELSE 1 END,
@@ -96,12 +105,20 @@ export async function GET() {
     console.error("admin leads fallback stats failed", err);
   }
 
+  let checkinStats = null;
+  try {
+    checkinStats = await loadHomeownerCheckinStats(db, 30);
+  } catch (err) {
+    console.error("admin leads check-in stats failed", err);
+  }
+
   return NextResponse.json({
     leads: leads.map((lead) => ({
       ...lead,
       routings: routingsByLead.get(lead.id) ?? [],
     })),
     fallbackStats,
+    checkinStats,
   });
 }
 

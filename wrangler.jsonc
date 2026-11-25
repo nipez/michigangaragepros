@@ -18,8 +18,8 @@
   },
   // Monday 14:00 UTC ≈ 9:00 AM Eastern Standard / 10:00 AM Eastern Daylight —
   // weekly performance digests (src/lib/weekly-digest.ts).
-  // Hourly — unanswered lead fallback to next eligible claimed pro
-  // (src/lib/lead-fallback.ts; default 24h silence window).
+  // Hourly — unanswered lead fallback (src/lib/lead-fallback.ts; ~24h silence)
+  // and homeowner check-in emails (src/lib/homeowner-checkin.ts; ~60h / 2.5d).
   "triggers": {
     "crons": ["0 14 * * 1", "0 * * * *"]
   },

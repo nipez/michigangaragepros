@@ -4,13 +4,17 @@
  * OpenNext's generated `.open-next/worker.js` only exports `fetch`. Cron
  * triggers need a `scheduled` handler alongside it, so this wrapper re-uses
  * the generated fetch handler and runs scheduled jobs (weekly digest +
- * unanswered lead fallback).
+ * unanswered lead fallback + homeowner check-in).
  *
  * @see https://opennext.js.org/cloudflare/howtos/custom-worker
  */
 
 // @ts-expect-error `.open-next/worker.js` is generated at build time
 import { default as handler } from "./.open-next/worker.js";
+import {
+  HOMEOWNER_CHECKIN_CRON,
+  runHomeownerCheckins,
+} from "./src/lib/homeowner-checkin";
 import {
   UNANSWERED_LEAD_FALLBACK_CRON,
   runUnansweredLeadFallback,
@@ -44,8 +48,13 @@ export default {
             return;
           }
 
-          if (cron === UNANSWERED_LEAD_FALLBACK_CRON) {
+          // Hourly trigger shared by unanswered-fallback + homeowner check-in.
+          if (
+            cron === UNANSWERED_LEAD_FALLBACK_CRON ||
+            cron === HOMEOWNER_CHECKIN_CRON
+          ) {
             await runUnansweredLeadFallback(env);
+            await runHomeownerCheckins(env);
             return;
           }
 
