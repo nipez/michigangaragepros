@@ -51,6 +51,11 @@ import {
   reviewRequestUrl,
 } from "@/lib/review-request";
 import { buildPageMetadata } from "@/lib/seo";
+import {
+  EMPTY_LEAD_PREFERENCES,
+  getCompanyLeadPreferences,
+  type CompanyLeadPreferences,
+} from "@/lib/lead-preferences";
 import { getWeeklyDigestOptOut } from "@/lib/weekly-digest";
 
 export const dynamic = "force-dynamic";
@@ -98,6 +103,7 @@ type LoadedManage = {
   trust: CompanyTrust;
   notifyEmail: string | null;
   weeklyDigestOptOut: boolean;
+  leadPreferences: CompanyLeadPreferences;
   reviewLinkVisits: number;
 };
 
@@ -249,6 +255,18 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     weeklyDigestOptOut = false;
   }
 
+  let leadPreferences: CompanyLeadPreferences = {
+    ...EMPTY_LEAD_PREFERENCES,
+  };
+  try {
+    const prefs = await getCompanyLeadPreferences(db, company.slug);
+    if (prefs) leadPreferences = prefs;
+  } catch (err) {
+    // Lead prefs are additive (migration 0032) — never block the form.
+    console.error("manage lead preferences load failed", err);
+    leadPreferences = { ...EMPTY_LEAD_PREFERENCES };
+  }
+
   let billing = emptyBilling(stripeConfigured);
   try {
     const info = await getCompanyBillingInfo(db, company.slug);
@@ -296,6 +314,7 @@ async function loadManagePage(token: string): Promise<LoadedManage | null> {
     trust,
     notifyEmail,
     weeklyDigestOptOut,
+    leadPreferences,
     reviewLinkVisits,
   };
 }
@@ -335,6 +354,7 @@ export default async function ManageListingPage({ params }: PageProps) {
       initialTrust={loaded.trust}
       initialNotifyEmail={loaded.notifyEmail}
       initialWeeklyDigestOptOut={loaded.weeklyDigestOptOut}
+      initialLeadPreferences={loaded.leadPreferences}
       initialReviewLinkVisits={loaded.reviewLinkVisits}
     />
   );
