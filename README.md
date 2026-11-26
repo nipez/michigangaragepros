@@ -175,6 +175,24 @@ After deploy, apply the migration:
 npm run db:migrate:remote
 ```
 
+### Lead preferences (claimed companies)
+
+Claimed companies can set **Lead preferences** on `/manage/<token>/` (`#lead-preferences`):
+
+- **Cities / areas** — optional allow-list of city slugs (empty = all matching leads, same as today)
+- **Service types** — optional allow-list of quote service types (empty = all)
+- **Pause new leads** — temporarily skip the company in routing (vacation / full schedule), with an optional resume date (YYYY-MM-DD; auto-resumes on that day UTC)
+
+Routing respects preferences everywhere leads are matched: direct company leads, general area matching, hourly unanswered-lead fallback, and homeowner check-in “not yet” re-routes. Paused or out-of-preference companies are skipped and the next eligible pro is used. Schema: migration `0032_lead_preferences.sql` (safe defaults for existing rows).
+
+Admin `/admin/leads/` shows which claimed companies are paused or city/service-limited so unrouted leads are explainable. No new secrets or bindings.
+
+After deploy:
+
+```bash
+npm run db:migrate:remote
+```
+
 ### Unanswered lead fallback
 
 Hourly Cron Trigger `0 * * * *` (same `custom-worker.ts` scheduled handler, branched by `controller.cron`) finds open leads where every routed claimed pro has neither viewed nor acted for ~24 hours (`UNANSWERED_LEAD_FALLBACK_HOURS` in `src/lib/lead-fallback.ts`), then:
@@ -242,6 +260,7 @@ npm run preview
 | `GET/POST/DELETE /api/manage/<token>/media` | Claimed company upload/replace/remove logo or profile photo (R2) |
 | `GET/PUT /api/manage/<token>/trust` | Claimed company self-reported trust credentials (live) |
 | `GET/PUT /api/manage/<token>/digest` | Weekly digest opt-out (`?action=unsubscribe` HTML link) |
+| `GET/PUT /api/manage/<token>/lead-preferences` | Claimed company lead city/service filters + pause |
 | `GET/POST /api/admin/weekly-digest` | Admin preview / dry-run (or single live send with slug) |
 | `GET/POST /api/admin/lead-fallback` | Unanswered-lead fallback stats / dry-run (or live cron pass) |
 | `GET /api/media/<key>` | Public read proxy for company media objects in private R2 |

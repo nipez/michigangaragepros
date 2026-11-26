@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/admin";
 import { getDb, getEnv } from "@/lib/db";
 import { loadHomeownerCheckinStats } from "@/lib/homeowner-checkin";
 import { loadLeadFallbackStats } from "@/lib/lead-fallback";
+import { loadLeadPreferenceStats } from "@/lib/lead-preferences";
 
 export const runtime = "nodejs";
 
@@ -112,6 +113,13 @@ export async function GET() {
     console.error("admin leads check-in stats failed", err);
   }
 
+  let preferenceStats = null;
+  try {
+    preferenceStats = await loadLeadPreferenceStats(db, { limit: 80 });
+  } catch (err) {
+    console.error("admin leads preference stats failed", err);
+  }
+
   return NextResponse.json({
     leads: leads.map((lead) => ({
       ...lead,
@@ -119,6 +127,7 @@ export async function GET() {
     })),
     fallbackStats,
     checkinStats,
+    preferenceStats,
   });
 }
 

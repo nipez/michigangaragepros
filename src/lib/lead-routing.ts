@@ -13,6 +13,12 @@ import {
 } from "@/lib/featured-billing";
 import { bumpListingStatSafe } from "@/lib/listing-stats";
 import {
+  companyEligibleForLead,
+  getCompanyLeadPreferences,
+  loadLeadPreferencesBySlugs,
+  type CompanyLeadPreferences,
+} from "@/lib/lead-preferences";
+import {
   compareResponsivenessTiebreak,
   loadResponsivenessBySlugs,
   type CompanyResponsivenessMetrics,
@@ -344,10 +350,15 @@ export async function resolveCompanyNotifyEmail(
 /**
  * Direct route: lead targets a specific company_slug that is claimed
  * and has a durable notify email (notify_email or approved claim contact).
+ * Respects lead preferences (pause / city / service) when lead context is given.
  */
 export async function findDirectRouteRecipient(
   db: D1Database,
   companySlug: string,
+  leadContext?: {
+    zip?: string | null;
+    service?: string | null;
+  },
 ): Promise<LeadRouteRecipient | null> {
   const slug = companySlug.trim();
   if (!slug) return null;
@@ -382,6 +393,27 @@ export async function findDirectRouteRecipient(
   if (!row || !row.claimed) return null;
   const email = pickEmail(row);
   if (!email) return null;
+
+  // Preference gate: paused / out-of-area / out-of-service ⇒ skip (caller falls
+  // through to area matching). Migration missing ⇒ fail open (today's behavior).
+  try {
+    const prefs = await getCompanyLeadPreferences(db, slug, {
+      autoClearExpiredPause: true,
+    });
+    if (prefs) {
+      const zip = leadContext?.zip?.trim() || "";
+      const normalized =
+        normalizeZip(zip) ?? zip.replace(/\D/g, "").slice(0, 5);
+      const leadCitySlug = normalized ? citySlugForZip(normalized) : null;
+      const eligibility = companyEligibleForLead(prefs, {
+        citySlug: leadCitySlug,
+        service: leadContext?.service,
+      });
+      if (!eligibility.eligible) return null;
+    }
+  } catch (err) {
+    console.error("lead-routing direct preference check failed", err);
+  }
 
   return {
     companyId: row.id,
@@ -587,14 +619,37 @@ async function queryAreaCandidates(
     if (candidate) out.push(candidate);
   }
 
-  // Attach responsiveness for ranking tiebreak (best-effort; fail-open).
+  // Lead preferences: skip paused / city-limited / service-limited companies.
+  // Empty prefs (default) keep current behavior. Fail-open if load fails.
+  let filtered = out;
   if (out.length > 0) {
     try {
-      const bySlug = await loadResponsivenessBySlugs(
+      const prefsBySlug = await loadLeadPreferencesBySlugs(
         db,
         out.map((c) => c.companySlug),
       );
-      for (const c of out) {
+      filtered = out.filter((c) => {
+        const prefs = prefsBySlug[c.companySlug];
+        if (!prefs) return true;
+        return companyEligibleForLead(prefs, {
+          citySlug: input.leadCitySlug,
+          service: input.leadService,
+        }).eligible;
+      });
+    } catch (err) {
+      console.error("lead-routing preference filter failed", err);
+      filtered = out;
+    }
+  }
+
+  // Attach responsiveness for ranking tiebreak (best-effort; fail-open).
+  if (filtered.length > 0) {
+    try {
+      const bySlug = await loadResponsivenessBySlugs(
+        db,
+        filtered.map((c) => c.companySlug),
+      );
+      for (const c of filtered) {
         c.responsiveness = bySlug[c.companySlug] ?? null;
       }
     } catch (err) {
@@ -602,7 +657,7 @@ async function queryAreaCandidates(
     }
   }
 
-  return out;
+  return filtered;
 }
 
 export async function resolveLeadRecipients(
@@ -616,10 +671,13 @@ export async function resolveLeadRecipients(
   const companySlug = lead.companySlug?.trim() || null;
 
   if (companySlug) {
-    const direct = await findDirectRouteRecipient(db, companySlug);
+    const direct = await findDirectRouteRecipient(db, companySlug, {
+      zip: lead.zip,
+      service: lead.service,
+    });
     if (direct) return [direct];
-    // Targeted company unclaimed / no email: fall through to area matches,
-    // excluding the (unclaimed) target so we don't double-count later.
+    // Targeted company unclaimed / no email / paused / out of prefs: fall
+    // through to area matches, excluding the target so we don't double-count.
     return findAreaRouteRecipients(db, lead.zip, {
       excludeSlug: companySlug,
       service: lead.service,
@@ -627,6 +685,41 @@ export async function resolveLeadRecipients(
   }
 
   return findAreaRouteRecipients(db, lead.zip, { service: lead.service });
+}
+
+/**
+ * Pure helper for tests: apply lead preferences to an already-built candidate
+ * list (same gate as queryAreaCandidates).
+ */
+export function filterCandidatesByLeadPreferences<
+  T extends { companySlug: string },
+>(
+  candidates: T[],
+  prefsBySlug: Record<string, CompanyLeadPreferences | undefined>,
+  lead: { citySlug?: string | null; service?: string | null },
+  now?: Date,
+): T[] {
+  return candidates.filter((c) => {
+    const prefs = prefsBySlug[c.companySlug];
+    if (!prefs) return true;
+    return companyEligibleForLead(prefs, lead, now).eligible;
+  });
+}
+
+/** Convenience: load prefs for one slug and decide eligibility (routing). */
+export async function companySlugEligibleForLead(
+  db: D1Database,
+  companySlug: string,
+  lead: { citySlug?: string | null; service?: string | null },
+): Promise<boolean> {
+  try {
+    const prefs = await getCompanyLeadPreferences(db, companySlug);
+    if (!prefs) return true;
+    return companyEligibleForLead(prefs, lead).eligible;
+  } catch (err) {
+    console.error("lead-routing eligibility lookup failed", err);
+    return true;
+  }
 }
 
 /** Slugs already recorded for this lead (idempotent re-delivery guard). */

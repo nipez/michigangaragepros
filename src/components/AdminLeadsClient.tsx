@@ -35,6 +35,27 @@ type CheckinStats = {
   optedOut: number;
 };
 
+type PreferenceCompany = {
+  slug: string;
+  name: string;
+  city: string;
+  paused: boolean;
+  resumeAt: string | null;
+  cityLimited: boolean;
+  serviceLimited: boolean;
+  citySlugs: string[];
+  services: string[];
+  statusLabel: string;
+};
+
+type PreferenceStats = {
+  paused: number;
+  cityLimited: number;
+  serviceLimited: number;
+  totalRestricted: number;
+  companies: PreferenceCompany[];
+};
+
 type LeadRow = {
   id: number;
   service: string;
@@ -72,6 +93,8 @@ export function AdminLeadsClient({
     null,
   );
   const [checkinStats, setCheckinStats] = useState<CheckinStats | null>(null);
+  const [preferenceStats, setPreferenceStats] =
+    useState<PreferenceStats | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(initiallyAuthed);
   const [loginBusy, setLoginBusy] = useState(false);
@@ -80,10 +103,19 @@ export function AdminLeadsClient({
     leads?: LeadRow[];
     fallbackStats?: FallbackStats | null;
     checkinStats?: CheckinStats | null;
+    preferenceStats?: PreferenceStats | null;
   }) => {
     setLeads(data.leads ?? []);
     setFallbackStats(data.fallbackStats ?? null);
     setCheckinStats(data.checkinStats ?? null);
+    setPreferenceStats(data.preferenceStats ?? null);
+  };
+
+  const clearLeadState = () => {
+    setLeads([]);
+    setFallbackStats(null);
+    setCheckinStats(null);
+    setPreferenceStats(null);
   };
 
   const loadLeads = async () => {
@@ -93,9 +125,7 @@ export function AdminLeadsClient({
       const res = await fetch("/api/admin/leads");
       if (res.status === 401) {
         setAuthed(false);
-        setLeads([]);
-        setFallbackStats(null);
-        setCheckinStats(null);
+        clearLeadState();
         return;
       }
       if (!res.ok) throw new Error("Unable to load leads");
@@ -103,6 +133,7 @@ export function AdminLeadsClient({
         leads: LeadRow[];
         fallbackStats?: FallbackStats | null;
         checkinStats?: CheckinStats | null;
+        preferenceStats?: PreferenceStats | null;
       };
       applyLeadsPayload(data);
       setAuthed(true);
@@ -122,9 +153,7 @@ export function AdminLeadsClient({
         if (cancelled) return;
         if (res.status === 401) {
           setAuthed(false);
-          setLeads([]);
-          setFallbackStats(null);
-          setCheckinStats(null);
+          clearLeadState();
           return;
         }
         if (!res.ok) throw new Error("Unable to load leads");
@@ -132,6 +161,7 @@ export function AdminLeadsClient({
           leads: LeadRow[];
           fallbackStats?: FallbackStats | null;
           checkinStats?: CheckinStats | null;
+          preferenceStats?: PreferenceStats | null;
         };
         if (cancelled) return;
         applyLeadsPayload(data);
@@ -175,9 +205,7 @@ export function AdminLeadsClient({
   const logout = async () => {
     await fetch("/api/admin/session", { method: "DELETE" });
     setAuthed(false);
-    setLeads([]);
-    setFallbackStats(null);
-    setCheckinStats(null);
+    clearLeadState();
   };
 
   const setStatus = async (id: number, status: string) => {
@@ -290,7 +318,7 @@ export function AdminLeadsClient({
         </div>
       </div>
 
-      {fallbackStats || checkinStats ? (
+      {fallbackStats || checkinStats || preferenceStats ? (
         <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {fallbackStats ? (
             <>
@@ -319,8 +347,78 @@ export function AdminLeadsClient({
               </div>
             </>
           ) : null}
-          {checkinStats ? (
+          {preferenceStats ? (
             <div className="rounded-2xl border border-border bg-white px-5 py-4 sm:col-span-2">
+              <div className="text-[12px] font-extrabold uppercase tracking-[0.5px] text-faint">
+                Lead preferences (claimed)
+              </div>
+              <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-body-secondary">
+                <span>
+                  <strong className="text-navy">{preferenceStats.paused}</strong>{" "}
+                  paused
+                </span>
+                <span>
+                  <strong className="text-navy">
+                    {preferenceStats.cityLimited}
+                  </strong>{" "}
+                  city-limited
+                </span>
+                <span>
+                  <strong className="text-navy">
+                    {preferenceStats.serviceLimited}
+                  </strong>{" "}
+                  service-limited
+                </span>
+                <span>
+                  <strong className="text-navy">
+                    {preferenceStats.totalRestricted}
+                  </strong>{" "}
+                  total restricted
+                </span>
+              </div>
+              <p className="mt-2 mb-0 text-[12.5px] text-muted">
+                Paused or filtered companies are skipped in routing — useful when
+                a lead has few or no recipients.
+              </p>
+              {preferenceStats.companies.length > 0 ? (
+                <ul className="mt-3 mb-0 max-h-40 list-none space-y-1.5 overflow-y-auto p-0 text-[12.5px]">
+                  {preferenceStats.companies.map((c) => (
+                    <li key={c.slug} className="text-body-secondary">
+                      <Link
+                        href={`/companies/${c.slug}/`}
+                        className="font-semibold text-michigan-blue hover:underline"
+                      >
+                        {c.name}
+                      </Link>
+                      <span className="text-faint"> · {c.city}</span>
+                      {c.paused ? (
+                        <span className="ml-1.5 rounded-full bg-[#FFF7E8] px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.3px] text-[#B54708]">
+                          Paused
+                          {c.resumeAt ? ` → ${c.resumeAt}` : ""}
+                        </span>
+                      ) : null}
+                      {c.cityLimited ? (
+                        <span className="ml-1.5 rounded-full bg-[#EEF5FF] px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.3px] text-michigan-blue">
+                          Cities {c.citySlugs.length}
+                        </span>
+                      ) : null}
+                      {c.serviceLimited ? (
+                        <span className="ml-1.5 rounded-full bg-[#EEF5FF] px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.3px] text-michigan-blue">
+                          Services {c.services.length}
+                        </span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-2 mb-0 text-[12.5px] text-muted">
+                  No claimed companies are paused or limiting leads right now.
+                </p>
+              )}
+            </div>
+          ) : null}
+          {checkinStats ? (
+            <div className="rounded-2xl border border-border bg-white px-5 py-4 sm:col-span-2 lg:col-span-4">
               <div className="text-[12px] font-extrabold uppercase tracking-[0.5px] text-faint">
                 Homeowner check-in ({checkinStats.windowDays}d)
               </div>

@@ -12,6 +12,7 @@
     "test:listing-demand": "npx tsx scripts/test-listing-demand.mjs",
     "test:company-leads": "npx tsx scripts/test-company-leads.mjs",
     "test:lead-routing": "npx tsx scripts/test-lead-routing.mjs",
+    "test:lead-preferences": "npx tsx scripts/test-lead-preferences.mjs",
     "test:lead-fallback": "npx tsx scripts/test-lead-fallback.mjs",
     "test:homeowner-checkin": "npx tsx scripts/test-homeowner-checkin.mjs",
     "test:responsiveness": "npx tsx scripts/test-responsiveness.mjs",

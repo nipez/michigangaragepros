@@ -21,12 +21,17 @@ import {
   topMissingCompletenessItems,
 } from "@/lib/listing-completeness";
 import {
+  LEAD_PREF_SERVICE_OPTIONS,
+  type CompanyLeadPreferences,
+} from "@/lib/lead-preferences";
+import {
   MANAGE_SERVICE_OPTIONS,
   type ListingFields,
 } from "@/lib/listing-manage";
 import type { ListingPerformance } from "@/lib/listing-stats";
 import type { CompanyResponsivenessMetrics } from "@/lib/responsiveness";
 import type { ManageReview } from "@/lib/review-replies";
+import { getCitiesByRegion } from "@/data/cities";
 import { CompanyLeadInbox } from "./CompanyLeadInbox";
 import { CompanyReviewReplies } from "./CompanyReviewReplies";
 import { CompactFooter } from "./Footer";
@@ -64,6 +69,7 @@ type Props = {
   initialTrust: CompanyTrust;
   initialNotifyEmail: string | null;
   initialWeeklyDigestOptOut: boolean;
+  initialLeadPreferences: CompanyLeadPreferences;
   /** Lifetime review-request link visits (for completeness scoring). */
   initialReviewLinkVisits?: number;
 };
@@ -88,6 +94,7 @@ export function ManageListingClient({
   initialTrust,
   initialNotifyEmail,
   initialWeeklyDigestOptOut,
+  initialLeadPreferences,
   initialReviewLinkVisits = 0,
 }: Props) {
   const [fields, setFields] = useState<ListingFields>(initialFields);
@@ -130,6 +137,24 @@ export function ManageListingClient({
   const [digestBusy, setDigestBusy] = useState(false);
   const [digestNote, setDigestNote] = useState("");
   const [digestError, setDigestError] = useState("");
+  const [leadPaused, setLeadPaused] = useState(
+    Boolean(initialLeadPreferences?.paused),
+  );
+  const [leadResumeAt, setLeadResumeAt] = useState(
+    initialLeadPreferences?.resumeAt ?? "",
+  );
+  const [leadCitySlugs, setLeadCitySlugs] = useState<string[]>(
+    initialLeadPreferences?.citySlugs ?? [],
+  );
+  const [leadServices, setLeadServices] = useState<string[]>(
+    initialLeadPreferences?.services ?? [],
+  );
+  const [leadPrefBusy, setLeadPrefBusy] = useState(false);
+  const [leadPrefNote, setLeadPrefNote] = useState("");
+  const [leadPrefError, setLeadPrefError] = useState("");
+  const [leadCitiesExpanded, setLeadCitiesExpanded] = useState(
+    (initialLeadPreferences?.citySlugs?.length ?? 0) > 0,
+  );
   const [billingBusy, setBillingBusy] = useState(false);
   const [billingError, setBillingError] = useState("");
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -425,6 +450,59 @@ export function ManageListingClient({
     }
   };
 
+  const toggleLeadCity = (slug: string) => {
+    setLeadCitySlugs((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
+    );
+  };
+
+  const toggleLeadService = (service: string) => {
+    setLeadServices((prev) =>
+      prev.includes(service)
+        ? prev.filter((s) => s !== service)
+        : [...prev, service],
+    );
+  };
+
+  const saveLeadPreferences = async () => {
+    setLeadPrefBusy(true);
+    setLeadPrefError("");
+    setLeadPrefNote("");
+    try {
+      const res = await fetch(`/api/manage/${token}/lead-preferences/`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paused: leadPaused,
+          resumeAt: leadPaused && leadResumeAt.trim() ? leadResumeAt.trim() : null,
+          citySlugs: leadCitySlugs,
+          services: leadServices,
+        }),
+      });
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+        message?: string;
+        preferences?: CompanyLeadPreferences;
+      } | null;
+      if (!res.ok) {
+        setLeadPrefError(data?.error || "Unable to save lead preferences");
+        return;
+      }
+      if (data?.preferences) {
+        setLeadPaused(Boolean(data.preferences.paused));
+        setLeadResumeAt(data.preferences.resumeAt ?? "");
+        setLeadCitySlugs(data.preferences.citySlugs ?? []);
+        setLeadServices(data.preferences.services ?? []);
+        setLeadCitiesExpanded((data.preferences.citySlugs?.length ?? 0) > 0);
+      }
+      setLeadPrefNote(data?.message || "Lead preferences saved.");
+    } finally {
+      setLeadPrefBusy(false);
+    }
+  };
+
+  const citiesByRegion = getCitiesByRegion();
+
   const submit = async () => {
     setError("");
     setSuccess("");
@@ -681,6 +759,193 @@ export function ManageListingClient({
               initialLeads={initialLeads}
               initialTotals={initialLeadTotals}
             />
+          </div>
+
+          <div
+            id="lead-preferences"
+            className="mt-5 scroll-mt-24 rounded-[12px] border border-border bg-bg px-4 py-4"
+          >
+            <div className="text-[13px] font-extrabold uppercase tracking-[0.6px] text-navy">
+              Lead preferences
+            </div>
+            <p className="mt-1.5 mb-4 text-[13.5px] leading-[1.5] text-muted">
+              Choose which cities and service types you want new quote leads
+              for. Leave filters empty to keep receiving every matching lead
+              (same as today). Pause when you are on vacation or booked solid.
+            </p>
+
+            <label className="flex cursor-pointer items-start gap-2.5 text-[13.5px] text-navy">
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={leadPaused}
+                disabled={leadPrefBusy}
+                onChange={(e) => setLeadPaused(e.target.checked)}
+              />
+              <span>
+                Pause new leads
+                {leadPaused ? " — you will be skipped in routing" : ""}
+              </span>
+            </label>
+
+            {leadPaused ? (
+              <div className="mt-3 ml-6">
+                <label className="mb-1.5 block text-[13px] font-bold text-navy">
+                  Resume date (optional)
+                </label>
+                <input
+                  className="field-input max-w-[14rem]"
+                  type="date"
+                  value={leadResumeAt}
+                  disabled={leadPrefBusy}
+                  onChange={(e) => setLeadResumeAt(e.target.value)}
+                />
+                <p className="mt-1.5 mb-0 text-[12.5px] text-muted">
+                  Leave blank to stay paused until you turn this off. Routing
+                  resumes automatically on the resume date.
+                </p>
+              </div>
+            ) : null}
+
+            <div className="mt-5 border-t border-border pt-4">
+              <div className="text-[13px] font-extrabold text-navy">
+                Service types
+              </div>
+              <p className="mt-1 mb-3 text-[13px] leading-[1.45] text-muted">
+                Empty = all service types. Select only what you want to receive.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {LEAD_PREF_SERVICE_OPTIONS.map((service) => {
+                  const checked = leadServices.includes(service);
+                  return (
+                    <label
+                      key={service}
+                      className={`inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12.5px] font-semibold ${
+                        checked
+                          ? "border-michigan-blue bg-[#EEF5FF] text-navy"
+                          : "border-border bg-white text-muted"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="sr-only"
+                        checked={checked}
+                        disabled={leadPrefBusy}
+                        onChange={() => toggleLeadService(service)}
+                      />
+                      {service}
+                    </label>
+                  );
+                })}
+              </div>
+              {leadServices.length > 0 ? (
+                <button
+                  type="button"
+                  className="mt-2 text-[12.5px] font-semibold text-michigan-blue hover:underline"
+                  disabled={leadPrefBusy}
+                  onClick={() => setLeadServices([])}
+                >
+                  Clear service filter (accept all)
+                </button>
+              ) : null}
+            </div>
+
+            <div className="mt-5 border-t border-border pt-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <div className="text-[13px] font-extrabold text-navy">
+                    Cities / areas
+                  </div>
+                  <p className="mt-1 mb-0 text-[13px] leading-[1.45] text-muted">
+                    Empty = every city where you already match. Narrow to only
+                    the markets you want leads from.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="btn-outline !px-3 !py-1.5 !text-[12.5px]"
+                  disabled={leadPrefBusy}
+                  onClick={() => setLeadCitiesExpanded((v) => !v)}
+                >
+                  {leadCitiesExpanded
+                    ? "Hide city list"
+                    : leadCitySlugs.length > 0
+                      ? `Edit cities (${leadCitySlugs.length})`
+                      : "Limit cities"}
+                </button>
+              </div>
+
+              {leadCitiesExpanded ? (
+                <div className="mt-3 max-h-64 overflow-y-auto rounded-lg border border-border bg-white px-3 py-3">
+                  {Object.entries(citiesByRegion).map(([region, cities]) => (
+                    <div key={region} className="mb-3 last:mb-0">
+                      <div className="mb-1.5 text-[11px] font-extrabold uppercase tracking-[0.5px] text-faint">
+                        {region}
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {cities.map((city) => {
+                          const checked = leadCitySlugs.includes(city.slug);
+                          return (
+                            <label
+                              key={city.slug}
+                              className={`inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-1 text-[12px] font-semibold ${
+                                checked
+                                  ? "border-michigan-blue bg-[#EEF5FF] text-navy"
+                                  : "border-border text-muted"
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                className="sr-only"
+                                checked={checked}
+                                disabled={leadPrefBusy}
+                                onChange={() => toggleLeadCity(city.slug)}
+                              />
+                              {city.name}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              {leadCitySlugs.length > 0 ? (
+                <button
+                  type="button"
+                  className="mt-2 text-[12.5px] font-semibold text-michigan-blue hover:underline"
+                  disabled={leadPrefBusy}
+                  onClick={() => {
+                    setLeadCitySlugs([]);
+                    setLeadCitiesExpanded(false);
+                  }}
+                >
+                  Clear city filter (accept all matching)
+                </button>
+              ) : null}
+            </div>
+
+            <div className="mt-4">
+              <button
+                type="button"
+                className="btn-outline !px-3 !py-2 !text-[13px]"
+                disabled={leadPrefBusy}
+                onClick={() => void saveLeadPreferences()}
+              >
+                {leadPrefBusy ? "Saving…" : "Save lead preferences"}
+              </button>
+            </div>
+            {leadPrefNote ? (
+              <p className="mt-3 mb-0 text-[12.5px] font-semibold text-success">
+                {leadPrefNote}
+              </p>
+            ) : null}
+            {leadPrefError ? (
+              <p className="mt-3 mb-0 text-[12.5px] font-semibold text-[#B42318]">
+                {leadPrefError}
+              </p>
+            ) : null}
           </div>
 
           <div
