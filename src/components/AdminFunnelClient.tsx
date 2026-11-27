@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import type { ClaimFunnelReport } from "@/lib/claim-funnel";
 import type { QuoteFunnelReport } from "@/lib/quote-funnel";
+
+type FunnelPayload = QuoteFunnelReport & {
+  claimFunnel?: ClaimFunnelReport | null;
+};
 
 function pct(rate: number | null): string {
   if (rate == null) return "—";
@@ -37,7 +42,7 @@ export function AdminFunnelClient({
 }) {
   const [authed, setAuthed] = useState(initiallyAuthed);
   const [token, setToken] = useState("");
-  const [report, setReport] = useState<QuoteFunnelReport | null>(null);
+  const [report, setReport] = useState<FunnelPayload | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(initiallyAuthed);
   const [loginBusy, setLoginBusy] = useState(false);
@@ -54,7 +59,7 @@ export function AdminFunnelClient({
         return;
       }
       if (!res.ok) throw new Error("Unable to load funnel stats");
-      const data = (await res.json()) as QuoteFunnelReport;
+      const data = (await res.json()) as FunnelPayload;
       setReport(data);
       setAuthed(true);
     } catch (err) {
@@ -77,7 +82,7 @@ export function AdminFunnelClient({
           return;
         }
         if (!res.ok) throw new Error("Unable to load funnel stats");
-        const data = (await res.json()) as QuoteFunnelReport;
+        const data = (await res.json()) as FunnelPayload;
         if (cancelled) return;
         setReport(data);
         setAuthed(true);
@@ -159,6 +164,7 @@ export function AdminFunnelClient({
   }
 
   const totals = report?.totals;
+  const claim = report?.claimFunnel;
 
   return (
     <div className="container-site py-10 pb-20">
@@ -168,10 +174,10 @@ export function AdminFunnelClient({
             Admin
           </div>
           <h1 className="m-0 text-[clamp(26px,3vw,34px)] font-extrabold tracking-[-0.7px] text-navy">
-            Quote funnel
+            Growth funnels
           </h1>
           <p className="mt-2 m-0 text-sm text-muted">
-            Privacy-light first-party counters · views → starts → submits
+            Privacy-light first-party counters · quote + claim acquisition
             {report
               ? ` · ${report.startDay} → ${report.endDay} (${report.windowDays}d)`
               : ""}
@@ -183,6 +189,12 @@ export function AdminFunnelClient({
             className="btn-outline !py-2.5 !px-4 inline-flex items-center"
           >
             Quote leads
+          </Link>
+          <Link
+            href="/admin/claims/"
+            className="btn-outline !py-2.5 !px-4 inline-flex items-center"
+          >
+            Claims
           </Link>
           <select
             className="rounded-[10px] border border-border bg-white px-3 py-2.5 text-sm font-bold text-navy"
@@ -223,6 +235,37 @@ export function AdminFunnelClient({
         <p className="text-muted">No funnel data yet.</p>
       ) : (
         <>
+          <h2 className="mb-3 text-lg font-extrabold text-navy">
+            Claim acquisition (/for-companies/)
+          </h2>
+          {claim ? (
+            <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <StatCard label="Page views" value={claim.totals.views} />
+              <StatCard
+                label="Searches"
+                value={claim.totals.searches}
+                hint={pct(claim.viewToSearchRate)}
+              />
+              <StatCard
+                label="Claim starts"
+                value={claim.totals.starts}
+                hint={pct(claim.viewToStartRate)}
+              />
+              <StatCard
+                label="Claim submits"
+                value={claim.totals.submits}
+                hint={pct(claim.startToSubmitRate)}
+              />
+            </div>
+          ) : (
+            <p className="mb-8 text-sm text-muted">
+              Claim funnel table not available yet — apply migration 0033.
+            </p>
+          )}
+
+          <h2 className="mb-3 text-lg font-extrabold text-navy">
+            Quote funnel
+          </h2>
           <div className="mb-6 grid gap-3 sm:grid-cols-3">
             <StatCard label="Form views" value={totals.views} />
             <StatCard
@@ -314,8 +357,10 @@ export function AdminFunnelClient({
           </div>
           <p className="mt-4 text-[13px] text-muted">
             Counters ignore known bots, store no PII, and do not use third-party
-            trackers. Successful submits also set{" "}
-            <code className="text-[12px]">leads.source_page</code>.
+            trackers. Quote submits also set{" "}
+            <code className="text-[12px]">leads.source_page</code>. Claim
+            counters come from{" "}
+            <code className="text-[12px]">claim_funnel_daily</code>.
           </p>
         </>
       )}

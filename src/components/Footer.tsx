@@ -73,23 +73,26 @@ export function Footer() {
           </div>
           <div>
             <div className="mb-3.5 text-[13px] font-extrabold uppercase tracking-[1px] text-footer-accent">
-              For Companies
+              For Pros
             </div>
             <div className="grid gap-[9px] text-sm">
-              <Link href="/companies/" className={FOOTER_LINK}>
-                Browse Companies
+              <Link href="/for-companies/" className={FOOTER_LINK}>
+                For Garage Door Pros
+              </Link>
+              <Link href="/for-companies/#find" className={FOOTER_LINK}>
+                Find Your Listing
               </Link>
               <Link href="/for-companies/#claim" className={FOOTER_LINK}>
                 Claim Your Page
               </Link>
-              <Link href="/for-companies/" className={FOOTER_LINK}>
-                Contractor Login
-              </Link>
-              <Link href="/for-companies/" className={FOOTER_LINK}>
-                Get More Leads
+              <Link href="/companies/" className={FOOTER_LINK}>
+                Browse Companies
               </Link>
               <Link href="/for-companies/#featured" className={FOOTER_LINK}>
                 Featured Listings
+              </Link>
+              <Link href="/for-companies/#recover" className={FOOTER_LINK}>
+                Contractor Login
               </Link>
             </div>
           </div>
@@ -142,6 +145,9 @@ export function CompactFooter() {
           <div className="flex flex-wrap gap-[22px] text-sm">
             <Link href="/pros/" className={FOOTER_LINK}>
               Find a Pro
+            </Link>
+            <Link href="/for-companies/" className={FOOTER_LINK}>
+              For Pros
             </Link>
             <Link href="/garage-door-repair/" className={FOOTER_LINK}>
               Services

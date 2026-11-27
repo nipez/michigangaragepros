@@ -53,7 +53,7 @@ async function main() {
   push("cities", "0.9");
   push("companies", "0.8");
   push("blog", "0.8");
-  push("for-companies", "0.7");
+  push("for-companies", "0.85");
   push("get-a-quote", "0.6");
   for (const s of SERVICES) push(s.slug, "0.8");
   push("cost", "0.75");

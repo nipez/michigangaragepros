@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
+import { loadClaimFunnelReport } from "@/lib/claim-funnel";
 import { getDb, getEnv } from "@/lib/db";
 import { loadQuoteFunnelReport } from "@/lib/quote-funnel";
 
@@ -20,8 +21,14 @@ export async function GET(request: Request) {
 
   try {
     const db = await getDb();
-    const report = await loadQuoteFunnelReport(db, windowDays);
-    return NextResponse.json(report);
+    const [report, claimFunnel] = await Promise.all([
+      loadQuoteFunnelReport(db, windowDays),
+      loadClaimFunnelReport(db, windowDays).catch((err) => {
+        console.error("admin claim funnel load failed", err);
+        return null;
+      }),
+    ]);
+    return NextResponse.json({ ...report, claimFunnel });
   } catch (err) {
     console.error("admin funnel load failed", err);
     return NextResponse.json(

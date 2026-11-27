@@ -48,11 +48,11 @@ export const STEP_SUBS = [
 ] as const;
 
 export const PRO_BENEFITS = [
-  "Control your company information",
-  "Add photos and services",
-  "Highlight your service area",
-  "Receive homeowner leads",
-  "Track profile activity",
+  "Free leads routed to your inbox",
+  "Reply to reviews from your manage page",
+  "Track listing views and performance",
+  "Update logo, photos, and trust credentials",
+  "Upgrade to Featured when you want more demand",
 ] as const;
 
 export const HOW_IT_WORKS = [
@@ -76,18 +76,18 @@ export const HOW_IT_WORKS = [
 export const HOW_IT_WORKS_PROS = [
   {
     step: "01",
-    title: "Claim Your Page",
-    desc: "Submit your company details and a contact so we can verify ownership. It's free.",
+    title: "Find & Claim",
+    desc: "Search for your business, submit a free claim, and we verify ownership — usually within one business day.",
   },
   {
     step: "02",
-    title: "Build It Out",
-    desc: "Add your services, photos, service area, and business details so homeowners can compare you accurately.",
+    title: "Manage Your Page",
+    desc: "Update services, photos, trust credentials, and reply to reviews from your private manage link.",
   },
   {
     step: "03",
-    title: "Get Leads",
-    desc: "Homeowners in your service area send quote requests straight to you.",
+    title: "Get Leads & Grow",
+    desc: "Quote requests route to your inbox. Track performance, then Feature for Sponsored placement.",
   },
 ] as const;
 

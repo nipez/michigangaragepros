@@ -1,25 +1,85 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { FEATURED_PLANS } from "@/data/growth";
 import { HOW_IT_WORKS_PROS, PRO_BENEFITS } from "@/data/site";
+import { trackGrowth } from "@/lib/analytics";
+import { recordClaimFunnelEvent } from "@/lib/claim-funnel-client";
+import type { CompanyClaimSearchHit } from "@/lib/company-claim-search";
+import { CityDemandSignals } from "./CityDemandSignals";
 import { ClaimForm } from "./ClaimForm";
 import { FeaturedInterestForm } from "./FeaturedInterestForm";
 import { CompactFooter } from "./Footer";
 import { Header } from "./Header";
 import { ManageLinkRecoverForm } from "./ManageLinkRecoverForm";
+import { ProCompanySearch } from "./ProCompanySearch";
 
 function ForCompaniesPageInner() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const initialCompanyName = searchParams.get("company") ?? "";
   const initialCity = searchParams.get("city") ?? "";
   const initialCompanySlug = searchParams.get("slug") ?? "";
+  const deepLinkStartCounted = useRef(false);
+
+  const [claimCompanyName, setClaimCompanyName] = useState(initialCompanyName);
+  const [claimCity, setClaimCity] = useState(initialCity);
+  const [claimCompanySlug, setClaimCompanySlug] = useState(initialCompanySlug);
+
+  useEffect(() => {
+    recordClaimFunnelEvent("view");
+    trackGrowth("for_companies_view");
+  }, []);
+
+  // Prefill from listing CTA counts as claim start once (search skipped).
+  // Do not re-fire when search selection updates the URL.
+  useEffect(() => {
+    if (deepLinkStartCounted.current) return;
+    if (!initialCompanySlug && !initialCompanyName) return;
+    deepLinkStartCounted.current = true;
+    recordClaimFunnelEvent("start");
+    trackGrowth("pro_claim_start", {
+      companySlug: initialCompanySlug || undefined,
+      city: initialCity || undefined,
+      source: "deep_link",
+    });
+  }, [initialCompanySlug, initialCompanyName, initialCity]);
+
+  const handleSelect = (hit: CompanyClaimSearchHit | null) => {
+    // Search selection already recorded claim_start; prevent deep-link double count.
+    deepLinkStartCounted.current = true;
+    if (hit) {
+      setClaimCompanyName(hit.name);
+      setClaimCity(hit.city);
+      setClaimCompanySlug(hit.slug);
+      const params = new URLSearchParams({
+        company: hit.name,
+        city: hit.city,
+        slug: hit.slug,
+      });
+      router.replace(`/for-companies/?${params.toString()}#claim`, {
+        scroll: false,
+      });
+    } else {
+      setClaimCompanyName("");
+      setClaimCity("");
+      setClaimCompanySlug("");
+      router.replace("/for-companies/#claim", { scroll: false });
+    }
+    // Scroll after URL update so the claim form is visible.
+    requestAnimationFrame(() => {
+      document.getElementById("claim")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  };
 
   return (
     <>
-      <Header active="for-companies" claimHref="#claim" />
+      <Header active="for-companies" claimHref="#find" />
 
       <section className="hero-gradient">
         <div
@@ -29,22 +89,22 @@ function ForCompaniesPageInner() {
         >
           <div>
             <div className="mb-[22px] inline-block rounded-full border border-[rgba(124,192,244,0.35)] bg-[rgba(124,192,244,0.12)] px-3 py-1.5 text-[13px] font-semibold text-[#A8D4F5]">
-              For Garage Door Companies
+              For Garage Door Pros
             </div>
             <h1 className="mb-4 text-[clamp(34px,4vw,52px)] font-extrabold leading-[1.1] tracking-[-1.1px] text-balance">
-              Get In Front of Michigan Homeowners Looking for You
+              Claim Your Free Listing. Get Michigan Leads.
             </h1>
             <p className="mb-[30px] max-w-[52ch] text-lg leading-[1.55] text-hero-muted text-pretty">
-              Homeowners come to Michigan Garage Pros for repair, installation,
-              and emergency help by city and ZIP — not by hunting brand names.
-              Claim free, then Feature where you want demand.
+              Homeowners request garage door quotes by city and ZIP. Claim free
+              to receive leads, reply to reviews, track performance, and upgrade
+              to Featured when you want more demand.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="#claim"
+                href="#find"
                 className="on-dark-solid inline-block rounded-xl bg-bright-blue px-7 py-[15px] text-base font-extrabold text-white hover:bg-cta-hover"
               >
-                Claim Your Free Page
+                Find Your Business
               </Link>
               <Link
                 href="#featured"
@@ -69,6 +129,16 @@ function ForCompaniesPageInner() {
           </div>
         </div>
       </section>
+
+      <section id="find" className="container-site pt-16">
+        <ProCompanySearch
+          onSelect={handleSelect}
+          initialQuery={initialCompanyName}
+          initialCity={initialCity}
+        />
+      </section>
+
+      <CityDemandSignals />
 
       <section className="container-site pt-20">
         <h2 className="mb-10 text-center text-[clamp(26px,3vw,36px)] font-extrabold tracking-[-0.8px] text-navy">
@@ -172,9 +242,9 @@ function ForCompaniesPageInner() {
             </div>
           </div>
           <FeaturedInterestForm
-            initialCompanyName={initialCompanyName}
-            initialCity={initialCity}
-            initialCompanySlug={initialCompanySlug}
+            initialCompanyName={claimCompanyName}
+            initialCity={claimCity}
+            initialCompanySlug={claimCompanySlug}
           />
         </div>
       </section>
@@ -185,13 +255,15 @@ function ForCompaniesPageInner() {
             Claim Your Free Page
           </h2>
           <p className="mx-auto mb-7 max-w-[48ch] text-[16.5px] leading-[1.6] text-hero-muted">
-            Leave your contact details so we can verify ownership and turn on
-            your listing.
+            {claimCompanySlug
+              ? `Verify ownership of ${claimCompanyName || "your listing"} so we can turn on lead routing and your manage dashboard.`
+              : "Leave your contact details so we can verify ownership and turn on your listing. Not in the directory yet? Submit anyway — we review new businesses manually."}
           </p>
           <ClaimForm
-            initialCompanyName={initialCompanyName}
-            initialCity={initialCity}
-            initialCompanySlug={initialCompanySlug}
+            key={`${claimCompanySlug}|${claimCompanyName}|${claimCity}`}
+            initialCompanyName={claimCompanyName}
+            initialCity={claimCity}
+            initialCompanySlug={claimCompanySlug}
           />
           <div className="mt-4 text-[13px] text-[#8AA3B8]">
             Free to claim · No credit card required · Stored securely in our

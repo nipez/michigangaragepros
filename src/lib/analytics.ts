@@ -6,7 +6,10 @@ type GrowthEvent =
   | "featured_interest"
   | "featured_checkout_started"
   | "pros_search"
-  | "city_browse";
+  | "city_browse"
+  | "for_companies_view"
+  | "pro_company_search"
+  | "pro_claim_start";
 
 /** GA4 Measurement ID — env override, production fallback is G-ZCS84QFFJP. */
 export const GA_MEASUREMENT_ID =
