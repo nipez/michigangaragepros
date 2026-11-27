@@ -147,6 +147,15 @@ export function CompanyClaimCard({
       >
         Claim this listing →
       </Link>
+      <p className="mt-3 mb-0 text-center text-[12.5px] leading-[1.45] text-muted">
+        Not your company?{" "}
+        <Link
+          href="/for-companies/#find"
+          className="font-bold text-michigan-blue underline-offset-2 hover:underline"
+        >
+          Find yours
+        </Link>
+      </p>
     </div>
   );
 }

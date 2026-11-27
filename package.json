@@ -18,6 +18,8 @@
     "test:responsiveness": "npx tsx scripts/test-responsiveness.mjs",
     "test:quote-links": "npx tsx scripts/test-quote-links.mjs",
     "test:quote-funnel": "npx tsx scripts/test-quote-funnel.mjs",
+    "test:claim-funnel": "npx tsx scripts/test-claim-funnel.mjs",
+    "test:company-claim-search": "npx tsx scripts/test-company-claim-search.mjs",
     "test:notify-lead-urgency": "npx tsx scripts/test-notify-lead-urgency.mjs",
     "test:lead-review-request": "npx tsx scripts/test-lead-review-request.mjs",
     "test:review-replies": "npx tsx scripts/test-review-replies.mjs",

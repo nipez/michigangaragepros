@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/admin";
 import { getEnv } from "@/lib/db";
 
 export const metadata: Metadata = {
-  title: "Admin · Quote funnel",
+  title: "Admin · Growth funnels",
   robots: { index: false, follow: false },
 };
 

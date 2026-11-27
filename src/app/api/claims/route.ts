@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { bumpClaimFunnel } from "@/lib/claim-funnel";
 import { getDb } from "@/lib/db";
 import { validateClaim, type ClaimRequest } from "@/lib/claim";
 import { assertClaimAllowed, getCompanyClaimStatus } from "@/lib/claimStatus";
@@ -77,6 +78,11 @@ export async function POST(request: Request) {
       .run();
 
     const id = result.meta.last_row_id;
+    try {
+      await bumpClaimFunnel(db, "submit");
+    } catch (funnelErr) {
+      console.error("claim funnel submit bump failed", funnelErr);
+    }
     await notifyOperator(
       formatClaimNotify({
         id: id ?? "unknown",

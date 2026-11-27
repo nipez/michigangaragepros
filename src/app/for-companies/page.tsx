@@ -3,9 +3,9 @@ import { buildPageMetadata } from "@/lib/seo";
 import { ForCompaniesPage } from "@/components/ForCompaniesPage";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "For Garage Door Companies",
+  title: "For Garage Door Pros — Claim Your Free Listing",
   description:
-    "Claim your free Michigan Garage Pros company page and get in front of homeowners looking for garage door service.",
+    "Claim your free Michigan Garage Pros listing to receive homeowner leads, reply to reviews, track performance, and upgrade to Featured placement.",
   path: "/for-companies/",
 });
 

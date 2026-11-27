@@ -10,7 +10,7 @@ const NAV = [
   { href: "/garage-door-repair/", label: "Services", id: "services" },
   { href: "/cities/", label: "Cities", id: "cities" },
   { href: "/blog/", label: "Blog", id: "blog" },
-  { href: "/for-companies/", label: "For Companies", id: "for-companies" },
+  { href: "/for-companies/", label: "For Pros", id: "for-companies" },
 ] as const;
 
 type HeaderProps = {

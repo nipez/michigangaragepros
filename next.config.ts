@@ -96,6 +96,13 @@ async function legacyRedirects() {
     statusCode: 301,
   });
 
+  // /for-pros/ → /for-companies/ (contractor acquisition hub alias)
+  redirects.push({
+    source: "/for-pros",
+    destination: "/for-companies/",
+    statusCode: 301,
+  });
+
   // Removed seed companies (0002 → 0003) → their city pages
   for (const { slug, citySlug } of REMOVED_COMPANY_TO_CITY) {
     redirects.push({
